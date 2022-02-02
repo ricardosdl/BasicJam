@@ -1,4 +1,4 @@
-﻿IncludeFile "GameObject.pbi"
+﻿XIncludeFile "GameObject.pbi"
 
 EnableExplicit
 
@@ -13,15 +13,13 @@ EndProcedure
 
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                          SpriteNum.i)
+                          SpriteNum.i, ZoomFactor.f)
   
   InitEnemy(*BananaEnemy, *Player)
   
-  InitGameObject(*BananaEnemy, *Position, 
+  InitGameObject(*BananaEnemy, *Position, 8, 8, SpriteNum, #Null, @DrawGameObject(), ZoomFactor)
   
-  *Position.TVector2D, OriginalWidth.u,
-                         OriginalHeight.u, SpriteNum.i, *UpdateProc.UpdateGameObjectProc,
-                         *DrawProc.DrawGameObjectProc, ZoomFactor.f = 1.0
+  ;some initialization for the bananaenemy
   
   
   

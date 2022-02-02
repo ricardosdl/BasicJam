@@ -1,11 +1,22 @@
-﻿IncludeFile "GameObject.pbi"
+﻿XIncludeFile "GameObject.pbi"
+XIncludeFile "Enemy.pbi"
 
 EnableExplicit
+
+#MAX_ENEMIES = 100
 
 Enumeration ESprites
   #Player1
   #Banana
 EndEnumeration
+
+Structure TGameState
+  CurrentState.u
+  LastState.u
+  
+  
+EndStructure
+
 
 InitSprite()
 InitKeyboard()
@@ -16,6 +27,8 @@ OpenWindowedScreen(WindowID(1),0,0,800,600,0,0,0)
 Global SimulationTime.q = 0, RealTime.q, GameTick = 6
 Global ElapsedTimneInS.f, LastTimeInMs.q
 Global Player.TGameObject, Banana.TGameObject
+
+Dim Enemies.TEnemy(#MAX_ENEMIES - 1)
 
 Procedure LoadSprites()
   LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending)
@@ -53,7 +66,11 @@ EndProcedure
 
 Procedure DrawWorld()
   Player\DrawGameObject(@Player)
-  Banana\DrawGameObject(@Banana)
+  ;Banana\DrawGameObject(@Banana)
+EndProcedure
+
+Procedure StartGame()
+  
 EndProcedure
 
 
@@ -65,10 +82,6 @@ LoadResources()
 Define PlayerPosition.TVector2D\x = 90
 PlayerPosition.TVector2D\y = 90
 InitGameObject(@Player, @PlayerPosition, 12, 12, #Player1, #Null, @DrawGameObject(), 2.5)
-
-Define BananaPos.TVector2D\x = 150
-BananaPos\y = 150
-InitGameObject(@Banana, @BananaPos, 8, 8, #Banana, #Null, @DrawGameObject(), 2.5)
 
 LastTimeInMs = ElapsedMilliseconds()
 

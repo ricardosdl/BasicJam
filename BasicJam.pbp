@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://www.purebasic.com/namespace" version="1.0" creator="PureBasic 5.73 LTS (Windows - x64)">
+  <section name="config">
+    <options closefiles="1" openmode="0" name="New Project"/>
+  </section>
+  <section name="data">
+    <explorer view="" pattern="0"/>
+    <log show="1"/>
+    <lastopen date="2022-02-02 15:46" user="ricardo.lima" host="686-D-00000537"/>
+  </section>
+  <section name="files">
+    <file name="BananaEnemy.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
+    </file>
+    <file name="Enemy.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+    <file name="GameObject.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+    <file name="Main.pb">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+    <file name="Math.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+  </section>
+  <section name="targets">
+    <target name="Default Target" enabled="1" default="1">
+      <inputfile value="Main.pb"/>
+      <outputfile value="BJ"/>
+      <options xpskin="1" debug="1"/>
+    </target>
+  </section>
+</project>

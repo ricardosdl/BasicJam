@@ -1,22 +1,6 @@
-﻿XIncludeFile "GameObject.pbi"
-XIncludeFile "Enemy.pbi"
+﻿XIncludeFile "GameState.pbi"
 
 EnableExplicit
-
-#MAX_ENEMIES = 100
-
-Enumeration ESprites
-  #Player1
-  #Banana
-EndEnumeration
-
-Structure TGameState
-  CurrentState.u
-  LastState.u
-  
-  
-EndStructure
-
 
 InitSprite()
 InitKeyboard()
@@ -26,9 +10,6 @@ OpenWindowedScreen(WindowID(1),0,0,800,600,0,0,0)
 
 Global SimulationTime.q = 0, RealTime.q, GameTick = 6
 Global ElapsedTimneInS.f, LastTimeInMs.q
-Global Player.TGameObject, Banana.TGameObject
-
-Dim Enemies.TEnemy(#MAX_ENEMIES - 1)
 
 Procedure LoadSprites()
   LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending)
@@ -40,32 +21,11 @@ Procedure LoadResources()
 EndProcedure
 
 Procedure UpdateWorld(TimeSlice.f)
-  Player\Velocity\x = 0
-  If KeyboardPushed(#PB_Key_Left)
-    Player\Velocity\x = -250
-  EndIf
   
-  If KeyboardPushed(#PB_Key_Right)
-    Player\Velocity\x = 250
-  EndIf
-  
-  Player\Velocity\y = 0
-  If KeyboardPushed(#PB_Key_Up)
-    Player\Velocity\y = -250
-  EndIf
-  
-  If KeyboardPushed(#PB_Key_Down)
-    Player\Velocity\y = 250
-  EndIf
-  
-  
-  
-  Player\Position\x + Player\Velocity\x * TimeSlice
-  Player\Position\y + Player\Velocity\y * TimeSlice
 EndProcedure
 
 Procedure DrawWorld()
-  Player\DrawGameObject(@Player)
+  ;Player\DrawGameObject(@Player)
   ;Banana\DrawGameObject(@Banana)
 EndProcedure
 
@@ -78,10 +38,8 @@ UsePNGImageDecoder()
 
 LoadResources()
 
-
-Define PlayerPosition.TVector2D\x = 90
-PlayerPosition.TVector2D\y = 90
-InitGameObject(@Player, @PlayerPosition, 12, 12, #Player1, #Null, @DrawGameObject(), 2.5)
+InitGameSates()
+SwitchGameState(@GameStateManager, #PlayState)
 
 LastTimeInMs = ElapsedMilliseconds()
 

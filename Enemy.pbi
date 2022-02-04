@@ -17,7 +17,7 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   InitEnemy(*BananaEnemy, *Player)
   
-  InitGameObject(*BananaEnemy, *Position, 8, 8, SpriteNum, #Null, @DrawGameObject(), ZoomFactor)
+  InitGameObject(*BananaEnemy, *Position, 8, 8, SpriteNum, #Null, @DrawGameObject(), #True, ZoomFactor)
   
   ;some initialization for the bananaenemy
   

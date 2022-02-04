@@ -8,7 +8,7 @@ InitKeyboard()
 OpenWindow(1, 0,0,800,600,"Foo Game", #PB_Window_ScreenCentered | #PB_Window_SystemMenu)
 OpenWindowedScreen(WindowID(1),0,0,800,600,0,0,0)
 
-Global SimulationTime.q = 0, RealTime.q, GameTick = 6
+Global SimulationTime.q = 0, RealTime.q, GameTick = 5
 Global ElapsedTimneInS.f, LastTimeInMs.q
 
 Procedure LoadSprites()
@@ -21,10 +21,11 @@ Procedure LoadResources()
 EndProcedure
 
 Procedure UpdateWorld(TimeSlice.f)
-  
+  UpdateCurrentStateGameStateManager(@GameStateManager, TimeSlice)
 EndProcedure
 
 Procedure DrawWorld()
+  DrawCurrentStateGameSateManager(@GameStateManager)
   ;Player\DrawGameObject(@Player)
   ;Banana\DrawGameObject(@Banana)
 EndProcedure

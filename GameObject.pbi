@@ -24,6 +24,8 @@ Structure TGameObject
   UpdateGameObject.UpdateGameObjectProc
   DrawGameObject.DrawGameObjectProc
   
+  Active.a
+  
   
   
 EndStructure
@@ -31,7 +33,7 @@ EndStructure
 
 Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, OriginalWidth.u,
                          OriginalHeight.u, SpriteNum.i, *UpdateProc.UpdateGameObjectProc,
-                         *DrawProc.DrawGameObjectProc, ZoomFactor.f = 1.0)
+                         *DrawProc.DrawGameObjectProc, Active.a, ZoomFactor.f = 1.0)
   
   *GameObject\Position\x = *Position\x
   *GameObject\Position\y = *Position\y
@@ -45,6 +47,8 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, OriginalW
   
   *GameObject\UpdateGameObject = *UpdateProc
   *GameObject\DrawGameObject = *DrawProc
+  
+  *GameObject\Active = Active
   
   
   

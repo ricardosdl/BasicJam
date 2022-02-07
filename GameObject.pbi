@@ -30,20 +30,43 @@ Structure TGameObject
   
 EndStructure
 
+Procedure GetSpriteOriginalWidthAndHeight(SpriteNum.i, *OriginalWidth.Integer, *OriginalHeight.Integer)
+  ;saves the current width and height
+  Protected CurrentWidth, CurrentHeight
+  CurrentWidth = SpriteWidth(SpriteNum)
+  CurrentHeight = SpriteHeight(SpriteNum)
+  
+  ;restore the orignal dimensions
+  ZoomSprite(SpriteNum, #PB_Default, #PB_Default)
+  
+  *OriginalWidth\i = SpriteWidth(SpriteNum)
+  *OriginalHeight\i = SpriteHeight(SpriteNum)
+  
+  ;restore the current dimensions
+  ZoomSprite(SpriteNum, CurrentWidth, CurrentHeight)
+  
+  
+EndProcedure
 
-Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, OriginalWidth.u,
-                         OriginalHeight.u, SpriteNum.i, *UpdateProc.UpdateGameObjectProc,
-                         *DrawProc.DrawGameObjectProc, Active.a, ZoomFactor.f = 1.0)
+
+Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum.i,
+                         *UpdateProc.UpdateGameObjectProc, *DrawProc.DrawGameObjectProc,
+                         Active.a, ZoomFactor.f = 1.0)
   
   *GameObject\Position\x = *Position\x
   *GameObject\Position\y = *Position\y
-  *GameObject\OriginalWidth = OriginalWidth
-  *GameObject\OriginalHeight = OriginalHeight
+  
+  
+  Protected OriginalWidth.Integer, OriginalHeight.Integer
+  GetSpriteOriginalWidthAndHeight(SpriteNum, @OriginalWidth, @OriginalHeight)
+  
+  *GameObject\OriginalWidth = OriginalWidth\i
+  *GameObject\OriginalHeight = OriginalHeight\i
   *GameObject\ZoomFactor = ZoomFactor
-  *GameObject\Width = OriginalWidth * ZoomFactor
-  *GameObject\Height = OriginalHeight * ZoomFactor
+  *GameObject\Width = OriginalWidth\i * ZoomFactor
+  *GameObject\Height = OriginalHeight\i * ZoomFactor
   *GameObject\SpriteNum = SpriteNum
-  ZoomSprite(*GameObject\SpriteNum, OriginalWidth * ZoomFactor, OriginalHeight * ZoomFactor)
+  ZoomSprite(*GameObject\SpriteNum, OriginalWidth\i * ZoomFactor, OriginalHeight\i * ZoomFactor)
   
   *GameObject\UpdateGameObject = *UpdateProc
   *GameObject\DrawGameObject = *DrawProc

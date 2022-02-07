@@ -7,7 +7,7 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2022-02-03 16:56" user="ricardo.lima" host="686-D-00000537"/>
+    <lastopen date="2022-02-07 15:25" user="ricardo.lima" host="686-D-00000537"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
@@ -19,14 +19,17 @@
     <file name="GameObject.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
+    <file name="GameState.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
     <file name="Main.pb">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="Math.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
-    <file name="GameState.pbi">
-      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    <file name="Util.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
     </file>
   </section>
   <section name="targets">

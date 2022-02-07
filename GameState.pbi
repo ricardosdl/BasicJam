@@ -1,6 +1,7 @@
 ﻿XIncludeFile "Math.pbi"
 XIncludeFile "GameObject.pbi"
 XIncludeFile "Enemy.pbi"
+XIncludeFile "Util.pbi"
 EnableExplicit
 
 Prototype StartGameStateProc(*GameState)
@@ -79,28 +80,96 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;we add half on the left and half on the right
   Protected HalfEnemies = NumEnemies / 2
   
+  
+  Protected LeftSideXMiddle.f = ScreenWidth() / 4
+  Protected LeftSideYMiddle.f = ScreenHeight() / 3
   ;left side
   Protected LeftSideEnemies = HalfEnemies
   While LeftSideEnemies
     ;we add random number of enemies each time
-    Protected EnemiesToAdd = Random(5, 1)
+    Protected EnemiesToAdd = Random(6, 3)
+    If LeftSideEnemies - EnemiesToAdd < 0
+      ;the last enemies do add
+      EnemiesToAdd = LeftSideEnemies
+    EndIf
     
-    While EnemiesToAdd
+    Protected LeftSideXOffset.f = LeftSideXMiddle - (EnemiesToAdd * 20) / 2
+    
+    
+    Protected EnemiesAdded = EnemiesToAdd
+    While EnemiesAdded
       Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(*PlayState)
       If *Enemy = #Null
         ;no enemy available :(
+        EnemiesAdded - 1
         Continue
       EndIf
       
+      Protected Position.TVector2d
+      InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
       
-      ;InitBananaEnemy(*Enemy, *PlayState\Player, 
+      Position\x = LeftSideXOffset + EnemiesAdded * *Enemy\Width + (5 * RandomSinValue())
+      Position\y = LeftSideYMiddle + (5 * RandomSinValue())
       
-      EnemiesToAdd - 1
+      *Enemy\Position\x = Position\x
+      *Enemy\Position\y = Position\y
+      
+      *Enemy\Active = #True
+      
+      EnemiesAdded - 1
     Wend
+    
+    LeftSideYMiddle + 20
     
     
     
     LeftSideEnemies - EnemiesToAdd
+  Wend
+  
+  
+  Protected RightSideXMiddle.f = ScreenWidth() / 4 * 3
+  Protected RightSideYMiddle.f = ScreenHeight() / 3
+  
+  Protected RightSideEnemies = HalfEnemies
+  While RightSideEnemies
+    ;we add random number of enemies each time
+    EnemiesToAdd = Random(6, 3)
+    If RightSideEnemies - EnemiesToAdd < 0
+      ;the last enemies do add
+      EnemiesToAdd = RightSideEnemies
+    EndIf
+    
+    Protected RightSideXOffset.f = RightSideXMiddle - (EnemiesToAdd * 20) / 2
+    
+    
+    EnemiesAdded = EnemiesToAdd
+    While EnemiesAdded
+      *Enemy.TEnemy = GetInactiveEnemyPlayState(*PlayState)
+      If *Enemy = #Null
+        ;no enemy available :(
+        EnemiesAdded - 1
+        Continue
+      EndIf
+      
+      Position.TVector2d
+      InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
+      
+      Position\x = RightSideXOffset + EnemiesAdded * *Enemy\Width + (5 * RandomSinValue())
+      Position\y = RightSideYMiddle + (5 * RandomSinValue())
+      
+      *Enemy\Position\x = Position\x
+      *Enemy\Position\y = Position\y
+      
+      *Enemy\Active = #True
+      
+      EnemiesAdded - 1
+    Wend
+    
+    RightSideYMiddle + 20
+    
+    
+    
+    RightSideEnemies - EnemiesToAdd
   Wend
   
   
@@ -115,9 +184,38 @@ Procedure StartPlayState(*PlayState.TPlayState)
   PlayerPos\y = ScreenHeight() / 2
   
   
-  InitGameObject(*Player, @PlayerPos, 12, 12, #Player1, #Null, @DrawGameObject(), #True, 2.5)
+  InitGameObject(*Player, @PlayerPos, #Player1, #Null, @DrawGameObject(), #True, 2.5)
   
   InitEnemiesPlayState(*PlayState)
+  
+  
+EndProcedure
+
+Procedure UpdatePlayStatePlayer(*PlayState.TPlayState, TimeSlice.f)
+  Protected *Player.TGameObject = @*PlayState\Player
+  *Player\Velocity\x = 0
+  *Player\Velocity\y = 0
+  
+  If KeyboardPushed(#PB_Key_Left)
+    *Player\Velocity\x = -200
+  EndIf
+  
+  If KeyboardPushed(#PB_Key_Right)
+    *Player\Velocity\x = 200
+  EndIf
+  
+  If KeyboardPushed(#PB_Key_Up)
+    *Player\Velocity\y = -200
+  EndIf
+  
+  If KeyboardPushed(#PB_Key_Down)
+    *Player\Velocity\y = 200
+  EndIf
+  
+  *Player\Position\x + *Player\Velocity\x * TimeSlice
+  *Player\Position\y + *Player\Velocity\y * TimeSlice
+  
+  
   
   
 EndProcedure
@@ -126,11 +224,20 @@ Procedure EndPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
-  
+  UpdatePlayStatePlayer(*PlayState, TimeSlice)
 EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
   *PlayState\Player\DrawGameObject(*PlayState\Player)
+  Protected i
+  Protected EnemiesEndIdx = ArraySize(*PlayState\Enemies())
+  For i = 0 To EnemiesEndIdx
+    If *PlayState\Enemies(i)\Active
+      *PlayState\Enemies(i)\DrawGameObject(@*PlayState\Enemies(i))
+    EndIf
+    
+  Next
+  
 EndProcedure
 
 Procedure InitGameSates()

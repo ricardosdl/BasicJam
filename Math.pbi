@@ -5,5 +5,18 @@ Structure TVector2D
   y.f
 EndStructure
 
+Structure TRect
+  Position.TVector2D
+  Width.f
+  Height.f
+EndStructure
+
+Structure TCircle
+  Position.TVector2D
+  Radius.f
+EndStructure
+
+
+
 
 DisableExplicit

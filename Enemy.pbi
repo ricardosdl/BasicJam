@@ -6,6 +6,8 @@ Structure TEnemy Extends TGameObject
   *Player.TGameObject
 EndStructure
 
+
+
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject)
   *Enemy\Player = *Player
   
@@ -17,7 +19,7 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   InitEnemy(*BananaEnemy, *Player)
   
-  InitGameObject(*BananaEnemy, *Position, 8, 8, SpriteNum, #Null, @DrawGameObject(), #True, ZoomFactor)
+  InitGameObject(*BananaEnemy, *Position, SpriteNum, #Null, @DrawGameObject(), #True, ZoomFactor)
   
   ;some initialization for the bananaenemy
   

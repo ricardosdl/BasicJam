@@ -73,103 +73,53 @@ Procedure.i GetInactiveEnemyPlayState(*PlayState.TPlayState)
     
 EndProcedure
 
-
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;enemies that we'll add
   Protected NumEnemies = 60
   ;we add half on the left and half on the right
-  Protected HalfEnemies = NumEnemies / 2
+  Protected EnemiesToAdd = NumEnemies
   
+  ;rect on left side
+  Protected EnemiesRect.TRect\Width = ScreenWidth() / 6
+  EnemiesRect\Height = ScreenHeight() / 4
+  ;left side position
+  EnemiesRect\Position\x = (ScreenWidth() / 4) - EnemiesRect\Width / 2
   
-  Protected LeftSideXMiddle.f = ScreenWidth() / 4
-  Protected LeftSideYMiddle.f = ScreenHeight() / 3
-  ;left side
-  Protected LeftSideEnemies = HalfEnemies
-  While LeftSideEnemies
-    ;we add random number of enemies each time
-    Protected EnemiesToAdd = Random(6, 3)
-    If LeftSideEnemies - EnemiesToAdd < 0
-      ;the last enemies do add
-      EnemiesToAdd = LeftSideEnemies
+  ;the enemies spawn on the same y interval of the enemiesrect on both left and right
+  EnemiesRect\Position\y = (ScreenHeight() / 2) - EnemiesRect\Height / 2
+  
+  Protected.f MaxLeftEnemyX, MinLeftEnemyX, MaxLeftEnemyY, MinLeftEnemyY
+  MaxLeftEnemyX = EnemiesRect\Position\x + EnemiesRect\Width
+  MinLeftEnemyX = EnemiesRect\Position\x
+  
+  MaxLeftEnemyY = EnemiesRect\Position\y + EnemiesRect\Height
+  MinLeftEnemyY = EnemiesRect\Position\y
+  
+  While EnemiesToAdd
+    Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(*PlayState)
+    If *Enemy = #Null
+      ;no enemy available :(
+      EnemiesToAdd - 1
+      Continue
     EndIf
     
-    Protected LeftSideXOffset.f = LeftSideXMiddle - (EnemiesToAdd * 20) / 2
-    
-    
-    Protected EnemiesAdded = EnemiesToAdd
-    While EnemiesAdded
-      Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(*PlayState)
-      If *Enemy = #Null
-        ;no enemy available :(
-        EnemiesAdded - 1
-        Continue
-      EndIf
-      
-      Protected Position.TVector2d
-      InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
-      
-      Position\x = LeftSideXOffset + EnemiesAdded * *Enemy\Width + (5 * RandomSinValue())
-      Position\y = LeftSideYMiddle + (5 * RandomSinValue())
-      
-      *Enemy\Position\x = Position\x
-      *Enemy\Position\y = Position\y
-      
-      *Enemy\Active = #True
-      
-      EnemiesAdded - 1
-    Wend
-    
-    LeftSideYMiddle + 20
-    
-    
-    
-    LeftSideEnemies - EnemiesToAdd
-  Wend
-  
-  
-  Protected RightSideXMiddle.f = ScreenWidth() / 4 * 3
-  Protected RightSideYMiddle.f = ScreenHeight() / 3
-  
-  Protected RightSideEnemies = HalfEnemies
-  While RightSideEnemies
-    ;we add random number of enemies each time
-    EnemiesToAdd = Random(6, 3)
-    If RightSideEnemies - EnemiesToAdd < 0
-      ;the last enemies do add
-      EnemiesToAdd = RightSideEnemies
+    If (EnemiesToAdd < NumEnemies / 2)
+      ;change the rect position to the right of the screen
+      EnemiesRect\Position\x = (ScreenWidth() / 4 * 3) - EnemiesRect\Width / 2
     EndIf
     
-    Protected RightSideXOffset.f = RightSideXMiddle - (EnemiesToAdd * 20) / 2
+    MaxLeftEnemyX = EnemiesRect\Position\x + EnemiesRect\Width
+    MinLeftEnemyX = EnemiesRect\Position\x
     
     
-    EnemiesAdded = EnemiesToAdd
-    While EnemiesAdded
-      *Enemy.TEnemy = GetInactiveEnemyPlayState(*PlayState)
-      If *Enemy = #Null
-        ;no enemy available :(
-        EnemiesAdded - 1
-        Continue
-      EndIf
-      
-      Position.TVector2d
-      InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
-      
-      Position\x = RightSideXOffset + EnemiesAdded * *Enemy\Width + (5 * RandomSinValue())
-      Position\y = RightSideYMiddle + (5 * RandomSinValue())
-      
-      *Enemy\Position\x = Position\x
-      *Enemy\Position\y = Position\y
-      
-      *Enemy\Active = #True
-      
-      EnemiesAdded - 1
-    Wend
+    Protected Position.TVector2d\x = Random(MaxLeftEnemyX, MinLeftEnemyX)
+    Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
-    RightSideYMiddle + 20
+    InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
     
+    *Enemy\Active = #True
     
-    
-    RightSideEnemies - EnemiesToAdd
+    EnemiesToAdd - 1
   Wend
   
   
@@ -237,7 +187,6 @@ Procedure DrawPlayState(*PlayState.TPlayState)
     EndIf
     
   Next
-  
 EndProcedure
 
 Procedure InitGameSates()

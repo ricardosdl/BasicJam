@@ -82,6 +82,27 @@ Procedure DrawGameObject(*GameObject.TGameObject)
   DisplayTransparentSprite(*GameObject\SpriteNum, Int(*GameObject\Position\x), Int(*GameObject\Position\y))
 EndProcedure
 
+Procedure UpdateGameObject(*GameObject.TGameObject, TimeSlice.f)
+  *GameObject\Velocity\x + *GameObject\Acceleration\x * TimeSlice
+  *GameObject\Velocity\y + *GameObject\Acceleration\y * TimeSlice
+  
+  If Abs(*GameObject\Velocity\x) > *GameObject\MaxVelocity\x
+    *GameObject\Velocity\x = Sign(*GameObject\Velocity\x) * *GameObject\MaxVelocity\x
+  EndIf
+  
+  If Abs(*GameObject\Velocity\y) > *GameObject\MaxVelocity\y
+    *GameObject\Velocity\y = Sign(*GameObject\Velocity\y) * *GameObject\MaxVelocity\y
+  EndIf
+  
+  *GameObject\Position\x + *GameObject\Velocity\x * TimeSlice
+  *GameObject\Position\y + *GameObject\Velocity\y * TimeSlice
+  
+  
+  
+  
+EndProcedure
+
+
 
 
 

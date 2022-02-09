@@ -14,6 +14,7 @@ Global ElapsedTimneInS.f, LastTimeInMs.q
 Procedure LoadSprites()
   LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Banana, "data\img\banana.png", #PB_Sprite_AlphaBlending)
+  LoadSprite(#Laser1, "data\img\laser1.png", #PB_Sprite_AlphaBlending)
 EndProcedure
 
 Procedure LoadResources()

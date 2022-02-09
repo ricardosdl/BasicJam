@@ -21,8 +21,8 @@ Structure TGameObject
   MaxVelocity.TVector2D
   Drag.TVector2D
   
-  UpdateGameObject.UpdateGameObjectProc
-  DrawGameObject.DrawGameObjectProc
+  Update.UpdateGameObjectProc
+  Draw.DrawGameObjectProc
   
   Active.a
   
@@ -68,8 +68,8 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   *GameObject\SpriteNum = SpriteNum
   ZoomSprite(*GameObject\SpriteNum, OriginalWidth\i * ZoomFactor, OriginalHeight\i * ZoomFactor)
   
-  *GameObject\UpdateGameObject = *UpdateProc
-  *GameObject\DrawGameObject = *DrawProc
+  *GameObject\Update = *UpdateProc
+  *GameObject\Draw = *DrawProc
   
   *GameObject\Active = Active
   

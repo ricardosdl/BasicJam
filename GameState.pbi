@@ -1,6 +1,9 @@
 ﻿XIncludeFile "Math.pbi"
 XIncludeFile "GameObject.pbi"
 XIncludeFile "Enemy.pbi"
+XIncludeFile "Player.pbi"
+XIncludeFile "Projectile.pbi"
+XIncludeFile "Resources.pbi"
 XIncludeFile "Util.pbi"
 EnableExplicit
 
@@ -8,11 +11,6 @@ Prototype StartGameStateProc(*GameState)
 Prototype EndGameStateProc(*GameState)
 Prototype UpdateGameStateProc(*GameState, TimeSlice.f)
 Prototype DrawGameStateProc(*GameState)
-
-Enumeration ESprites
-  #Player1
-  #Banana
-EndEnumeration
 
 Enumeration EGameStates
   #NoGameState
@@ -40,12 +38,11 @@ Structure TGameStateManager
 EndStructure
 
 Structure TPlayState Extends TGameState
-  Player.TGameObject
+  Player.TPlayer
   Array Enemies.TEnemy(#MAX_ENEMIES - 1)
   CurrentLevel.a
+  PlayerProjectiles.TProjectileList
 EndStructure
-
-
 
 Global GameStateManager.TGameStateManager, PlayState.TPlayState
 
@@ -129,43 +126,15 @@ EndProcedure
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
   
-  Protected *Player.TGameObject = @*PlayState\Player
+  Protected *Player.TPlayer = @*PlayState\Player
   Protected PlayerPos.TVector2D\x = ScreenWidth() / 2
   PlayerPos\y = ScreenHeight() / 2
   
   
-  InitGameObject(*Player, @PlayerPos, #Player1, #Null, @DrawGameObject(), #True, 2.5)
+  InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #Player1, 2.5)
+  ;InitPlayer(*Player, #Null, @PlayerPos, #Player1, 2.5)
   
   InitEnemiesPlayState(*PlayState)
-  
-  
-EndProcedure
-
-Procedure UpdatePlayStatePlayer(*PlayState.TPlayState, TimeSlice.f)
-  Protected *Player.TGameObject = @*PlayState\Player
-  *Player\Velocity\x = 0
-  *Player\Velocity\y = 0
-  
-  If KeyboardPushed(#PB_Key_Left)
-    *Player\Velocity\x = -200
-  EndIf
-  
-  If KeyboardPushed(#PB_Key_Right)
-    *Player\Velocity\x = 200
-  EndIf
-  
-  If KeyboardPushed(#PB_Key_Up)
-    *Player\Velocity\y = -200
-  EndIf
-  
-  If KeyboardPushed(#PB_Key_Down)
-    *Player\Velocity\y = 200
-  EndIf
-  
-  *Player\Position\x + *Player\Velocity\x * TimeSlice
-  *Player\Position\y + *Player\Velocity\y * TimeSlice
-  
-  
   
   
 EndProcedure
@@ -174,16 +143,16 @@ Procedure EndPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
-  UpdatePlayStatePlayer(*PlayState, TimeSlice)
+  *PlayState\Player\Update(*PlayState\Player, TimeSlice)
 EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
-  *PlayState\Player\DrawGameObject(*PlayState\Player)
+  *PlayState\Player\Draw(*PlayState\Player)
   Protected i
   Protected EnemiesEndIdx = ArraySize(*PlayState\Enemies())
   For i = 0 To EnemiesEndIdx
     If *PlayState\Enemies(i)\Active
-      *PlayState\Enemies(i)\DrawGameObject(@*PlayState\Enemies(i))
+      *PlayState\Enemies(i)\Draw(@*PlayState\Enemies(i))
     EndIf
     
   Next

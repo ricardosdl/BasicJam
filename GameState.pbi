@@ -144,6 +144,14 @@ EndProcedure
 
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
+  ;update player projectiles
+  ForEach *PlayState\PlayerProjectiles\Projectiles()
+    If *PlayState\PlayerProjectiles\Projectiles()\Active
+      *PlayState\PlayerProjectiles\Projectiles()\Update(@*PlayState\PlayerProjectiles\Projectiles(), TimeSlice)
+    EndIf
+    
+  Next
+  
 EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
@@ -156,6 +164,14 @@ Procedure DrawPlayState(*PlayState.TPlayState)
     EndIf
     
   Next
+  
+  ;draw player projectiles
+  ForEach *PlayState\PlayerProjectiles\Projectiles()
+    If *PlayState\PlayerProjectiles\Projectiles()\Active
+      *PlayState\PlayerProjectiles\Projectiles()\Draw(@*PlayState\PlayerProjectiles\Projectiles())
+    EndIf
+  Next
+  
 EndProcedure
 
 Procedure InitGameSates()

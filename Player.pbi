@@ -19,6 +19,15 @@ Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
     Protected PlayerShootingAngle.f = ATan2(*Player\Velocity\x, *Player\Velocity\y)
     Protected *Projectile.TProjectile = GetInactiveProjectile(*Player\Projectiles)
     
+    Protected Position.TVector2D
+    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, PlayerShootingAngle, #ProjectileLaser1)
+    
+    Position\x = *Player\MiddlePosition\x - *Projectile\Width / 2
+    Position\y = *Player\MiddlePosition\y - *Projectile\Height / 2
+    
+    *Projectile\Position = Position
+    
+    *Player\ShootTimer = 0.0
     
   EndIf
   
@@ -29,18 +38,22 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   *Player\Velocity\y = 0
   
   If KeyboardPushed(#PB_Key_Left)
+    *Player\IsShooting = #True
     *Player\Velocity\x = -200
   EndIf
   
   If KeyboardPushed(#PB_Key_Right)
+    *Player\IsShooting = #True
     *Player\Velocity\x = 200
   EndIf
   
   If KeyboardPushed(#PB_Key_Up)
+    *Player\IsShooting = #True
     *Player\Velocity\y = -200
   EndIf
   
   If KeyboardPushed(#PB_Key_Down)
+    *Player\IsShooting = #True
     *Player\Velocity\y = 200
   EndIf
   

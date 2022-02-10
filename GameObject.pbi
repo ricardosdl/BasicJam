@@ -7,6 +7,7 @@ Prototype DrawGameObjectProc(*GameObject)
 
 Structure TGameObject
   Position.TVector2D
+  MiddlePosition.TVector2D
   LastPosition.TVector2D
   OriginalWidth.u
   OriginalHeight.u
@@ -97,7 +98,8 @@ Procedure UpdateGameObject(*GameObject.TGameObject, TimeSlice.f)
   *GameObject\Position\x + *GameObject\Velocity\x * TimeSlice
   *GameObject\Position\y + *GameObject\Velocity\y * TimeSlice
   
-  
+  *GameObject\MiddlePosition\x = *GameObject\Position\x + *GameObject\Width / 2
+  *GameObject\MiddlePosition\y = *GameObject\Position\y + *GameObject\Height / 2
   
   
 EndProcedure

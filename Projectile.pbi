@@ -12,6 +12,7 @@ EndEnumeration
 Structure TProjectile Extends TGameObject
   Angle.f;in radians
   Type.a
+  Power.f
 EndStructure
 
 Structure TProjectileList
@@ -79,12 +80,23 @@ Procedure UpdateProjectile(*Projectile.TProjectile, TimeSlice.f)
   
 EndProcedure
 
-Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a, ZoomFactor.f, Angle.f, Type.a)
-  Protected SpriteNum, Velocity.f
+Procedure HurtProjectile(*Projectile.TProjectile, Power.f)
+  *Projectile\Health - Power
+  If *Projectile\Health <= 0
+    *Projectile\Active = #False
+  EndIf
+  
+EndProcedure
+
+Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
+                         ZoomFactor.f, Angle.f, Type.a)
+  Protected SpriteNum, Velocity.f, Power.f, Health.f
   Select Type
     Case #ProjectileLaser1
       SpriteNum = #Laser1
       Velocity = 500.0
+      Power = 1.0
+      Health = 1.0
   EndSelect
   
   InitGameObject(*Projectile, *Pos, SpriteNum, @UpdateProjectile(), @DrawProjectile(), Active, ZoomFactor)
@@ -92,6 +104,10 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a, Zoom
   *Projectile\Velocity\y = Sin(Angle) * Velocity
   
   *Projectile\Angle = Angle
+  
+  *Projectile\Power = Power
+  
+  *Projectile\Health = Health
   
   *Projectile\MaxVelocity\x = 1000
   *Projectile\MaxVelocity\y = 1000

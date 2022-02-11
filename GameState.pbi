@@ -142,6 +142,45 @@ EndProcedure
 Procedure EndPlayState(*PlayState.TPlayState)
 EndProcedure
 
+Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TProjectile,
+                                           TimeSlice.f)
+  Protected i, IdxMax = ArraySize(*PlayState\Enemies())
+  For i = 0 To IdxMax
+    If *PlayState\Enemies(i)\Active
+      Protected *Enemy.TEnemy = *PlayState\Enemies(i)
+      Protected EnemyRect.TRect\Position = *Enemy\Position
+      EnemyRect\Width = *Enemy\Width
+      EnemyRect\Height = *Enemy\Height
+      
+      Protected ProjectileRect.TRect\Position = *Projectile\Position
+      ProjectileRect\Width = *Projectile\Width
+      ProjectileRect\Height = *Projectile\Height
+      
+      If CollisionRectRect(EnemyRect\Position\x, EnemyRect\Position\y, EnemyRect\Width,
+                           EnemyRect\Height, ProjectileRect\Position\x,
+                           ProjectileRect\Position\y, ProjectileRect\Width, ProjectileRect\Height)
+        HurtProjectile(*Projectile, 1.0)
+        HurtEnemy(*Enemy, *Projectile\Power)
+        
+      EndIf
+      
+    EndIf
+    
+  Next
+  
+EndProcedure
+
+
+Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
+  ;collisions of player projectiles and enemies
+  ForEach *PlayState\PlayerProjectiles\Projectiles()
+    If *PlayState\PlayerProjectiles\Projectiles()\Active
+      Protected *Projectile.TProjectile = *PlayState\PlayerProjectiles\Projectiles()
+      CollisionPlayerProjectileEnemies(*PlayState, *Projectile, TimeSlice)
+    EndIf
+  Next
+EndProcedure
+
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
   ;update player projectiles
@@ -151,6 +190,8 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
     EndIf
     
   Next
+  
+  UpdateCollisionsPlayState(*PlayState, TimeSlice)
   
 EndProcedure
 

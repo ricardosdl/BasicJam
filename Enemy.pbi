@@ -19,6 +19,8 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   InitEnemy(*BananaEnemy, *Player)
   
+  *BananaEnemy\Health = 2.0
+  
   InitGameObject(*BananaEnemy, *Position, SpriteNum, #Null, @DrawGameObject(), #True, ZoomFactor)
   
   ;some initialization for the bananaenemy
@@ -27,6 +29,20 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   
 EndProcedure
+
+Procedure KillEnemy(*Enemy.TEnemy)
+  *Enemy\Active = #False
+EndProcedure
+
+
+Procedure HurtEnemy(*Enemy.TEnemy, Power.f)
+  *Enemy\Health - Power
+  If *Enemy\Health <= 0.0
+    KillEnemy(*Enemy)
+  EndIf
+  
+EndProcedure
+
 
 
 

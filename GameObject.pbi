@@ -27,6 +27,8 @@ Structure TGameObject
   
   Active.a
   
+  Health.f
+  
   
   
 EndStructure

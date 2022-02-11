@@ -45,17 +45,17 @@ EndProcedure
 Procedure DrawProjectile(*Projectile.TProjectile)
   RotateSprite(*Projectile\SpriteNum, Degree(*Projectile\Angle), #PB_Absolute)
   DrawGameObject(*Projectile)
-  Protected ScreenRect.TRect\Position\x = 0
-  ScreenRect\Position\y = 0
-  ScreenRect\Width = ScreenWidth()
-  ScreenRect\Height = ScreenHeight()
-  If CollisionRectRect(ScreenRect\Position\x, ScreenRect\Position\y, ScreenRect\Width,
-                       ScreenRect\Height, *Projectile\Position\x, *Projectile\Position\y, 0, 0)
-    StartDrawing(ScreenOutput())
-    Box(Int(*Projectile\Position\x), Int(*Projectile\Position\y), SpriteWidth(#Laser1), SpriteHeight(#Laser1), RGB(213, 44, 44))
-    Plot(Int(*Projectile\Position\x), Int(*Projectile\Position\y), RGB(44, 213, 44))
-    StopDrawing()
-  EndIf
+  ;Protected ScreenRect.TRect\Position\x = 0
+  ;ScreenRect\Position\y = 0
+  ;ScreenRect\Width = ScreenWidth()
+  ;ScreenRect\Height = ScreenHeight()
+  ;If CollisionRectRect(ScreenRect\Position\x, ScreenRect\Position\y, ScreenRect\Width,
+  ;                     ScreenRect\Height, *Projectile\Position\x, *Projectile\Position\y, 0, 0)
+  ;  StartDrawing(ScreenOutput())
+  ;  Box(Int(*Projectile\Position\x), Int(*Projectile\Position\y), SpriteWidth(#Laser1), SpriteHeight(#Laser1), RGB(213, 44, 44))
+  ;  Plot(Int(*Projectile\Position\x), Int(*Projectile\Position\y), RGB(44, 213, 44))
+  ;  StopDrawing()
+  ;EndIf
   
   
 EndProcedure

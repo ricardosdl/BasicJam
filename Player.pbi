@@ -10,13 +10,14 @@ Structure TPlayer Extends TGameObject
   *Projectiles.TProjectileList
   IsShooting.a
   ShootTimer.f
+  LastMovementAngle.f;in radians
 EndStructure
 
 Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
   *Player\ShootTimer + TimeSlice
   If *Player\ShootTimer >= #PLAYER_SHOOT_TIMER
     ;shoot
-    Protected PlayerShootingAngle.f = ATan2(*Player\Velocity\x, *Player\Velocity\y)
+    Protected PlayerShootingAngle.f = *Player\LastMovementAngle
     Protected *Projectile.TProjectile = GetInactiveProjectile(*Player\Projectiles)
     
     Protected Position.TVector2D
@@ -57,13 +58,17 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
     *Player\Velocity\y = 200
   EndIf
   
+  If (*Player\Velocity\x <> 0) Or (*Player\Velocity\y <> 0)
+    *Player\LastMovementAngle = ATan2(*Player\Velocity\x, *Player\Velocity\y)
+  EndIf
+  
+    
+  
   If *Player\IsShooting
     PlayerShoot(*Player, TimeSlice)
   EndIf
   
   
-  ;*Player\Position\x + *Player\Velocity\x * TimeSlice
-  ;*Player\Position\y + *Player\Velocity\y * TimeSlice
   UpdateGameObject(*Player, TimeSlice)
   
 EndProcedure

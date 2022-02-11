@@ -9,7 +9,7 @@ OpenWindow(1, 0,0,800,600,"Foo Game", #PB_Window_ScreenCentered | #PB_Window_Sys
 OpenWindowedScreen(WindowID(1),0,0,800,600,0,0,0)
 
 Global SimulationTime.q = 0, RealTime.q, GameTick = 5
-Global ElapsedTimneInS.f, LastTimeInMs.q
+Global LastTimeInMs.q
 
 Procedure LoadSprites()
   LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending)
@@ -43,10 +43,9 @@ LoadResources()
 InitGameSates()
 SwitchGameState(@GameStateManager, #PlayState)
 
-LastTimeInMs = ElapsedMilliseconds()
+SimulationTime = ElapsedMilliseconds()
 
 Repeat
-  ElapsedTimneInS = (ElapsedMilliseconds() - LastTimeInMs) / 1000.0
   LastTimeInMs = ElapsedMilliseconds()
   
   ;RealTime = ElapsedMilliseconds()
@@ -59,9 +58,6 @@ Repeat
     SimulationTime + GameTick
     UpdateWorld(GameTick / 1000.0)
   Wend
-  
-  
-  ;UpdateWorld(ElapsedTimneInS)
   
   ;Draw
   ClearScreen(#Black)  

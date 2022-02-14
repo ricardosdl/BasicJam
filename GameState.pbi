@@ -41,6 +41,7 @@ Structure TPlayState Extends TGameState
   Player.TPlayer
   Array Enemies.TEnemy(#MAX_ENEMIES - 1)
   CurrentLevel.a
+  MaxLevel.a
   PlayerProjectiles.TProjectileList
 EndStructure
 
@@ -54,6 +55,23 @@ EndProcedure
 Procedure UpdateCurrentStateGameStateManager(*GameStateManager.TGameStateManager, TimeSlice.f)
   Protected *GameState.TGameState = *GameStateManager\GameStates(*GameStateManager\CurrentGameState)
   *GameState\UpdateGameState(*GameState, TimeSlice)
+EndProcedure
+
+Procedure SwitchGameState(*GameStateManager.TGameStateManager, NewGameState.a)
+  Protected *CurrentGameState.TGameState = #Null
+  If *GameStateManager\CurrentGameState <> #NoGameState
+    *CurrentGameState = *GameStateManager\GameStates(*GameStateManager\CurrentGameState)
+  EndIf
+  
+  If *CurrentGameState <> #Null
+    *CurrentGameState\EndGameState(*CurrentGameState)
+  EndIf
+  
+  *GameStateManager\LastGameState = *GameStateManager\CurrentGameState
+  *GameStateManager\CurrentGameState = NewGameState
+  
+  Protected *NewGameState.TGameState = *GameStateManager\GameStates(NewGameState)
+  *NewGameState\StartGameState(*NewGameState)
 EndProcedure
 
 Procedure.i GetInactiveEnemyPlayState(*PlayState.TPlayState)
@@ -125,6 +143,7 @@ EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
+  *PlayState\MaxLevel = 1;TODO: more levels
   
   Protected *Player.TPlayer = @*PlayState\Player
   Protected PlayerPos.TVector2D\x = ScreenWidth() / 2
@@ -181,6 +200,28 @@ Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
   Next
 EndProcedure
 
+Procedure.a FinishedEnemiesPlayState(*PlayState.TPlayState)
+  Protected i, EnemiesEndIdx = ArraySize(*PlayState\Enemies())
+  For i = 0 To EnemiesEndIdx
+    If *PlayState\Enemies(i)\Active
+      ProcedureReturn #False
+    EndIf
+  Next
+  
+  ProcedureReturn #True
+  
+EndProcedure
+
+Procedure EndLevelPlayState(*PlayState.TPlayState)
+  If *PlayState\CurrentLevel = *PlayState\MaxLevel
+    ;finished the game
+    ;for now just restart the game
+    SwitchGameState(@GameStateManager, #PlayState)
+    ProcedureReturn
+  EndIf
+  
+EndProcedure
+
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
   ;update player projectiles
@@ -192,6 +233,12 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   Next
   
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
+  
+  If FinishedEnemiesPlayState(*PlayState)
+    EndLevelPlayState(*PlayState)
+    ProcedureReturn
+  EndIf
+  
   
 EndProcedure
 
@@ -227,23 +274,6 @@ Procedure InitGameSates()
   GameStateManager\GameStates(#PlayState) = @PlayState
   GameStateManager\CurrentGameState = #NoGameState
   GameStateManager\LastGameState = #NoGameState
-EndProcedure
-
-Procedure SwitchGameState(*GameStateManager.TGameStateManager, NewGameState.a)
-  Protected *CurrentGameState.TGameState = #Null
-  If *GameStateManager\CurrentGameState <> #NoGameState
-    *CurrentGameState = *GameStateManager\GameStates(*GameStateManager\CurrentGameState)
-  EndIf
-  
-  If *CurrentGameState <> #Null
-    *CurrentGameState\EndGameState(*CurrentGameState)
-  EndIf
-  
-  *GameStateManager\LastGameState = *GameStateManager\CurrentGameState
-  *GameStateManager\CurrentGameState = NewGameState
-  
-  Protected *NewGameState.TGameState = *GameStateManager\GameStates(NewGameState)
-  *NewGameState\StartGameState(*NewGameState)
 EndProcedure
 
 

@@ -2,8 +2,15 @@
 
 EnableExplicit
 
+Enumeration EEnemyStates
+  #EnemyNoState
+  #EnemyPatrolling
+EndEnumeration
+
 Structure TEnemy Extends TGameObject
   *Player.TGameObject
+  CurrentState.a
+  LastState.a
 EndStructure
 
 
@@ -13,6 +20,45 @@ Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject)
   
 EndProcedure
 
+Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
+  UpdateMiddlePositionGameObject(*BananaEnemy)
+  If *BananaEnemy\MiddlePosition\x < (ScreenWidth() / 2)
+    ;to the left of screen, will move up or down
+    If *BananaEnemy\MiddlePosition\y < (ScreenHeight() / 2)
+      ;move up
+      *BananaEnemy\Velocity\y = -100
+    Else
+      ;move down
+      *BananaEnemy\Velocity\y = 100
+    EndIf
+    
+  Else
+    ;to the right of screen, will move left or right
+    If *BananaEnemy\MiddlePosition\y < (ScreenHeight() / 2)
+      ;move left
+      *BananaEnemy\Velocity\x = -100
+    Else
+      ;move right
+      *BananaEnemy\Velocity\x = 100
+    EndIf
+    
+  EndIf
+  
+EndProcedure
+
+
+Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
+  If *BananaEnemy\CurrentState = #EnemyNoState
+    ;lets start some state
+    *BananaEnemy\LastState = *BananaEnemy\CurrentState
+    *BananaEnemy\CurrentState = #EnemyPatrolling
+    SetVelocityPatrollingBananaEnemy(*BananaEnemy)
+    ProcedureReturn
+  EndIf
+  
+  UpdateGameObject(*BananaEnemy, TimeSlice)
+  
+EndProcedure
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
                           SpriteNum.i, ZoomFactor.f)
@@ -21,7 +67,13 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   *BananaEnemy\Health = 2.0
   
-  InitGameObject(*BananaEnemy, *Position, SpriteNum, #Null, @DrawGameObject(), #True, ZoomFactor)
+  InitGameObject(*BananaEnemy, *Position, SpriteNum, @UpdateBananaEnemy(), @DrawGameObject(),
+                 #True, ZoomFactor)
+  
+  *BananaEnemy\MaxVelocity\x = 200.0
+  *BananaEnemy\MaxVelocity\y = 200.0
+  
+  *BananaEnemy\CurrentState = #EnemyNoState
   
   ;some initialization for the bananaenemy
   

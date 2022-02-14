@@ -85,6 +85,11 @@ Procedure DrawGameObject(*GameObject.TGameObject)
   DisplayTransparentSprite(*GameObject\SpriteNum, Int(*GameObject\Position\x), Int(*GameObject\Position\y))
 EndProcedure
 
+Procedure UpdateMiddlePositionGameObject(*GameObject.TGameObject)
+  *GameObject\MiddlePosition\x = *GameObject\Position\x + *GameObject\Width / 2
+  *GameObject\MiddlePosition\y = *GameObject\Position\y + *GameObject\Height / 2
+EndProcedure
+
 Procedure UpdateGameObject(*GameObject.TGameObject, TimeSlice.f)
   *GameObject\Velocity\x + *GameObject\Acceleration\x * TimeSlice
   *GameObject\Velocity\y + *GameObject\Acceleration\y * TimeSlice

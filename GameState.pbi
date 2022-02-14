@@ -232,6 +232,14 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
     
   Next
   
+  Protected i, EndEnemiesIdx = ArraySize(*PlayState\Enemies())
+  For i = 0 To EndEnemiesIdx
+    If *PlayState\Enemies(i)\Active
+      *PlayState\Enemies(i)\Update(@*PlayState\Enemies(i), TimeSlice)
+    EndIf
+  Next
+  
+  
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
   
   If FinishedEnemiesPlayState(*PlayState)

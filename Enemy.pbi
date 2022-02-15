@@ -11,6 +11,7 @@ Structure TEnemy Extends TGameObject
   *Player.TGameObject
   CurrentState.a
   LastState.a
+  
 EndStructure
 
 
@@ -57,6 +58,23 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   UpdateGameObject(*BananaEnemy, TimeSlice)
+  
+  If *BananaEnemy\Position\x < 0 Or
+     (*BananaEnemy\Position\x + *BananaEnemy\Width > ScreenWidth())
+    
+    *BananaEnemy\Velocity\x * -1
+    
+    
+  EndIf
+  
+  If *BananaEnemy\Position\y < 0 Or
+     (*BananaEnemy\Position\y + *BananaEnemy\Health > ScreenHeight())
+    
+    *BananaEnemy\Velocity\y * -1
+    
+    
+  EndIf
+  
   
 EndProcedure
 

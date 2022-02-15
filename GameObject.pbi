@@ -111,6 +111,37 @@ Procedure UpdateGameObject(*GameObject.TGameObject, TimeSlice.f)
   
 EndProcedure
 
+Procedure GetRandomRectAroundGameObject(*GameObject.TGameObject, RectWidth.f, RectHeight.f,
+                                    *RectAroundPlayer.TRect)
+  Protected NumOffsets.a = 4
+  Dim RandomOffsets.TVector2D(NumOffsets - 1)
+  RandomOffsets(0)\x = 0 : RandomOffsets(1)\y = -1
+  RandomOffsets(1)\x = 1 : RandomOffsets(1)\y = 0
+  RandomOffsets(2)\x = 0 : RandomOffsets(2)\y = 1
+  RandomOffsets(3)\x = -1 : RandomOffsets(3)\y = 0
+  
+  Protected RandomRect.TRect
+  Protected MaxIdxRandomOffsets.a = ArraySize(RandomOffsets())
+  
+  Protected RandomOffset.TVector2D = RandomOffsets(Random(MaxIdxRandomOffsets, 0))
+  RandomRect\Width = RectWidth : RandomRect\Height = RectHeight
+  ;If RandomOffset\x = 0 Or RandomOffset\y = 0
+  If RandomOffset\x = 0
+    ;just center the randomrect on the x axis with the player
+    RandomRect\Position\x = *GameObject\Position\x - (RandomRect\Width / 2)
+    ;the random rect will be above or bellow the player
+    RandomRect\Position\y = *GameObject\Position\y + RandomOffset\y * RandomRect\Height
+  ElseIf RandomOffset\y = 0
+    ;just center the randomrect on the y axis with the player
+    RandomRect\Position\y = *GameObject\Position\y - (RandomRect\Height / 2)
+    ;the random rect will be left or right the player
+    RandomRect\Position\x = *GameObject\Position\x + RandomOffset\x * RandomRect\Width
+  EndIf
+  
+  CopyStructure(@RandomRect, *RectAroundPlayer, TRect)
+  
+EndProcedure
+
 
 
 

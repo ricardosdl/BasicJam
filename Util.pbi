@@ -11,5 +11,19 @@ Procedure.a CollisionRectRect(x1.f, y1.f, w1.f, h1.f, x2.f, y2.f, w2.f, h2.f)
   ProcedureReturn Bool(RightAndLeft And TopAndBottom)
 EndProcedure
 
+Procedure.f ClampF(Value.f, Min.f, Max.f)
+  If Value < Min
+    ProcedureReturn Min
+  EndIf
+  
+  If Value > Max
+    ProcedureReturn Max
+  EndIf
+  
+  ProcedureReturn Value
+  
+  
+EndProcedure
+
 
 DisableExplicit

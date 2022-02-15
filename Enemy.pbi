@@ -1,17 +1,22 @@
 ﻿XIncludeFile "GameObject.pbi"
+XIncludeFile "Math.pbi"
+XIncludeFile "Util.pbi"
 
 EnableExplicit
 
 Enumeration EEnemyStates
   #EnemyNoState
+  #EnemyGoingToObjectiveRect
+  #EnemyWaiting
   #EnemyPatrolling
+  
 EndEnumeration
 
 Structure TEnemy Extends TGameObject
   *Player.TGameObject
   CurrentState.a
   LastState.a
-  
+  ObjectiveRect.TRect;a rect that can be used as an objective point for the enemy to reach
 EndStructure
 
 
@@ -47,33 +52,42 @@ Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
   
 EndProcedure
 
-
 Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
+  Protected *Player.TGameObject = *BananaEnemy\Player
   If *BananaEnemy\CurrentState = #EnemyNoState
     ;lets start some state
     *BananaEnemy\LastState = *BananaEnemy\CurrentState
-    *BananaEnemy\CurrentState = #EnemyPatrolling
-    SetVelocityPatrollingBananaEnemy(*BananaEnemy)
+ 
+    Protected RectAroundPlayer.TRect
+    GetRandomRectAroundGameObject(*Player, *Player\Width * 1.5, *Player\Height * 1.5,
+                                  @RectAroundPlayer)
+    
+    ;lets get a random point inside the rect around the player
+    Protected RandomPoint.TVector2D\x = Random(RectAroundPlayer\Position\x +
+                                               RectAroundPlayer\Width,
+                                               RectAroundPlayer\Position\x)
+    RandomPoint\y = Random(RectAroundPlayer\Position\y + RectAroundPlayer\Height,
+                           RectAroundPlayer\Position\y)
+    
+    Protected ObjectiveRect.TRect\Width = 4
+    ObjectiveRect\Height = 4
+    
+    ;make sure the point is inside
+    RandomPoint\x = ClampF(RandomPoint\x, 0, ScreenWidth() - ObjectiveRect\Width)
+    RandomPoint\y = ClampF(RandomPoint\y, 0, ScreenHeight() - ObjectiveRect\Height)
+    
+    ObjectiveRect\Position = RandomPoint
+    
+    *BananaEnemy\CurrentState = #EnemyGoingToObjectiveRect
     ProcedureReturn
   EndIf
   
+  If *BananaEnemy\CurrentState = #EnemyGoingToObjectiveRect
+    
+  EndIf
+  
+  
   UpdateGameObject(*BananaEnemy, TimeSlice)
-  
-  If *BananaEnemy\Position\x < 0 Or
-     (*BananaEnemy\Position\x + *BananaEnemy\Width > ScreenWidth())
-    
-    *BananaEnemy\Velocity\x * -1
-    
-    
-  EndIf
-  
-  If *BananaEnemy\Position\y < 0 Or
-     (*BananaEnemy\Position\y + *BananaEnemy\Health > ScreenHeight())
-    
-    *BananaEnemy\Velocity\y * -1
-    
-    
-  EndIf
   
   
 EndProcedure

@@ -254,12 +254,14 @@ Procedure DrawPlayState(*PlayState.TPlayState)
   *PlayState\Player\Draw(*PlayState\Player)
   Protected i
   Protected EnemiesEndIdx = ArraySize(*PlayState\Enemies())
+  
   For i = 0 To EnemiesEndIdx
     If *PlayState\Enemies(i)\Active
       *PlayState\Enemies(i)\Draw(@*PlayState\Enemies(i))
     EndIf
     
   Next
+  
   
   ;draw player projectiles
   ForEach *PlayState\PlayerProjectiles\Projectiles()

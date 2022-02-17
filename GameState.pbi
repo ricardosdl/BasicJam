@@ -90,7 +90,7 @@ EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;enemies that we'll add
-  Protected NumEnemies = 30
+  Protected NumEnemies = 2
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   
@@ -130,7 +130,8 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     Protected Position.TVector2d\x = Random(MaxLeftEnemyX, MinLeftEnemyX)
     Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
-    InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
+    ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
+    InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5)
     
     *Enemy\Active = #True
     

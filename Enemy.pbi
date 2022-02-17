@@ -22,6 +22,7 @@ Structure TEnemy Extends TGameObject
   FollowPlayerTimer.f
   *ShootingTarget.TGameObject
   ShootingArea.TRect
+  ShootingTimer.f
 EndStructure
 
 
@@ -226,8 +227,11 @@ Procedure.a IsCloseEneoughToPlayerEnemy(*Enemy.TEnemy, CloseEnoughDistance.f)
   
 EndProcedure
 
-Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, *Target.TGameObject)
+Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, ShootingTimer.f, *Target.TGameObject)
+  *Enemy\Velocity\x = 0
+  *Enemy\Velocity\y = 0
   *Enemy\ShootingTarget = *Target
+  *Enemy\ShootingTimer = ShootingTimer
   SwitchStateEnemy(*Enemy, #EnemyShooting)
 EndProcedure
 
@@ -243,9 +247,9 @@ Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   If *AppleEnemy\CurrentState = #EnemyFollowingPlayer
-    If IsCloseEneoughToPlayerEnemy(*AppleEnemy, 5 * *AppleEnemy\Width)
-      Debug "close enough to shoot"
-      ;SwitchToShootingTargetEnemy(*AppleEnemy, *AppleEnemy\Player)
+    If IsCloseEneoughToPlayerEnemy(*AppleEnemy, 6 * *AppleEnemy\Width)
+      ;Debug "close enough to shoot"
+      SwitchToShootingTargetEnemy(*AppleEnemy, 0.5, *AppleEnemy\Player)
       ;ProcedureReturn
     EndIf
     
@@ -256,11 +260,36 @@ Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
       ProcedureReturn
     EndIf
     
+  ElseIf *AppleEnemy\CurrentState = #EnemyShooting
+    *AppleEnemy\ShootingTimer - TimeSlice
+    If *AppleEnemy\ShootingTimer <= 0
+      
+    EndIf
+    
+    
   EndIf
   
   
   UpdateGameObject(*AppleEnemy, TimeSlice)
   
+EndProcedure
+
+Procedure DrawAppleEnemy(*AppleEnemy.TEnemy)
+  DrawEnemy(*AppleEnemy)
+  UpdateMiddlePositionGameObject(*AppleEnemy)
+  UpdateMiddlePositionGameObject(*AppleEnemy\Player)
+  
+  If IsCloseEneoughToPlayerEnemy(*AppleEnemy, 6 * *AppleEnemy\Width)
+    
+    
+    StartDrawing(ScreenOutput())
+    LineXY(*AppleEnemy\MiddlePosition\x, *AppleEnemy\MiddlePosition\y, *AppleEnemy\Player\MiddlePosition\x,
+           *AppleEnemy\Player\MiddlePosition\y, RGB(150, 30, 30))
+    StopDrawing()
+    ;Debug "close enough to shoot"
+    ;SwitchToShootingTargetEnemy(*AppleEnemy, *AppleEnemy\Player)
+    ;ProcedureReturn
+  EndIf
 EndProcedure
 
 Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -270,7 +299,8 @@ Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVec
   
   *AppleEnemy\Health = 2.0
   
-  InitGameObject(*AppleEnemy, *Position, SpriteNum, #Null, @DrawEnemy(), #True, ZoomFactor)
+  InitGameObject(*AppleEnemy, *Position, SpriteNum, @UpdateAppleEnemy(), @DrawAppleEnemy(),
+                 #True, ZoomFactor)
   
   *AppleEnemy\MaxVelocity\x = 80.0
   *AppleEnemy\MaxVelocity\y = 80.0

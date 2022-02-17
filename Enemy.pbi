@@ -168,18 +168,7 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawEnemy(*Enemy.TEnemy)
-  StartDrawing(ScreenOutput())
-  
-  If *Enemy\CurrentState = #EnemyGoingToObjectiveRect
-    Box(*Enemy\ObjectiveRect\Position\x, *Enemy\ObjectiveRect\Position\y, *Enemy\ObjectiveRect\Width, *Enemy\ObjectiveRect\Height)
-  EndIf
-  
-  StopDrawing()
-  
   DrawGameObject(*Enemy)
-  
-  
-  
 EndProcedure
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,

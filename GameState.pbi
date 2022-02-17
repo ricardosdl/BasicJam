@@ -90,7 +90,7 @@ EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;enemies that we'll add
-  Protected NumEnemies = 60
+  Protected NumEnemies = 30
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   

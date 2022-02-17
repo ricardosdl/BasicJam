@@ -6,6 +6,7 @@ Enumeration ESprites
   #Player1
   #Banana
   #Laser1
+  #Apple
 EndEnumeration
 
 DisableExplicit

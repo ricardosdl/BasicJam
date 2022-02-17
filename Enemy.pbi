@@ -9,7 +9,8 @@ Enumeration EEnemyStates
   #EnemyGoingToObjectiveRect
   #EnemyWaiting
   #EnemyPatrolling
-  
+  #EnemyShooting
+  #EnemyFollowingPlayer
 EndEnumeration
 
 Structure TEnemy Extends TGameObject
@@ -18,6 +19,9 @@ Structure TEnemy Extends TGameObject
   LastState.a
   ObjectiveRect.TRect;a rect that can be used as an objective point for the enemy to reach
   WaitTimer.f
+  FollowPlayerTimer.f
+  *ShootingTarget.TGameObject
+  ShootingArea.TRect
 EndStructure
 
 
@@ -143,7 +147,7 @@ EndProcedure
 Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   
   If *BananaEnemy\CurrentState = #EnemyNoState
-    SwitchToGoingToObjectiveRectEnemy(*BananaEnemy)
+    SwitchToWaitingEnemy(*BananaEnemy, 1.0)
     ProcedureReturn
   EndIf
   
@@ -176,7 +180,7 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
   InitEnemy(*BananaEnemy, *Player)
   
-  *BananaEnemy\Health = 2.0
+  *BananaEnemy\Health = 1.0
   
   InitGameObject(*BananaEnemy, *Position, SpriteNum, @UpdateBananaEnemy(), @DrawEnemy(),
                  #True, ZoomFactor)
@@ -189,6 +193,89 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   ;some initialization for the bananaenemy
   
   
+  
+  
+EndProcedure
+
+Procedure SwitchToFollowingPlayerEnemy(*Enemy.TEnemy, FollowPlayerTimer.f = 1.0)
+  Protected *Player.TGameObject = *Enemy\Player
+  
+  UpdateMiddlePositionGameObject(*Enemy)
+  UpdateMiddlePositionGameObject(*Player)
+  
+  Protected DeltaX.f = *Player\MiddlePosition\x - *Enemy\MiddlePosition\x
+  Protected DeltaY.f = *Player\MiddlePosition\y - *Enemy\MiddlePosition\y
+  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  
+  *Enemy\Velocity\x = Cos(Angle) * *Enemy\MaxVelocity\x
+  *Enemy\Velocity\y = Sin(Angle) * *Enemy\MaxVelocity\y
+  *Enemy\FollowPlayerTimer = FollowPlayerTimer
+  SwitchStateEnemy(*Enemy, #EnemyFollowingPlayer)
+EndProcedure
+
+Procedure.a IsCloseEneoughToPlayerEnemy(*Enemy.TEnemy, CloseEnoughDistance.f)
+  
+  UpdateMiddlePositionGameObject(*Enemy)
+  UpdateMiddlePositionGameObject(*Enemy\Player)
+  
+  Protected DistanceToPlayer.f = DistanceBetweenPoints(*Enemy\MiddlePosition\x,
+                                                       *Enemy\MiddlePosition\y,
+                                                       *Enemy\Player\MiddlePosition\x,
+                                                       *Enemy\Player\MiddlePosition\y)
+  ProcedureReturn Bool(DistanceToPlayer <= CloseEnoughDistance)
+  
+EndProcedure
+
+Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, *Target.TGameObject)
+  *Enemy\ShootingTarget = *Target
+  SwitchStateEnemy(*Enemy, #EnemyShooting)
+EndProcedure
+
+Procedure SwitchToShootingAreaEnemy(*Enemy.TEnemy, *TargetArea.TRect)
+  CopyStructure(*TargetArea, *Enemy\ShootingArea, TRect)
+  SwitchStateEnemy(*Enemy, #EnemyShooting)
+EndProcedure
+
+Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
+  If *AppleEnemy\CurrentState = #EnemyNoState
+    SwitchToFollowingPlayerEnemy(*AppleEnemy)
+    ProcedureReturn
+  EndIf
+  
+  If *AppleEnemy\CurrentState = #EnemyFollowingPlayer
+    If IsCloseEneoughToPlayerEnemy(*AppleEnemy, 5 * *AppleEnemy\Width)
+      Debug "close enough to shoot"
+      ;SwitchToShootingTargetEnemy(*AppleEnemy, *AppleEnemy\Player)
+      ;ProcedureReturn
+    EndIf
+    
+    *AppleEnemy\FollowPlayerTimer - TimeSlice
+    If *AppleEnemy\FollowPlayerTimer <= 0
+      ;readjust with the current player's position
+      SwitchToFollowingPlayerEnemy(*AppleEnemy)
+      ProcedureReturn
+    EndIf
+    
+  EndIf
+  
+  
+  UpdateGameObject(*AppleEnemy, TimeSlice)
+  
+EndProcedure
+
+Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                         SpriteNum.i, ZoomFactor.f)
+  
+  InitEnemy(*AppleEnemy, *Player)
+  
+  *AppleEnemy\Health = 2.0
+  
+  InitGameObject(*AppleEnemy, *Position, SpriteNum, #Null, @DrawEnemy(), #True, ZoomFactor)
+  
+  *AppleEnemy\MaxVelocity\x = 80.0
+  *AppleEnemy\MaxVelocity\y = 80.0
+  
+  *AppleEnemy\CurrentState = #EnemyNoState
   
   
 EndProcedure

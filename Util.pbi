@@ -25,5 +25,11 @@ Procedure.f ClampF(Value.f, Min.f, Max.f)
   
 EndProcedure
 
+Procedure.f DistanceBetweenPoints(x1.f, y1.f, x2.f, y2.f)
+  Protected DistX.f = x1 - x2
+  Protected DistY.f = y1 - y2
+  ProcedureReturn Sqr((DistX * DistX) + (DistY * DistY))
+EndProcedure
+
 
 DisableExplicit

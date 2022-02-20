@@ -7,6 +7,7 @@ Enumeration ESprites
   #Banana
   #Laser1
   #Apple
+  #Barf1
 EndEnumeration
 
 DisableExplicit

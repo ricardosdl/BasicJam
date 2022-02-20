@@ -43,6 +43,7 @@ Structure TPlayState Extends TGameState
   CurrentLevel.a
   MaxLevel.a
   PlayerProjectiles.TProjectileList
+  EnemiesProjectiles.TProjectileList
 EndStructure
 
 Global GameStateManager.TGameStateManager, PlayState.TPlayState
@@ -131,7 +132,7 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
     ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
-    InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5)
+    InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
     
     *Enemy\Active = #True
     

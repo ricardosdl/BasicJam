@@ -1,6 +1,7 @@
 ﻿XIncludeFile "GameObject.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Util.pbi"
+XIncludeFile "Projectile.pbi"
 
 EnableExplicit
 
@@ -23,11 +24,12 @@ Structure TEnemy Extends TGameObject
   *ShootingTarget.TGameObject
   ShootingArea.TRect
   ShootingTimer.f
+  *Projectiles.TProjectileList
 EndStructure
 
 
 
-Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject)
+Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList)
   *Enemy\Player = *Player
   
 EndProcedure
@@ -177,9 +179,9 @@ Procedure DrawEnemy(*Enemy.TEnemy)
 EndProcedure
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                          SpriteNum.i, ZoomFactor.f)
+                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
   
-  InitEnemy(*BananaEnemy, *Player)
+  InitEnemy(*BananaEnemy, *Player, *ProjectileList)
   
   *BananaEnemy\Health = 1.0
   
@@ -293,9 +295,9 @@ Procedure DrawAppleEnemy(*AppleEnemy.TEnemy)
 EndProcedure
 
 Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                         SpriteNum.i, ZoomFactor.f)
+                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
   
-  InitEnemy(*AppleEnemy, *Player)
+  InitEnemy(*AppleEnemy, *Player, *ProjectileList.TProjectileList)
   
   *AppleEnemy\Health = 2.0
   

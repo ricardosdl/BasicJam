@@ -241,6 +241,13 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
     EndIf
   Next
   
+  ForEach *PlayState\EnemiesProjectiles\Projectiles()
+    If *PlayState\EnemiesProjectiles\Projectiles()\Active
+      *PlayState\EnemiesProjectiles\Projectiles()\Update(@*PlayState\EnemiesProjectiles\Projectiles(), TimeSlice)
+    EndIf
+  Next
+  
+  
   
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
   
@@ -269,6 +276,13 @@ Procedure DrawPlayState(*PlayState.TPlayState)
   ForEach *PlayState\PlayerProjectiles\Projectiles()
     If *PlayState\PlayerProjectiles\Projectiles()\Active
       *PlayState\PlayerProjectiles\Projectiles()\Draw(@*PlayState\PlayerProjectiles\Projectiles())
+    EndIf
+  Next
+  
+  ;draw enemies projectiles
+  ForEach *PlayState\EnemiesProjectiles\Projectiles()
+    If *PlayState\EnemiesProjectiles\Projectiles()\Active
+      *PlayState\EnemiesProjectiles\Projectiles()\Draw(@*PlayState\EnemiesProjectiles\Projectiles())
     EndIf
   Next
   

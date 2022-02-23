@@ -31,7 +31,7 @@ EndStructure
 
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList)
   *Enemy\Player = *Player
-  
+  *Enemy\Projectiles = *ProjectileList
 EndProcedure
 
 Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
@@ -242,6 +242,36 @@ Procedure SwitchToShootingAreaEnemy(*Enemy.TEnemy, *TargetArea.TRect)
   SwitchStateEnemy(*Enemy, #EnemyShooting)
 EndProcedure
 
+Procedure ShootAppleEnemy(*AppleEnemy.TEnemy)
+  Protected *Projectile.TProjectile = GetInactiveProjectile(*AppleEnemy\Projectiles)
+  
+  UpdateMiddlePositionGameObject(*AppleEnemy)
+  UpdateMiddlePositionGameObject(*AppleEnemy\ShootingTarget)
+  
+  Protected *Target.TGameObject = *AppleEnemy\ShootingTarget
+  
+  Protected DeltaX.f, DeltaY.f, Distance.f
+  DeltaX = *Target\MiddlePosition\x - *AppleEnemy\MiddlePosition\x
+  DeltaY = *Target\MiddlePosition\y - *AppleEnemy\MiddlePosition\y
+  Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
+  
+  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  
+  Protected Position.TVector2D
+  
+  InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileBarf1)
+  Position\x = *AppleEnemy\MiddlePosition\x - *Projectile\Width / 2
+  Position\y = *AppleEnemy\MiddlePosition\y - *Projectile\Height / 2
+  
+  *Projectile\Position = Position
+  
+  Protected ProjectileAliveTimer.f = Distance / *Projectile\Velocity\x + 0.1
+  *Projectile\HasAliveTimer = #True
+  *Projectile\AliveTimer = ProjectileAliveTimer
+  
+EndProcedure
+
+
 Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
   If *AppleEnemy\CurrentState = #EnemyNoState
     SwitchToFollowingPlayerEnemy(*AppleEnemy)
@@ -265,8 +295,17 @@ Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
   ElseIf *AppleEnemy\CurrentState = #EnemyShooting
     *AppleEnemy\ShootingTimer - TimeSlice
     If *AppleEnemy\ShootingTimer <= 0
-      
+      ShootAppleEnemy(*AppleEnemy)
+      SwitchToWaitingEnemy(*AppleEnemy, 2)
     EndIf
+    
+  ElseIf *AppleEnemy\CurrentState = #EnemyWaiting
+    *AppleEnemy\WaitTimer - TimeSlice
+    If *AppleEnemy\WaitTimer <= 0
+      SwitchToFollowingPlayerEnemy(*AppleEnemy)
+      ProcedureReturn
+    EndIf
+    
     
     
   EndIf
@@ -297,7 +336,7 @@ EndProcedure
 Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
   
-  InitEnemy(*AppleEnemy, *Player, *ProjectileList.TProjectileList)
+  InitEnemy(*AppleEnemy, *Player, *ProjectileList)
   
   *AppleEnemy\Health = 2.0
   

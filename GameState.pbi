@@ -132,7 +132,8 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
     ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
-    InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
+    ;InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
+    InitGrapeEnemy(*Enemy, *PlayState\Player, @Position, #Grape, 2.5, @*PlayState\EnemiesProjectiles)
     
     *Enemy\Active = #True
     

@@ -25,6 +25,10 @@ Structure TEnemy Extends TGameObject
   ShootingArea.TRect
   ShootingTimer.f
   *Projectiles.TProjectileList
+  NumShots.a
+  TimerBetweenShots.f
+  CurrentTimerBetweenShots.f
+  CurrentAngleShot.f
 EndStructure
 
 
@@ -229,11 +233,15 @@ Procedure.a IsCloseEneoughToPlayerEnemy(*Enemy.TEnemy, CloseEnoughDistance.f)
   
 EndProcedure
 
-Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, ShootingTimer.f, *Target.TGameObject)
+Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, ShootingTimer.f, *Target.TGameObject,
+                                      NumShots.a = 1, TimerBetweenShots.f = 0.0)
   *Enemy\Velocity\x = 0
   *Enemy\Velocity\y = 0
   *Enemy\ShootingTarget = *Target
   *Enemy\ShootingTimer = ShootingTimer
+  *Enemy\NumShots = NumShots
+  *Enemy\TimerBetweenShots = TimerBetweenShots
+  *Enemy\CurrentTimerBetweenShots = TimerBetweenShots
   SwitchStateEnemy(*Enemy, #EnemyShooting)
 EndProcedure
 
@@ -347,6 +355,119 @@ Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVec
   *AppleEnemy\MaxVelocity\y = 80.0
   
   *AppleEnemy\CurrentState = #EnemyNoState
+  
+  
+EndProcedure
+
+Procedure ShootGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
+  *GrapeEnemy\CurrentTimerBetweenShots - TimeSlice
+  If *GrapeEnemy\CurrentTimerBetweenShots <= 0 And *GrapeEnemy\NumShots > 0
+    *GrapeEnemy\CurrentTimerBetweenShots = *GrapeEnemy\TimerBetweenShots
+    
+    Protected *Projectile.TProjectile = GetInactiveProjectile(*GrapeEnemy\Projectiles)
+    
+    UpdateMiddlePositionGameObject(*GrapeEnemy)
+    UpdateMiddlePositionGameObject(*GrapeEnemy\ShootingTarget)
+    
+    Protected *Target.TGameObject = *GrapeEnemy\ShootingTarget
+    
+    Protected DeltaX.f, DeltaY.f, Distance.f
+    DeltaX = *Target\MiddlePosition\x - *GrapeEnemy\MiddlePosition\x
+    DeltaY = *Target\MiddlePosition\y - *GrapeEnemy\MiddlePosition\y
+    Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
+    
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    Angle + *GrapeEnemy\CurrentAngleShot
+    *GrapeEnemy\CurrentAngleShot + Radian(25.0)
+    
+    Protected Position.TVector2D
+    
+    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileGrape1)
+    Position\x = *GrapeEnemy\MiddlePosition\x - *Projectile\Width / 2
+    Position\y = *GrapeEnemy\MiddlePosition\y - *Projectile\Height / 2
+    
+    *Projectile\Position = Position
+    
+    *GrapeEnemy\NumShots - 1
+    If *GrapeEnemy\NumShots < 1
+      ;ended the shots
+      ProcedureReturn #True
+    Else
+      ProcedureReturn #False
+    EndIf
+    
+    
+    ;Protected ProjectileAliveTimer.f = Distance / *Projectile\Velocity\x + 0.1
+    ;*Projectile\HasAliveTimer = #True
+    ;*Projectile\AliveTimer = ProjectileAliveTimer
+  EndIf
+  
+  ProcedureReturn #False
+  
+EndProcedure
+
+
+Procedure UpdateGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
+  If *GrapeEnemy\CurrentState = #EnemyNoState
+    SwitchToFollowingPlayerEnemy(*GrapeEnemy)
+    ProcedureReturn
+  EndIf
+  
+  If *GrapeEnemy\CurrentState = #EnemyFollowingPlayer
+    If IsCloseEneoughToPlayerEnemy(*GrapeEnemy, 8 * *GrapeEnemy\Width)
+      
+      SwitchToShootingTargetEnemy(*GrapeEnemy, 1, *GrapeEnemy\Player, 3, 0.5)
+      ;the first shot is off -25 degrees from the target
+      *GrapeEnemy\CurrentAngleShot = Radian(-25.0)
+    EndIf
+    
+    *GrapeEnemy\FollowPlayerTimer - TimeSlice
+    If *GrapeEnemy\FollowPlayerTimer <= 0
+      ;readjust with the current player's position
+      SwitchToFollowingPlayerEnemy(*GrapeEnemy)
+      ProcedureReturn
+    EndIf
+    
+  ElseIf *GrapeEnemy\CurrentState = #EnemyShooting
+    *GrapeEnemy\ShootingTimer - TimeSlice
+    If *GrapeEnemy\ShootingTimer <= 0
+      If ShootGrapeEnemy(*GrapeEnemy, TimeSlice)
+        ;ended all shots
+        SwitchToWaitingEnemy(*GrapeEnemy, 2)
+      EndIf
+      
+      
+    EndIf
+    
+  ElseIf *GrapeEnemy\CurrentState = #EnemyWaiting
+    *GrapeEnemy\WaitTimer - TimeSlice
+    If *GrapeEnemy\WaitTimer <= 0
+      SwitchToFollowingPlayerEnemy(*GrapeEnemy)
+      ProcedureReturn
+    EndIf
+    
+    
+    
+  EndIf
+  
+  
+  UpdateGameObject(*GrapeEnemy, TimeSlice)
+EndProcedure
+
+Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+  
+  InitEnemy(*GrapeEnemy, *Player, *ProjectileList)
+  
+  *GrapeEnemy\Health = 2.0
+  
+  InitGameObject(*GrapeEnemy, *Position, SpriteNum, @UpdateGrapeEnemy(), @DrawAppleEnemy(),
+                 #True, ZoomFactor)
+  
+  *GrapeEnemy\MaxVelocity\x = 80.0
+  *GrapeEnemy\MaxVelocity\y = 80.0
+  
+  *GrapeEnemy\CurrentState = #EnemyNoState
   
   
 EndProcedure

@@ -8,6 +8,8 @@ Enumeration ESprites
   #Laser1
   #Apple
   #Barf1
+  #Grape
+  #Grape1
 EndEnumeration
 
 DisableExplicit

@@ -7,6 +7,7 @@ EnableExplicit
 Enumeration EProjectileTypes
   #ProjectileLaser1
   #ProjectileBarf1
+  #ProjectileGrape1
 EndEnumeration
 
 
@@ -111,6 +112,11 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       Health = 1.0
     Case #ProjectileBarf1
       SpriteNum = #Barf1
+      Velocity = 100.0
+      Power = 1.0
+      Health = 1.0
+    Case #ProjectileGrape1
+      SpriteNum = #Grape1
       Velocity = 100.0
       Power = 1.0
       Health = 1.0

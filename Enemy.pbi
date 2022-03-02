@@ -245,8 +245,13 @@ Procedure SwitchToShootingTargetEnemy(*Enemy.TEnemy, ShootingTimer.f, *Target.TG
   SwitchStateEnemy(*Enemy, #EnemyShooting)
 EndProcedure
 
-Procedure SwitchToShootingAreaEnemy(*Enemy.TEnemy, *TargetArea.TRect)
+Procedure SwitchToShootingAreaEnemy(*Enemy.TEnemy, *TargetArea.TRect, ShootingTimer.f, NumShots.a = 1,
+                                    TimerBetweenShots.f = 0.0)
   CopyStructure(*TargetArea, *Enemy\ShootingArea, TRect)
+  *Enemy\ShootingTimer = ShootingTimer
+  *Enemy\NumShots = NumShots
+  *Enemy\TimerBetweenShots = TimerBetweenShots
+  *Enemy\CurrentTimerBetweenShots = TimerBetweenShots
   SwitchStateEnemy(*Enemy, #EnemyShooting)
 EndProcedure
 
@@ -468,6 +473,83 @@ Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVec
   *GrapeEnemy\MaxVelocity\y = 80.0
   
   *GrapeEnemy\CurrentState = #EnemyNoState
+  
+  
+EndProcedure
+
+Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
+  ;implement the shoot here
+EndProcedure
+
+Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
+  If *WatermelonEnemy\CurrentState = #EnemyNoState
+    SwitchToFollowingPlayerEnemy(*WatermelonEnemy)
+    ProcedureReturn
+  EndIf
+  
+  If *WatermelonEnemy\CurrentState = #EnemyFollowingPlayer
+    If IsCloseEneoughToPlayerEnemy(*WatermelonEnemy, 10 * *WatermelonEnemy\Width)
+      
+      SwitchToShootingTargetEnemy(*WatermelonEnemy, 1, *WatermelonEnemy\Player, 3, 0.5)
+      Protected AreaAroundPlayer.TRect
+      AreaAroundPlayer\Width = *WatermelonEnemy\Player\Width * 10
+      AreaAroundPlayer\Height = *WatermelonEnemy\Player\Height * 10
+      AreaAroundPlayer\Position\x = *WatermelonEnemy\Player\Position\x - (AreaAroundPlayer\Width / 2)
+      AreaAroundPlayer\Position\y = *WatermelonEnemy\Player\Position\y - (AreaAroundPlayer\Height / 2)
+      
+      
+      SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 1)
+      ;the first shot is off -30/3 degrees from the target
+      *WatermelonEnemy\CurrentAngleShot = Radian(-30.0 / 3)
+    EndIf
+    
+    *WatermelonEnemy\FollowPlayerTimer - TimeSlice
+    If *WatermelonEnemy\FollowPlayerTimer <= 0
+      ;readjust with the current player's position
+      SwitchToFollowingPlayerEnemy(*WatermelonEnemy)
+      ProcedureReturn
+    EndIf
+    
+  ElseIf *WatermelonEnemy\CurrentState = #EnemyShooting
+    *WatermelonEnemy\ShootingTimer - TimeSlice
+    If *WatermelonEnemy\ShootingTimer <= 0
+      If ShootWatermelonEnemy(*WatermelonEnemy, TimeSlice)
+        ;ended all shots
+        SwitchToWaitingEnemy(*WatermelonEnemy, 2)
+      EndIf
+      
+      
+    EndIf
+    
+  ElseIf *WatermelonEnemy\CurrentState = #EnemyWaiting
+    *WatermelonEnemy\WaitTimer - TimeSlice
+    If *WatermelonEnemy\WaitTimer <= 0
+      SwitchToFollowingPlayerEnemy(*WatermelonEnemy)
+      ProcedureReturn
+    EndIf
+    
+    
+    
+  EndIf
+  
+  
+  UpdateGameObject(*WatermelonEnemy, TimeSlice)
+EndProcedure
+
+Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+  
+  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList)
+  
+  *WatermelonEnemy\Health = 3.0
+  
+  InitGameObject(*WatermelonEnemy, *Position, SpriteNum, @UpdateWatermelonEnemy(), @DrawEnemy(),
+                 #True, ZoomFactor)
+  
+  *WatermelonEnemy\MaxVelocity\x = 80.0
+  *WatermelonEnemy\MaxVelocity\y = 80.0
+  
+  *WatermelonEnemy\CurrentState = #EnemyNoState
   
   
 EndProcedure

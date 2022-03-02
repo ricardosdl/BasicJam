@@ -10,6 +10,8 @@ Enumeration ESprites
   #Barf1
   #Grape
   #Grape1
+  #Watermelon
+  #Seed1
 EndEnumeration
 
 DisableExplicit

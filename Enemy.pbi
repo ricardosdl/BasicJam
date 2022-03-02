@@ -378,7 +378,7 @@ Procedure ShootGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
     
     Protected Angle.f = ATan2(DeltaX, DeltaY)
     Angle + *GrapeEnemy\CurrentAngleShot
-    *GrapeEnemy\CurrentAngleShot + Radian(25.0)
+    *GrapeEnemy\CurrentAngleShot + Radian(30.0 / 3)
     
     Protected Position.TVector2D
     
@@ -417,8 +417,8 @@ Procedure UpdateGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
     If IsCloseEneoughToPlayerEnemy(*GrapeEnemy, 8 * *GrapeEnemy\Width)
       
       SwitchToShootingTargetEnemy(*GrapeEnemy, 1, *GrapeEnemy\Player, 3, 0.5)
-      ;the first shot is off -25 degrees from the target
-      *GrapeEnemy\CurrentAngleShot = Radian(-25.0)
+      ;the first shot is off -30/3 degrees from the target
+      *GrapeEnemy\CurrentAngleShot = Radian(-30.0 / 3)
     EndIf
     
     *GrapeEnemy\FollowPlayerTimer - TimeSlice

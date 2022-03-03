@@ -31,5 +31,14 @@ Procedure.f DistanceBetweenPoints(x1.f, y1.f, x2.f, y2.f)
   ProcedureReturn Sqr((DistX * DistX) + (DistY * DistY))
 EndProcedure
 
+Procedure.f RandomFloat()
+  ProcedureReturn Random(10000, 0) / 10000.0
+EndProcedure
+
+Procedure.f RandomInterval(Max.f, Min.f)
+  Protected Range.f = Abs(Max - Min)
+  ProcedureReturn Min + Range * RandomFloat()
+EndProcedure
+
 
 DisableExplicit

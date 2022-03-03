@@ -8,6 +8,7 @@ Enumeration EProjectileTypes
   #ProjectileLaser1
   #ProjectileBarf1
   #ProjectileGrape1
+  #ProjectileSeed1
 EndEnumeration
 
 
@@ -101,9 +102,17 @@ Procedure HurtProjectile(*Projectile.TProjectile, Power.f)
   
 EndProcedure
 
+Procedure UpdateSeed1Projectile(*Projectile.TProjectile, TimeSlice.f)
+  *Projectile\Angle + Radian(200.0) * TimeSlice
+  UpdateProjectile(*Projectile, TimeSlice)
+EndProcedure
+
 Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
                          ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False, AliveTimer.f = 0.0)
+  
   Protected SpriteNum, Velocity.f, Power.f, Health.f
+  Protected *UpdateProjectileProc = @UpdateProjectile()
+  
   Select Type
     Case #ProjectileLaser1
       SpriteNum = #Laser1
@@ -120,9 +129,15 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       Velocity = 100.0
       Power = 1.0
       Health = 1.0
+    Case #ProjectileSeed1
+      SpriteNum = #Seed1
+      Velocity = 80.0
+      Power = 2.0
+      Health = 1.0
+      *UpdateProjectileProc = @UpdateSeed1Projectile()
   EndSelect
   
-  InitGameObject(*Projectile, *Pos, SpriteNum, @UpdateProjectile(), @DrawProjectile(), Active, ZoomFactor)
+  InitGameObject(*Projectile, *Pos, SpriteNum, *UpdateProjectileProc, @DrawProjectile(), Active, ZoomFactor)
   *Projectile\Velocity\x = Cos(Angle) * Velocity
   *Projectile\Velocity\y = Sin(Angle) * Velocity
   

@@ -479,6 +479,41 @@ EndProcedure
 
 Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
   ;implement the shoot here
+  UpdateMiddlePositionGameObject(*WatermelonEnemy)
+  While *WatermelonEnemy\NumShots
+    Protected *Projectile.TProjectile = GetInactiveProjectile(*WatermelonEnemy\Projectiles)
+    
+    Protected *TargetArea.TRect = @*WatermelonEnemy\ShootingArea
+    Protected TargetPosition.TVector2D\x = RandomInterval(*TargetArea\Position\x + *TargetArea\Width, *TargetArea\Position\x)
+    TargetPosition\y = RandomInterval(*TargetArea\Position\y + *TargetArea\Height, *TargetArea\Position\y)
+    
+    Protected DeltaX.f, DeltaY.f, Distance.f
+    DeltaX = TargetPosition\x - *WatermelonEnemy\MiddlePosition\x
+    DeltaY = TargetPosition\y - *WatermelonEnemy\MiddlePosition\y
+    Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
+    
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    ;Angle + *GrapeEnemy\CurrentAngleShot
+    ;*GrapeEnemy\CurrentAngleShot + Radian(30.0 / 3)
+    
+    Protected Position.TVector2D
+    
+    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileSeed1)
+    Position\x = *WatermelonEnemy\MiddlePosition\x - *Projectile\Width / 2
+    Position\y = *WatermelonEnemy\MiddlePosition\y - *Projectile\Height / 2
+    
+    *Projectile\Position = Position
+    *Projectile\Angle = RandomInterval(2 * #PI, 0)
+    
+    Protected ProjectileAliveTimer.f = Distance / *Projectile\Velocity\x
+    *Projectile\HasAliveTimer = #True
+    *Projectile\AliveTimer = ProjectileAliveTimer
+    
+    *WatermelonEnemy\NumShots - 1
+    
+  Wend
+  ProcedureReturn #True
+  
 EndProcedure
 
 Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
@@ -498,9 +533,7 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
       AreaAroundPlayer\Position\y = *WatermelonEnemy\Player\Position\y - (AreaAroundPlayer\Height / 2)
       
       
-      SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 1)
-      ;the first shot is off -30/3 degrees from the target
-      *WatermelonEnemy\CurrentAngleShot = Radian(-30.0 / 3)
+      SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 5)
     EndIf
     
     *WatermelonEnemy\FollowPlayerTimer - TimeSlice
@@ -536,6 +569,19 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
   UpdateGameObject(*WatermelonEnemy, TimeSlice)
 EndProcedure
 
+Procedure DrawWatermelonEnemy(*WatermelonEnemy.TEnemy)
+  If *WatermelonEnemy\CurrentState = #EnemyShooting
+    StartDrawing(ScreenOutput())
+    Box(*WatermelonEnemy\ShootingArea\Position\x, *WatermelonEnemy\ShootingArea\Position\y,
+        *WatermelonEnemy\ShootingArea\Width, *WatermelonEnemy\ShootingArea\Height, RGB(34, 122, 100))
+    StopDrawing()
+  EndIf
+  
+  
+  
+  DrawEnemy(*WatermelonEnemy)
+EndProcedure
+
 Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
   
@@ -543,7 +589,7 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
   
   *WatermelonEnemy\Health = 3.0
   
-  InitGameObject(*WatermelonEnemy, *Position, SpriteNum, @UpdateWatermelonEnemy(), @DrawEnemy(),
+  InitGameObject(*WatermelonEnemy, *Position, SpriteNum, @UpdateWatermelonEnemy(), @DrawWatermelonEnemy(),
                  #True, ZoomFactor)
   
   *WatermelonEnemy\MaxVelocity\x = 80.0

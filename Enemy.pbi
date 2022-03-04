@@ -478,23 +478,45 @@ Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVec
 EndProcedure
 
 Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
-  ;implement the shoot here
-  UpdateMiddlePositionGameObject(*WatermelonEnemy)
-  While *WatermelonEnemy\NumShots
-    Protected *Projectile.TProjectile = GetInactiveProjectile(*WatermelonEnemy\Projectiles)
+  
+  *WatermelonEnemy\CurrentTimerBetweenShots - TimeSlice
+  If *WatermelonEnemy\CurrentTimerBetweenShots <= 0 And *WatermelonEnemy\NumShots > 0
+    ;restore the timer
+    *WatermelonEnemy\CurrentTimerBetweenShots = *WatermelonEnemy\TimerBetweenShots
+    
+    UpdateMiddlePositionGameObject(*WatermelonEnemy)
+    
+    ;the shots are distributed over the targetarea in 3x3 rows and cols
+    Protected ShotsPerRow.a = 3
     
     Protected *TargetArea.TRect = @*WatermelonEnemy\ShootingArea
-    Protected TargetPosition.TVector2D\x = RandomInterval(*TargetArea\Position\x + *TargetArea\Width, *TargetArea\Position\x)
-    TargetPosition\y = RandomInterval(*TargetArea\Position\y + *TargetArea\Height, *TargetArea\Position\y)
     
+    Protected *Projectile.TProjectile = GetInactiveProjectile(*WatermelonEnemy\Projectiles)
+    
+    Protected.a TargetRow, TargetCol
+    ;get the targetrow (0..2) and target col(0..2)
+    TargetRow = (*WatermelonEnemy\NumShots - 1) / ShotsPerRow
+    TargetCol = (*WatermelonEnemy\NumShots - 1) % ShotsPerRow
+    
+    ;the position where the projectile will land
+    Protected TargetPosition.TVector2D
+    
+    ;the width of each row
+    Protected QuadrantWidth.f = *TargetArea\Width / ShotsPerRow
+    ;the height of each col
+    Protected QuadrantHeight.f = *TargetArea\Height / ShotsPerRow
+    
+    ;the target position is centralized inside each quadrant
+    TargetPosition\x = *TargetArea\Position\x + (QuadrantWidth) * TargetCol + (QuadrantWidth / 2)
+    TargetPosition\y = *TargetArea\Position\y + (QuadrantHeight) * TargetRow + (QuadrantHeight / 2)
+    
+    ;get the distance and the angle in which the projectile will travel
     Protected DeltaX.f, DeltaY.f, Distance.f
     DeltaX = TargetPosition\x - *WatermelonEnemy\MiddlePosition\x
     DeltaY = TargetPosition\y - *WatermelonEnemy\MiddlePosition\y
     Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
     
     Protected Angle.f = ATan2(DeltaX, DeltaY)
-    ;Angle + *GrapeEnemy\CurrentAngleShot
-    ;*GrapeEnemy\CurrentAngleShot + Radian(30.0 / 3)
     
     Protected Position.TVector2D
     
@@ -505,14 +527,23 @@ Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
     *Projectile\Position = Position
     *Projectile\Angle = RandomInterval(2 * #PI, 0)
     
-    Protected ProjectileAliveTimer.f = Distance / *Projectile\Velocity\x
+    ;the projectile velocity on both axis
+    Protected ProjectileVel.f = Sqr(*Projectile\Velocity\x * *Projectile\Velocity\x +
+                                    *Projectile\Velocity\y * *Projectile\Velocity\y)
+    
+    Protected ProjectileAliveTimer.f = Distance / ProjectileVel
     *Projectile\HasAliveTimer = #True
     *Projectile\AliveTimer = ProjectileAliveTimer
     
     *WatermelonEnemy\NumShots - 1
     
-  Wend
-  ProcedureReturn #True
+    If *WatermelonEnemy\NumShots < 1
+      ProcedureReturn #True
+    EndIf
+  EndIf
+  
+  
+  ProcedureReturn #False
   
 EndProcedure
 
@@ -527,13 +558,13 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
       
       SwitchToShootingTargetEnemy(*WatermelonEnemy, 1, *WatermelonEnemy\Player, 3, 0.5)
       Protected AreaAroundPlayer.TRect
-      AreaAroundPlayer\Width = *WatermelonEnemy\Player\Width * 10
-      AreaAroundPlayer\Height = *WatermelonEnemy\Player\Height * 10
+      AreaAroundPlayer\Width = *WatermelonEnemy\Player\Width * 5
+      AreaAroundPlayer\Height = *WatermelonEnemy\Player\Height * 5
       AreaAroundPlayer\Position\x = *WatermelonEnemy\Player\Position\x - (AreaAroundPlayer\Width / 2)
       AreaAroundPlayer\Position\y = *WatermelonEnemy\Player\Position\y - (AreaAroundPlayer\Height / 2)
       
       
-      SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 5)
+      SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 9, 0.3)
     EndIf
     
     *WatermelonEnemy\FollowPlayerTimer - TimeSlice
@@ -570,15 +601,6 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawWatermelonEnemy(*WatermelonEnemy.TEnemy)
-  If *WatermelonEnemy\CurrentState = #EnemyShooting
-    StartDrawing(ScreenOutput())
-    Box(*WatermelonEnemy\ShootingArea\Position\x, *WatermelonEnemy\ShootingArea\Position\y,
-        *WatermelonEnemy\ShootingArea\Width, *WatermelonEnemy\ShootingArea\Height, RGB(34, 122, 100))
-    StopDrawing()
-  EndIf
-  
-  
-  
   DrawEnemy(*WatermelonEnemy)
 EndProcedure
 

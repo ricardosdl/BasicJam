@@ -9,6 +9,7 @@ Enumeration EProjectileTypes
   #ProjectileBarf1
   #ProjectileGrape1
   #ProjectileSeed1
+  #ProjectileGomo1
 EndEnumeration
 
 

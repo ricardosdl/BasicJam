@@ -622,6 +622,33 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
   
 EndProcedure
 
+Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
+  
+EndProcedure
+
+Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
+  
+EndProcedure
+
+Procedure IniTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                            SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+  
+  InitEnemy(*TangerineEnemy, *Player, *ProjectileList)
+  
+  *TangerineEnemy\Health = 4.0
+  
+  InitGameObject(*TangerineEnemy, *Position, SpriteNum, @UpdateTangerineEnemy(), @DrawTangerineEnemy(),
+                 #True, ZoomFactor)
+  
+  *TangerineEnemy\MaxVelocity\x = 80.0
+  *TangerineEnemy\MaxVelocity\y = 80.0
+  
+  *TangerineEnemy\CurrentState = #EnemyNoState
+  
+  
+EndProcedure
+
+
 Procedure KillEnemy(*Enemy.TEnemy)
   *Enemy\Active = #False
 EndProcedure

@@ -12,6 +12,8 @@ Enumeration ESprites
   #Grape1
   #Watermelon
   #Seed1
+  #Tangerine
+  #Gomo1
 EndEnumeration
 
 DisableExplicit

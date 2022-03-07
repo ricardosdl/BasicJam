@@ -21,6 +21,8 @@ Procedure LoadSprites()
   LoadSprite(#Grape1, "data\img\grape1.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Watermelon, "data\img\watermelon.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Seed1, "data\img\seed1.png", #PB_Sprite_AlphaBlending)
+  LoadSprite(#Tangerine, "data\img\tangerine.png", #PB_Sprite_AlphaBlending)
+  LoadSprite(#Gomo1, "data\img\gomo1.png", #PB_Sprite_AlphaBlending)
 EndProcedure
 
 Procedure LoadResources()

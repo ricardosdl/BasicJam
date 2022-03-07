@@ -18,6 +18,7 @@ Structure TProjectile Extends TGameObject
   Power.f
   HasAliveTimer.a
   AliveTimer.f
+  *Owner.TGameObject
 EndStructure
 
 Structure TProjectileList
@@ -108,7 +109,8 @@ Procedure UpdateSeed1Projectile(*Projectile.TProjectile, TimeSlice.f)
 EndProcedure
 
 Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
-                         ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False, AliveTimer.f = 0.0)
+                         ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False,
+                         AliveTimer.f = 0.0, *Owner.TGameObject = #Null)
   
   Protected SpriteNum, Velocity.f, Power.f, Health.f
   Protected *UpdateProjectileProc = @UpdateProjectile()
@@ -149,6 +151,8 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   
   *Projectile\HasAliveTimer = HasAliveTimer
   *Projectile\AliveTimer = AliveTimer
+  
+  *Projectile\Owner = *Owner
   
   *Projectile\MaxVelocity\x = 1000
   *Projectile\MaxVelocity\y = 1000

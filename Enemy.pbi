@@ -556,7 +556,7 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
   If *WatermelonEnemy\CurrentState = #EnemyFollowingPlayer
     If IsCloseEneoughToPlayerEnemy(*WatermelonEnemy, 10 * *WatermelonEnemy\Width)
       
-      SwitchToShootingTargetEnemy(*WatermelonEnemy, 1, *WatermelonEnemy\Player, 3, 0.5)
+      ;SwitchToShootingTargetEnemy(*WatermelonEnemy, 1, *WatermelonEnemy\Player, 3, 0.5)
       Protected AreaAroundPlayer.TRect
       AreaAroundPlayer\Width = *WatermelonEnemy\Player\Width * 5
       AreaAroundPlayer\Height = *WatermelonEnemy\Player\Height * 5
@@ -623,7 +623,84 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
 EndProcedure
 
 Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
+  If *TangerineEnemy\CurrentState = #EnemyNoState
+    ;get a area around the player and choose one of the sides (left or right as objective)
+    Protected AreaAroundPlayer.TRect
+    AreaAroundPlayer\Width = *TangerineEnemy\Player\Width * 5
+    AreaAroundPlayer\Height = *TangerineEnemy\Player\Height * 5
+    AreaAroundPlayer\Position\x = *TangerineEnemy\Player\Position\x - (AreaAroundPlayer\Width / 2)
+    AreaAroundPlayer\Position\y = *TangerineEnemy\Player\Position\y - (AreaAroundPlayer\Height / 2)
+    
+    UpdateMiddlePositionGameObject(*TangerineEnemy)
+    UpdateMiddlePositionGameObject(*TangerineEnemy\Player)
+    Protected ToTheLeftOfPlayer.a = Bool(*TangerineEnemy\MiddlePosition\x < *TangerineEnemy\Player\MiddlePosition\x)
+    Protected ToTheRightOfPlayer.a = Bool(Not ToTheLeftOfPlayer)
+    Protected LeftIsOutsidePlayArea.a = Bool(AreaAroundPlayer\Position\x < 0)
+    Protected RightIsOutsidePlayArea.a = Bool(AreaAroundPlayer\Position\x + AreaAroundPlayer\Width > ScreenWidth() - 1)
+    Protected ShouldGoLeft.a
+    If ToTheLeftOfPlayer And Not LeftIsOutsidePlayArea
+      ShouldGoLeft = #True
+    ElseIf ToTheLeftOfPlayer And LeftIsOutsidePlayArea
+      ShouldGoLeft = #False
+    ElseIf ToTheRightOfPlayer And Not RightIsOutsidePlayArea
+      ShouldGoLeft = #False
+    ElseIf ToTheRightOfPlayer And RightIsOutsidePlayArea
+      ShouldGoLeft = #True
+    EndIf
+    
+    Protected ObjectiveRect.Trect
+    If ShouldGoLeft
+      ObjectiveRect\Position\x = AreaAroundPlayer\Position\x
+    Else
+      ObjectiveRect\Position\x = AreaAroundPlayer\Position\x + AreaAroundPlayer\Width
+    EndIf
+    ObjectiveRect\Position\y = AreaAroundPlayer\Position\y + AreaAroundPlayer\Height / 2
+    ObjectiveRect\Width = *TangerineEnemy\Width / 2
+      ObjectiveRect\Height = *TangerineEnemy\Height / 2
+      *TangerineEnemy\ObjectiveRect = ObjectiveRect
+    
+    SwitchToFollowingPlayerEnemy(*TangerineEnemy)
+    ProcedureReturn
+  EndIf
   
+  If *TangerineEnemy\CurrentState = #EnemyFollowingPlayer
+    If IsCloseEneoughToPlayerEnemy(*TangerineEnemy, 10 * *TangerineEnemy\Width)
+      
+      
+      
+    EndIf
+    
+    *TangerineEnemy\FollowPlayerTimer - TimeSlice
+    If *TangerineEnemy\FollowPlayerTimer <= 0
+      ;readjust with the current player's position
+      SwitchToFollowingPlayerEnemy(*TangerineEnemy)
+      ProcedureReturn
+    EndIf
+    
+  ElseIf *TangerineEnemy\CurrentState = #EnemyShooting
+    *TangerineEnemy\ShootingTimer - TimeSlice
+    If *TangerineEnemy\ShootingTimer <= 0
+      If ShootWatermelonEnemy(*TangerineEnemy, TimeSlice)
+        ;ended all shots
+        SwitchToWaitingEnemy(*TangerineEnemy, 2)
+      EndIf
+      
+      
+    EndIf
+    
+  ElseIf *TangerineEnemy\CurrentState = #EnemyWaiting
+    *TangerineEnemy\WaitTimer - TimeSlice
+    If *TangerineEnemy\WaitTimer <= 0
+      SwitchToFollowingPlayerEnemy(*TangerineEnemy)
+      ProcedureReturn
+    EndIf
+    
+    
+    
+  EndIf
+  
+  
+  UpdateGameObject(*TangerineEnemy, TimeSlice)
 EndProcedure
 
 Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)

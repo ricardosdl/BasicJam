@@ -227,6 +227,7 @@ Procedure SetWayPointsProjectile(*Projectile.TProjectile, List WayPoints.TRect()
   Protected Angle.f = ATan2(DeltaX, DeltaY)
   
   *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
+  *Projectile\Velocity\y = Sin(Angle) * GetProjectileVelocity(*Projectile\Type)
   
 EndProcedure
 

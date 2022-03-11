@@ -20,7 +20,7 @@ Structure TEnemy Extends TGameObject
   LastState.a
   ObjectiveRect.TRect;a rect that can be used as an objective point for the enemy to reach
   WaitTimer.f
-  FollowPlayerTimer.f
+  StateTimer.f
   *ShootingTarget.TGameObject
   ShootingArea.TRect
   ShootingTimer.f
@@ -122,26 +122,21 @@ Procedure SwitchStateEnemy(*Enemy.TEnemy, NewState.a)
   *Enemy\CurrentState = NewState
 EndProcedure
 
-Procedure SwitchToGoingToObjectiveRectEnemy(*BananaEnemy.TEnemy)
-  Protected *Player.TGameObject = *BananaEnemy\Player
-  Protected ObjectiveRect.TRect
-  GetRandomRectAroundPlayer(*Player, @ObjectiveRect, *Player\Width * 10,
-                            *Player\Height * 10, *BananaEnemy\Width, *BananaEnemy\Height)
+Procedure SwitchToGoingToObjectiveRectEnemy(*Enemy.TEnemy, *ObjectiveRect.TRect, StateTimer.f = 1.0)
+  CopyStructure(*ObjectiveRect, @*Enemy\ObjectiveRect, TRect)
   
-  *BananaEnemy\ObjectiveRect = ObjectiveRect
+  UpdateMiddlePositionGameObject(*Enemy)
   
-  UpdateMiddlePositionGameObject(*BananaEnemy)
-  
-  Protected DeltaX.f = ObjectiveRect\Position\x - *BananaEnemy\Position\x
-  Protected DeltaY.f = ObjectiveRect\Position\y - *BananaEnemy\Position\y
+  Protected DeltaX.f = *ObjectiveRect\Position\x - *Enemy\MiddlePosition\x
+  Protected DeltaY.f = *ObjectiveRect\Position\y - *Enemy\MiddlePosition\y
   
   Protected Angle.f = ATan2(DeltaX, DeltaY)
   
-  *BananaEnemy\Velocity\x = Cos(Angle) * *BananaEnemy\MaxVelocity\x
-  *BananaEnemy\Velocity\y = Sin(Angle) * *BananaEnemy\MaxVelocity\y
+  *Enemy\Velocity\x = Cos(Angle) * *Enemy\MaxVelocity\x
+  *Enemy\Velocity\y = Sin(Angle) * *Enemy\MaxVelocity\y
   
-  
-  SwitchStateEnemy(*BananaEnemy, #EnemyGoingToObjectiveRect)
+  *Enemy\StateTimer = StateTimer
+  SwitchStateEnemy(*Enemy, #EnemyGoingToObjectiveRect)
 EndProcedure
 
 Procedure SwitchToWaitingEnemy(*Enemy.TEnemy, WaitTimer.f = 1.5)
@@ -166,7 +161,11 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   ElseIf *BananaEnemy\CurrentState = #EnemyWaiting
     *BananaEnemy\WaitTimer - TimeSlice
     If *BananaEnemy\WaitTimer <= 0.0
-      SwitchToGoingToObjectiveRectEnemy(*BananaEnemy)
+      Protected ObjectiveRect.TRect
+      Protected *Player.TGameObject = *BananaEnemy\Player
+      GetRandomRectAroundPlayer(*Player, @ObjectiveRect, *Player\Width * 10,
+                            *Player\Height * 10, *BananaEnemy\Width, *BananaEnemy\Height)
+      SwitchToGoingToObjectiveRectEnemy(*BananaEnemy, @ObjectiveRect)
       ProcedureReturn
     EndIf
   EndIf
@@ -204,7 +203,7 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
   
 EndProcedure
 
-Procedure SwitchToFollowingPlayerEnemy(*Enemy.TEnemy, FollowPlayerTimer.f = 1.0)
+Procedure SwitchToFollowingPlayerEnemy(*Enemy.TEnemy, StateTimer.f = 1.0)
   Protected *Player.TGameObject = *Enemy\Player
   
   UpdateMiddlePositionGameObject(*Enemy)
@@ -216,7 +215,7 @@ Procedure SwitchToFollowingPlayerEnemy(*Enemy.TEnemy, FollowPlayerTimer.f = 1.0)
   
   *Enemy\Velocity\x = Cos(Angle) * *Enemy\MaxVelocity\x
   *Enemy\Velocity\y = Sin(Angle) * *Enemy\MaxVelocity\y
-  *Enemy\FollowPlayerTimer = FollowPlayerTimer
+  *Enemy\StateTimer = StateTimer
   SwitchStateEnemy(*Enemy, #EnemyFollowingPlayer)
 EndProcedure
 
@@ -298,8 +297,8 @@ Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
       ;ProcedureReturn
     EndIf
     
-    *AppleEnemy\FollowPlayerTimer - TimeSlice
-    If *AppleEnemy\FollowPlayerTimer <= 0
+    *AppleEnemy\StateTimer - TimeSlice
+    If *AppleEnemy\StateTimer <= 0
       ;readjust with the current player's position
       SwitchToFollowingPlayerEnemy(*AppleEnemy)
       ProcedureReturn
@@ -426,8 +425,8 @@ Procedure UpdateGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
       *GrapeEnemy\CurrentAngleShot = Radian(-30.0 / 3)
     EndIf
     
-    *GrapeEnemy\FollowPlayerTimer - TimeSlice
-    If *GrapeEnemy\FollowPlayerTimer <= 0
+    *GrapeEnemy\StateTimer - TimeSlice
+    If *GrapeEnemy\StateTimer <= 0
       ;readjust with the current player's position
       SwitchToFollowingPlayerEnemy(*GrapeEnemy)
       ProcedureReturn
@@ -567,8 +566,8 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
       SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 9, 0.3)
     EndIf
     
-    *WatermelonEnemy\FollowPlayerTimer - TimeSlice
-    If *WatermelonEnemy\FollowPlayerTimer <= 0
+    *WatermelonEnemy\StateTimer - TimeSlice
+    If *WatermelonEnemy\StateTimer <= 0
       ;readjust with the current player's position
       SwitchToFollowingPlayerEnemy(*WatermelonEnemy)
       ProcedureReturn
@@ -622,67 +621,123 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
   
 EndProcedure
 
-Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
-  If *TangerineEnemy\CurrentState = #EnemyNoState
-    ;get a area around the player and choose one of the sides (left or right as objective)
-    Protected AreaAroundPlayer.TRect
-    AreaAroundPlayer\Width = *TangerineEnemy\Player\Width * 5
-    AreaAroundPlayer\Height = *TangerineEnemy\Player\Height * 5
-    AreaAroundPlayer\Position\x = *TangerineEnemy\Player\Position\x - (AreaAroundPlayer\Width / 2)
-    AreaAroundPlayer\Position\y = *TangerineEnemy\Player\Position\y - (AreaAroundPlayer\Height / 2)
+Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
+  Protected *Projectile.TProjectile = GetOwnedProjectile(*TangerineEnemy, *TangerineEnemy\Projectiles)
+  If *Projectile <> #Null
+  Else
+    ;need to shoot a new one here
+    *Projectile = GetInactiveProjectile(*TangerineEnemy\Projectiles)
+    If *Projectile = #Null
+      ProcedureReturn #True
+    EndIf
+    
+    Protected Position.TVector2d
+    
+    Protected *Target.TGameObject = *TangerineEnemy\ShootingTarget
     
     UpdateMiddlePositionGameObject(*TangerineEnemy)
-    UpdateMiddlePositionGameObject(*TangerineEnemy\Player)
-    Protected ToTheLeftOfPlayer.a = Bool(*TangerineEnemy\MiddlePosition\x < *TangerineEnemy\Player\MiddlePosition\x)
-    Protected ToTheRightOfPlayer.a = Bool(Not ToTheLeftOfPlayer)
-    Protected LeftIsOutsidePlayArea.a = Bool(AreaAroundPlayer\Position\x < 0)
-    Protected RightIsOutsidePlayArea.a = Bool(AreaAroundPlayer\Position\x + AreaAroundPlayer\Width > ScreenWidth() - 1)
-    Protected ShouldGoLeft.a
-    If ToTheLeftOfPlayer And Not LeftIsOutsidePlayArea
-      ShouldGoLeft = #True
-    ElseIf ToTheLeftOfPlayer And LeftIsOutsidePlayArea
-      ShouldGoLeft = #False
-    ElseIf ToTheRightOfPlayer And Not RightIsOutsidePlayArea
-      ShouldGoLeft = #False
-    ElseIf ToTheRightOfPlayer And RightIsOutsidePlayArea
-      ShouldGoLeft = #True
-    EndIf
+    UpdateMiddlePositionGameObject(*Target)
     
-    Protected ObjectiveRect.Trect
-    If ShouldGoLeft
-      ObjectiveRect\Position\x = AreaAroundPlayer\Position\x
-    Else
-      ObjectiveRect\Position\x = AreaAroundPlayer\Position\x + AreaAroundPlayer\Width
-    EndIf
-    ObjectiveRect\Position\y = AreaAroundPlayer\Position\y + AreaAroundPlayer\Height / 2
-    ObjectiveRect\Width = *TangerineEnemy\Width / 2
-      ObjectiveRect\Height = *TangerineEnemy\Height / 2
-      *TangerineEnemy\ObjectiveRect = ObjectiveRect
     
-    SwitchToFollowingPlayerEnemy(*TangerineEnemy)
+    Protected DeltaX.f, DeltaY.f, Distance.f
+    DeltaX = *Target\MiddlePosition\x - *TangerineEnemy\MiddlePosition\x
+    DeltaY = *Target\MiddlePosition\y - *TangerineEnemy\MiddlePosition\y
+    ;Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    
+    
+    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileGomo1,
+                   #False, 0, *TangerineEnemy)
+    
+    
+    Position\x = *TangerineEnemy\MiddlePosition\x - (*Projectile\Width / 2)
+    Position\y = *TangerineEnemy\MiddlePosition\y - (*Projectile\Height / 2)
+    
+    *Projectile\Position = Position
+    
+    NewList WayPoints.TRect()
+    AddElement(WayPoints())
+    ;the first waypoint is the target positon
+    WayPoints()\Position = *Target\Position
+    
+    
+    ;the second waypoint is to the right and below the target position, taking into
+    ;account the angle
+    AddElement(WayPoints())
+    WayPoints()\Position\x = *Target\Position\x + 20 * Cos(Angle)
+    WayPoints()\Position\y = *Target\Position\y + 20 * Sin(Angle)
+    
+    ;the third waypoint is at the same x position of the target, but is bellow
+    ;the second waypoint
+    AddElement(WayPoints())
+    WayPoints()\Position\x = *Target\Position\x
+    WayPoints()\Position\y = *Target\Position\y + 2 * 20 * Sin(Angle)
+    
+    ;the fourth waypoint is at the tangerineenemy position, because the projectile will
+    ;return to the enemy
+    AddElement(WayPoints())
+    WayPoints()\Position = *TangerineEnemy\Position
+    
+    
+    ;all waypoints have the same width and height
+    ForEach WayPoints()
+      WayPoints()\Width = *Projectile\Width * 0.8
+      WayPoints()\Height = *Projectile\Height * 0.8
+    Next
+    
+    SetWayPointsProjectile(*Projectile, WayPoints())
+    
+    
+    
+    
+    
+    
+    
+  EndIf
+  
+EndProcedure
+
+Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
+  Protected *Player.TGameObject = *TangerineEnemy\Player
+  If *TangerineEnemy\CurrentState = #EnemyNoState
+    UpdateMiddlePositionGameObject(*TangerineEnemy)
+    UpdateMiddlePositionGameObject(*Player)
+    
+    Protected DeltaX.f = *Player\MiddlePosition\x - *TangerineEnemy\MiddlePosition\x
+    Protected DeltaY.f = *Player\MiddlePosition\y - *TangerineEnemy\MiddlePosition\y
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    
+    Protected ObjectiveRect.TRect\Width = *TangerineEnemy\Width * 0.8
+    ObjectiveRect\Height = *TangerineEnemy\Height * 0.8
+    
+    Protected Radius.f = *Player\Width * 5
+    
+    ObjectiveRect\Position\x = *Player\MiddlePosition\x + Radius * Cos(angle)
+    ObjectiveRect\Position\y = *Player\MiddlePosition\x + Radius * Sin(angle)
+    
+    
+    SwitchToGoingToObjectiveRectEnemy(*TangerineEnemy, @ObjectiveRect)
     ProcedureReturn
   EndIf
   
-  If *TangerineEnemy\CurrentState = #EnemyFollowingPlayer
-    If IsCloseEneoughToPlayerEnemy(*TangerineEnemy, 10 * *TangerineEnemy\Width)
-      
-      
-      
-    EndIf
-    
-    *TangerineEnemy\FollowPlayerTimer - TimeSlice
-    If *TangerineEnemy\FollowPlayerTimer <= 0
-      ;readjust with the current player's position
-      SwitchToFollowingPlayerEnemy(*TangerineEnemy)
+  If *TangerineEnemy\CurrentState = #EnemyGoingToObjectiveRect
+    If HasReachedObjectiveRectEnemy(*TangerineEnemy)
+      SwitchToShootingTargetEnemy(*TangerineEnemy, 0.1, *TangerineEnemy\Player)
       ProcedureReturn
     EndIf
     
+    *TangerineEnemy\StateTimer - TimeSlice
+    If *TangerineEnemy\StateTimer <= 0
+      ;so we can go end retarget the objective rect
+      SwitchStateEnemy(*TangerineEnemy, #EnemyNoState)
+      ProcedureReturn
+    EndIf
   ElseIf *TangerineEnemy\CurrentState = #EnemyShooting
     *TangerineEnemy\ShootingTimer - TimeSlice
     If *TangerineEnemy\ShootingTimer <= 0
-      If ShootWatermelonEnemy(*TangerineEnemy, TimeSlice)
+      If ShootTangerineEnemy(*TangerineEnemy, TimeSlice)
         ;ended all shots
-        SwitchToWaitingEnemy(*TangerineEnemy, 2)
+        SwitchToWaitingEnemy(*TangerineEnemy, #EnemyNoState)
       EndIf
       
       
@@ -707,7 +762,7 @@ Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
   
 EndProcedure
 
-Procedure IniTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
+Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
                             SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
   
   InitEnemy(*TangerineEnemy, *Player, *ProjectileList)

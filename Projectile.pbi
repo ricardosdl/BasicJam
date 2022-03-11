@@ -20,11 +20,25 @@ Structure TProjectile Extends TGameObject
   HasAliveTimer.a
   AliveTimer.f
   *Owner.TGameObject
+  List WayPoints.TRect()
+  CurrentWayPoint.a
 EndStructure
 
 Structure TProjectileList
   List Projectiles.TProjectile()
 EndStructure
+
+Procedure GetOwnedProjectile(*Owner.TGameObject, *Projectiles.TProjectileList)
+  ForEach *Projectiles\Projectiles()
+    If *Projectiles\Projectiles()\Active And *Projectiles\Projectiles()\Owner = *Owner
+      ProcedureReturn @*Projectiles\Projectiles()
+    EndIf
+    
+  Next
+  
+  ProcedureReturn #Null
+  
+EndProcedure
 
 Procedure GetInactiveProjectile(*Projectiles.TProjectileList, AddIfNotFound.a = #True)
   ForEach *Projectiles\Projectiles()
@@ -109,6 +123,39 @@ Procedure UpdateSeed1Projectile(*Projectile.TProjectile, TimeSlice.f)
   UpdateProjectile(*Projectile, TimeSlice)
 EndProcedure
 
+Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
+  ;more stuff here
+  SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint)
+  Protected CurrentWayPoint.TRect = *Projectile\WayPoints()
+  
+  UpdateProjectile(*Projectile, TimeSlice)
+EndProcedure
+
+Procedure.f GetProjectileVelocity(Type.a)
+  Select Type
+    Case #ProjectileLaser1
+      
+      ProcedureReturn 500.0
+      
+    Case #ProjectileBarf1
+      
+      ProcedureReturn 100.0
+      
+    Case #ProjectileGrape1
+      
+      ProcedureReturn 100.0
+      
+    Case #ProjectileSeed1
+      
+      ProcedureReturn 80.0
+      
+    Case #ProjectileGomo1
+      
+      ProcedureReturn 80.0
+      
+  EndSelect
+EndProcedure
+
 Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
                          ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False,
                          AliveTimer.f = 0.0, *Owner.TGameObject = #Null)
@@ -138,6 +185,12 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       Power = 2.0
       Health = 1.0
       *UpdateProjectileProc = @UpdateSeed1Projectile()
+    Case #ProjectileGomo1
+      SpriteNum = #Gomo1
+      Velocity = 80.0
+      Power = 2.0
+      Health = 1.0
+      *UpdateProjectileProc = @UpdateGomo1Projectile()
   EndSelect
   
   InitGameObject(*Projectile, *Pos, SpriteNum, *UpdateProjectileProc, @DrawProjectile(), Active, ZoomFactor)
@@ -157,6 +210,23 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   
   *Projectile\MaxVelocity\x = 1000
   *Projectile\MaxVelocity\y = 1000
+  
+  ClearList(*Projectile\WayPoints())
+  *Projectile\CurrentWayPoint = 1
+  
+EndProcedure
+
+Procedure SetWayPointsProjectile(*Projectile.TProjectile, List WayPoints.TRect())
+  CopyList(WayPoints(), *Projectile\WayPoints())
+  FirstElement(*Projectile\WayPoints())
+  UpdateMiddlePositionGameObject(*Projectile)
+  Protected DeltaX.f, DeltaY.f
+  DeltaX = *Projectile\WayPoints()\Position\x - *Projectile\MiddlePosition\x
+  DeltaY = *Projectile\WayPoints()\Position\y - *Projectile\MiddlePosition\y
+  
+  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  
+  *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
   
 EndProcedure
 

@@ -658,25 +658,25 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     NewList WayPoints.TRect()
     AddElement(WayPoints())
     ;the first waypoint is the target positon
-    WayPoints()\Position = *Target\Position
+    WayPoints()\Position = *Target\MiddlePosition
     
     
     ;the second waypoint is to the right and below the target position, taking into
     ;account the angle
     AddElement(WayPoints())
-    WayPoints()\Position\x = *Target\Position\x + 20 * Cos(Angle)
-    WayPoints()\Position\y = *Target\Position\y + 20 * Sin(Angle)
+    WayPoints()\Position\x = *Target\Position\x + (3 * *Target\Width) * Cos(Angle)
+    WayPoints()\Position\y = *Target\Position\y + (3 * *Target\Height) * Sin(Angle)
     
     ;the third waypoint is at the same x position of the target, but is bellow
     ;the second waypoint
     AddElement(WayPoints())
     WayPoints()\Position\x = *Target\Position\x
-    WayPoints()\Position\y = *Target\Position\y + 2 * 20 * Sin(Angle)
+    WayPoints()\Position\y = *Target\Position\y + 2 * (3 * *Target\Height) * Sin(Angle)
     
     ;the fourth waypoint is at the tangerineenemy position, because the projectile will
     ;return to the enemy
     AddElement(WayPoints())
-    WayPoints()\Position = *TangerineEnemy\Position
+    WayPoints()\Position = *TangerineEnemy\MiddlePosition
     
     
     ;all waypoints have the same width and height
@@ -703,8 +703,8 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     UpdateMiddlePositionGameObject(*TangerineEnemy)
     UpdateMiddlePositionGameObject(*Player)
     
-    Protected DeltaX.f = *Player\MiddlePosition\x - *TangerineEnemy\MiddlePosition\x
-    Protected DeltaY.f = *Player\MiddlePosition\y - *TangerineEnemy\MiddlePosition\y
+    Protected DeltaX.f = *TangerineEnemy\MiddlePosition\x - *Player\MiddlePosition\x
+    Protected DeltaY.f = *TangerineEnemy\MiddlePosition\y - *Player\MiddlePosition\y
     Protected Angle.f = ATan2(DeltaX, DeltaY)
     
     Protected ObjectiveRect.TRect\Width = *TangerineEnemy\Width * 0.8
@@ -713,7 +713,7 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     Protected Radius.f = *Player\Width * 5
     
     ObjectiveRect\Position\x = *Player\MiddlePosition\x + Radius * Cos(angle)
-    ObjectiveRect\Position\y = *Player\MiddlePosition\x + Radius * Sin(angle)
+    ObjectiveRect\Position\y = *Player\MiddlePosition\y + Radius * Sin(angle)
     
     
     SwitchToGoingToObjectiveRectEnemy(*TangerineEnemy, @ObjectiveRect)
@@ -759,7 +759,14 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
+  If *TangerineEnemy\CurrentState = #EnemyGoingToObjectiveRect
+    StartDrawing(ScreenOutput())
+    Box(*TangerineEnemy\ObjectiveRect\Position\x, *TangerineEnemy\ObjectiveRect\Position\y,
+        *TangerineEnemy\ObjectiveRect\Width, *TangerineEnemy\ObjectiveRect\Height, RGB($55, $65, $47))
+    StopDrawing()
+  EndIf
   
+  DrawEnemy(*TangerineEnemy)
 EndProcedure
 
 Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,

@@ -134,7 +134,8 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
     ;InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
     ;InitGrapeEnemy(*Enemy, *PlayState\Player, @Position, #Grape, 2.5, @*PlayState\EnemiesProjectiles)
-    InitWatermelonEnemy(*Enemy, *PlayState\Player, @Position, #Watermelon, 2.5, @*PlayState\EnemiesProjectiles)
+    ;InitWatermelonEnemy(*Enemy, *PlayState\Player, @Position, #Watermelon, 2.5, @*PlayState\EnemiesProjectiles)
+    InitTangerineEnemy(*Enemy, *PlayState\Player, @Position, #Tangerine, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
     
     *Enemy\Active = #True
     

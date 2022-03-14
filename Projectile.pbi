@@ -67,17 +67,17 @@ EndProcedure
 Procedure DrawProjectile(*Projectile.TProjectile)
   RotateSprite(*Projectile\SpriteNum, Degree(*Projectile\Angle), #PB_Absolute)
   DrawGameObject(*Projectile)
-  ;Protected ScreenRect.TRect\Position\x = 0
-  ;ScreenRect\Position\y = 0
-  ;ScreenRect\Width = ScreenWidth()
-  ;ScreenRect\Height = ScreenHeight()
-  ;If CollisionRectRect(ScreenRect\Position\x, ScreenRect\Position\y, ScreenRect\Width,
-  ;                     ScreenRect\Height, *Projectile\Position\x, *Projectile\Position\y, 0, 0)
-  ;  StartDrawing(ScreenOutput())
-  ;  Box(Int(*Projectile\Position\x), Int(*Projectile\Position\y), SpriteWidth(#Laser1), SpriteHeight(#Laser1), RGB(213, 44, 44))
-  ;  Plot(Int(*Projectile\Position\x), Int(*Projectile\Position\y), RGB(44, 213, 44))
-  ;  StopDrawing()
-  ;EndIf
+  
+  If ListSize(*Projectile\WayPoints())
+   StartDrawing(ScreenOutput())
+   ForEach *Projectile\WayPoints()
+     Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
+         *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
+   Next
+   
+   StopDrawing()
+ EndIf
+  
   
   
 EndProcedure
@@ -123,14 +123,6 @@ Procedure UpdateSeed1Projectile(*Projectile.TProjectile, TimeSlice.f)
   UpdateProjectile(*Projectile, TimeSlice)
 EndProcedure
 
-Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
-  ;more stuff here
-  SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint)
-  Protected CurrentWayPoint.TRect = *Projectile\WayPoints()
-  
-  UpdateProjectile(*Projectile, TimeSlice)
-EndProcedure
-
 Procedure.f GetProjectileVelocity(Type.a)
   Select Type
     Case #ProjectileLaser1
@@ -154,6 +146,52 @@ Procedure.f GetProjectileVelocity(Type.a)
       ProcedureReturn 80.0
       
   EndSelect
+EndProcedure
+
+Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
+  ;more stuff here
+  
+  ;Debug "updategomo"
+  ;Debug "current time:" + ElapsedMilliseconds()
+  ;Debug "current index:" + ListIndex(*Projectile\WayPoints())
+  SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint - 1)
+  Protected CurrentWayPoint.TRect = *Projectile\WayPoints()
+  ;Debug "position x:" + CurrentWayPoint\Position\x
+  ;Debug "position y:" + CurrentWayPoint\Position\y
+  
+  
+  
+  If CollisionRectRect(*Projectile\Position\x, *Projectile\Position\y, *Projectile\Width,
+                       *Projectile\Height, CurrentWayPoint\Position\x,
+                       CurrentWayPoint\Position\y, CurrentWayPoint\Width, CurrentWayPoint\Height)
+    
+    ;goes to the next way point
+    *Projectile\CurrentWayPoint + 1
+    
+    If SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint - 1) = 0
+      ;end of way points
+      *Projectile\Active = #False
+      ProcedureReturn
+    EndIf
+    
+    Protected DeltaX.f, DeltaY.f
+    DeltaX = *Projectile\WayPoints()\Position\x - *Projectile\Position\x
+    DeltaY = *Projectile\WayPoints()\Position\y - *Projectile\Position\y
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    
+    *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
+    *Projectile\Velocity\y = Sin(Angle) * GetProjectileVelocity(*Projectile\Type)
+    
+    
+    
+    
+    
+  EndIf
+  
+  
+  
+  *Projectile\Angle + Radian(200.0) * TimeSlice
+  UpdateProjectile(*Projectile, TimeSlice)
 EndProcedure
 
 Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
@@ -198,6 +236,8 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   *Projectile\Velocity\y = Sin(Angle) * Velocity
   
   *Projectile\Angle = Angle
+  
+  *Projectile\Type = Type
   
   *Projectile\Power = Power
   

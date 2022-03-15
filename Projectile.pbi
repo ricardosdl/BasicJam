@@ -69,14 +69,17 @@ Procedure DrawProjectile(*Projectile.TProjectile)
   DrawGameObject(*Projectile)
   
   If ListSize(*Projectile\WayPoints())
-   StartDrawing(ScreenOutput())
-   ForEach *Projectile\WayPoints()
-     Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
-         *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
-   Next
-   
-   StopDrawing()
- EndIf
+    StartDrawing(ScreenOutput())
+    Protected WayPointNum.a = 1
+    ForEach *Projectile\WayPoints()
+      Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
+          *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
+      DrawText(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y, StrU(WayPointNum, #PB_Byte))
+      WayPointNum + 1
+    Next
+    
+    StopDrawing()
+  EndIf
   
   
   
@@ -143,7 +146,7 @@ Procedure.f GetProjectileVelocity(Type.a)
       
     Case #ProjectileGomo1
       
-      ProcedureReturn 80.0
+      ProcedureReturn 100.0
       
   EndSelect
 EndProcedure
@@ -204,32 +207,34 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   Select Type
     Case #ProjectileLaser1
       SpriteNum = #Laser1
-      Velocity = 500.0
+      
       Power = 1.0
       Health = 1.0
     Case #ProjectileBarf1
       SpriteNum = #Barf1
-      Velocity = 100.0
+      
       Power = 1.0
       Health = 1.0
     Case #ProjectileGrape1
       SpriteNum = #Grape1
-      Velocity = 100.0
+      
       Power = 1.0
       Health = 1.0
     Case #ProjectileSeed1
       SpriteNum = #Seed1
-      Velocity = 80.0
+      
       Power = 2.0
       Health = 1.0
       *UpdateProjectileProc = @UpdateSeed1Projectile()
     Case #ProjectileGomo1
       SpriteNum = #Gomo1
-      Velocity = 80.0
+      
       Power = 2.0
       Health = 1.0
       *UpdateProjectileProc = @UpdateGomo1Projectile()
   EndSelect
+  
+  Velocity = GetProjectileVelocity(Type)
   
   InitGameObject(*Projectile, *Pos, SpriteNum, *UpdateProjectileProc, @DrawProjectile(), Active, ZoomFactor)
   *Projectile\Velocity\x = Cos(Angle) * Velocity

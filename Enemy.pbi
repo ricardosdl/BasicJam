@@ -645,6 +645,9 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     ;Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
     Protected Angle.f = ATan2(DeltaX, DeltaY)
     
+    Debug "Angle deg:" + Degree(Angle)
+    Debug "angle rad:" + Angle
+    
     
     InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileGomo1,
                    #False, 0, *TangerineEnemy)
@@ -664,14 +667,14 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     ;the second waypoint is to the right and below the target position, taking into
     ;account the angle
     AddElement(WayPoints())
-    WayPoints()\Position\x = *Target\Position\x + (3 * *Target\Width) * Cos(Angle)
-    WayPoints()\Position\y = *Target\Position\y + (3 * *Target\Height) * Sin(Angle)
+    WayPoints()\Position\x = *Target\MiddlePosition\x + (3 * *Target\Width) * Cos(Angle)
+    WayPoints()\Position\y = *Target\MiddlePosition\y + (3 * *Target\Width) * Sin(Angle)
     
     ;the third waypoint is at the same x position of the target, but is bellow
     ;the second waypoint
     AddElement(WayPoints())
-    WayPoints()\Position\x = *Target\Position\x
-    WayPoints()\Position\y = *Target\Position\y + 2 * (3 * *Target\Height) * Sin(Angle)
+    WayPoints()\Position\x = *Target\MiddlePosition\x
+    WayPoints()\Position\y = *Target\MiddlePosition\y + 2 * (3 * *Target\Width) * Sin(Angle)
     
     ;the fourth waypoint is at the tangerineenemy position, because the projectile will
     ;return to the enemy

@@ -68,18 +68,18 @@ Procedure DrawProjectile(*Projectile.TProjectile)
   RotateSprite(*Projectile\SpriteNum, Degree(*Projectile\Angle), #PB_Absolute)
   DrawGameObject(*Projectile)
   
-  If ListSize(*Projectile\WayPoints())
-    StartDrawing(ScreenOutput())
-    Protected WayPointNum.a = 1
-    ForEach *Projectile\WayPoints()
-      Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
-          *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
-      DrawText(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y, StrU(WayPointNum, #PB_Byte))
-      WayPointNum + 1
-    Next
-    
-    StopDrawing()
-  EndIf
+;   If ListSize(*Projectile\WayPoints())
+;     StartDrawing(ScreenOutput())
+;     Protected WayPointNum.a = 1
+;     ForEach *Projectile\WayPoints()
+;       Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
+;           *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
+;       DrawText(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y, StrU(WayPointNum, #PB_Byte))
+;       WayPointNum + 1
+;     Next
+;     
+;     StopDrawing()
+;   EndIf
   
   
   
@@ -152,17 +152,8 @@ Procedure.f GetProjectileVelocity(Type.a)
 EndProcedure
 
 Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
-  ;more stuff here
-  
-  ;Debug "updategomo"
-  ;Debug "current time:" + ElapsedMilliseconds()
-  ;Debug "current index:" + ListIndex(*Projectile\WayPoints())
   SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint - 1)
   Protected CurrentWayPoint.TRect = *Projectile\WayPoints()
-  ;Debug "position x:" + CurrentWayPoint\Position\x
-  ;Debug "position y:" + CurrentWayPoint\Position\y
-  
-  
   
   If CollisionRectRect(*Projectile\Position\x, *Projectile\Position\y, *Projectile\Width,
                        *Projectile\Height, CurrentWayPoint\Position\x,
@@ -193,7 +184,7 @@ Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
   
   
   
-  *Projectile\Angle + Radian(200.0) * TimeSlice
+  *Projectile\Angle + Radian(-200.0) * TimeSlice
   UpdateProjectile(*Projectile, TimeSlice)
 EndProcedure
 

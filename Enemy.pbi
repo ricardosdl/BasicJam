@@ -645,10 +645,6 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     ;Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
     Protected Angle.f = ATan2(DeltaX, DeltaY)
     
-    Debug "Angle deg:" + Degree(Angle)
-    Debug "angle rad:" + Angle
-    
-    
     InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileGomo1,
                    #False, 0, *TangerineEnemy)
     
@@ -659,22 +655,32 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     *Projectile\Position = Position
     
     NewList WayPoints.TRect()
-    AddElement(WayPoints())
+    
     ;the first waypoint is the target positon
-    WayPoints()\Position = *Target\MiddlePosition
-    
-    
-    ;the second waypoint is to the right and below the target position, taking into
-    ;account the angle
+    Protected FirstWayPoint.TRect
+    FirstWayPoint\Position\x = *Target\MiddlePosition\x
+    FirstWayPoint\Position\y = *Target\MiddlePosition\y
     AddElement(WayPoints())
-    WayPoints()\Position\x = *Target\MiddlePosition\x + (3 * *Target\Width) * Cos(Angle)
-    WayPoints()\Position\y = *Target\MiddlePosition\y + (3 * *Target\Width) * Sin(Angle)
+    WayPoints() = FirstWayPoint
     
-    ;the third waypoint is at the same x position of the target, but is bellow
-    ;the second waypoint
+    
+    ;the second point is beyond (to the left or tight) of the first and rotated 30 degrees
+    Protected SecondWayPoint.TRect\Position = FirstWayPoint\Position
+    Protected SignDeltaX.f = Sign(*Target\Position\x - *TangerineEnemy\Position\x)
+    SecondWayPoint\Position\x + (3 * *Target\Width) * SignDeltaX
+    RotateAroundPoint(FirstWayPoint\Position, @SecondWayPoint\Position, Radian(30))
+    
     AddElement(WayPoints())
-    WayPoints()\Position\x = *Target\MiddlePosition\x
-    WayPoints()\Position\y = *Target\MiddlePosition\y + 2 * (3 * *Target\Width) * Sin(Angle)
+    WayPoints()\Position = SecondWayPoint\Position
+    
+    ;the third way point is the first one rotated 60 degrees around the tangerine position
+    Protected ThirdWayPoint.TRect\Position = FirstWayPoint\Position
+    ThirdWayPoint\Position\y + (3 * *Target\Width) * (Sign(*Target\Position\y - *TangerineEnemy\Position\y))
+    RotateAroundPoint(FirstWayPoint\Position, @ThirdWayPoint\Position, Radian(30))
+    
+    AddElement(WayPoints())
+    WayPoints()\Position = ThirdWayPoint\Position
+    
     
     ;the fourth waypoint is at the tangerineenemy position, because the projectile will
     ;return to the enemy

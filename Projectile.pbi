@@ -22,6 +22,7 @@ Structure TProjectile Extends TGameObject
   *Owner.TGameObject
   List WayPoints.TRect()
   CurrentWayPoint.a
+  EndedWayPoints.a
 EndStructure
 
 Structure TProjectileList
@@ -92,7 +93,9 @@ Procedure UpdateProjectile(*Projectile.TProjectile, TimeSlice.f)
   ScreenRect\Width = ScreenWidth()
   ScreenRect\Height = ScreenHeight()
   
-  If Not CollisionRectRect(ScreenRect\Position\x, ScreenRect\Position\y, ScreenRect\Width,
+  Protected NoWayPoints.a = Bool(ListSize(*Projectile\WayPoints()) = 0)
+  
+  If NoWayPoints And Not CollisionRectRect(ScreenRect\Position\x, ScreenRect\Position\y, ScreenRect\Width,
                            ScreenRect\Height, *Projectile\Position\x, *Projectile\Position\y,
                            *Projectile\Width, *Projectile\Height)
     
@@ -164,17 +167,21 @@ Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
     
     If SelectElement(*Projectile\WayPoints(), *Projectile\CurrentWayPoint - 1) = 0
       ;end of way points
-      *Projectile\Active = #False
-      ProcedureReturn
+      *Projectile\Velocity\x = 0
+      *Projectile\Velocity\y = 0
+      *Projectile\EndedWayPoints = #True
+    Else
+      
+      
+      Protected DeltaX.f, DeltaY.f
+      DeltaX = *Projectile\WayPoints()\Position\x - *Projectile\Position\x
+      DeltaY = *Projectile\WayPoints()\Position\y - *Projectile\Position\y
+      Protected Angle.f = ATan2(DeltaX, DeltaY)
+      
+      *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
+      *Projectile\Velocity\y = Sin(Angle) * GetProjectileVelocity(*Projectile\Type)
+      
     EndIf
-    
-    Protected DeltaX.f, DeltaY.f
-    DeltaX = *Projectile\WayPoints()\Position\x - *Projectile\Position\x
-    DeltaY = *Projectile\WayPoints()\Position\y - *Projectile\Position\y
-    Protected Angle.f = ATan2(DeltaX, DeltaY)
-    
-    *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
-    *Projectile\Velocity\y = Sin(Angle) * GetProjectileVelocity(*Projectile\Type)
     
     
     
@@ -250,6 +257,8 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   ClearList(*Projectile\WayPoints())
   *Projectile\CurrentWayPoint = 1
   
+  *Projectile\EndedWayPoints = #False
+  
 EndProcedure
 
 Procedure SetWayPointsProjectile(*Projectile.TProjectile, List WayPoints.TRect())
@@ -265,6 +274,11 @@ Procedure SetWayPointsProjectile(*Projectile.TProjectile, List WayPoints.TRect()
   *Projectile\Velocity\x = Cos(Angle) * GetProjectileVelocity(*Projectile\Type)
   *Projectile\Velocity\y = Sin(Angle) * GetProjectileVelocity(*Projectile\Type)
   
+EndProcedure
+
+Procedure ResetWayPointsProjectile(*Projectile.TProjectile)
+  ResetList(*Projectile\WayPoints())
+  *Projectile\CurrentWayPoint = 1
 EndProcedure
 
 

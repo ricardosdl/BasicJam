@@ -624,6 +624,13 @@ EndProcedure
 Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
   Protected *Projectile.TProjectile = GetOwnedProjectile(*TangerineEnemy, *TangerineEnemy\Projectiles)
   If *Projectile <> #Null
+    If *Projectile\EndedWayPoints
+      *Projectile\Active = #False
+      ProcedureReturn #True
+    EndIf
+    
+    ProcedureReturn #False
+    
   Else
     ;need to shoot a new one here
     *Projectile = GetInactiveProjectile(*TangerineEnemy\Projectiles)
@@ -696,7 +703,7 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     
     SetWayPointsProjectile(*Projectile, WayPoints())
     
-    
+    ProcedureReturn #False
     
     
     
@@ -725,7 +732,7 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     ObjectiveRect\Position\y = *Player\MiddlePosition\y + Radius * Sin(angle)
     
     
-    SwitchToGoingToObjectiveRectEnemy(*TangerineEnemy, @ObjectiveRect)
+    SwitchToGoingToObjectiveRectEnemy(*TangerineEnemy, @ObjectiveRect, 0.5)
     ProcedureReturn
   EndIf
   
@@ -746,20 +753,11 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     If *TangerineEnemy\ShootingTimer <= 0
       If ShootTangerineEnemy(*TangerineEnemy, TimeSlice)
         ;ended all shots
-        SwitchToWaitingEnemy(*TangerineEnemy, #EnemyNoState)
+        SwitchStateEnemy(*TangerineEnemy, #EnemyNoState)
       EndIf
       
       
     EndIf
-    
-  ElseIf *TangerineEnemy\CurrentState = #EnemyWaiting
-    *TangerineEnemy\WaitTimer - TimeSlice
-    If *TangerineEnemy\WaitTimer <= 0
-      SwitchToFollowingPlayerEnemy(*TangerineEnemy)
-      ProcedureReturn
-    EndIf
-    
-    
     
   EndIf
   

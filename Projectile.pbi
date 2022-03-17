@@ -149,7 +149,7 @@ Procedure.f GetProjectileVelocity(Type.a)
       
     Case #ProjectileGomo1
       
-      ProcedureReturn 100.0
+      ProcedureReturn 150.0
       
   EndSelect
 EndProcedure

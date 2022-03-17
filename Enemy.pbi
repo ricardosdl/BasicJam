@@ -738,7 +738,7 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
   
   If *TangerineEnemy\CurrentState = #EnemyGoingToObjectiveRect
     If HasReachedObjectiveRectEnemy(*TangerineEnemy)
-      SwitchToShootingTargetEnemy(*TangerineEnemy, 0.1, *TangerineEnemy\Player)
+      SwitchToShootingTargetEnemy(*TangerineEnemy, 0.5, *TangerineEnemy\Player)
       ProcedureReturn
     EndIf
     

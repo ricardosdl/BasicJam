@@ -14,6 +14,8 @@ Enumeration EEnemyStates
   #EnemyFollowingPlayer
 EndEnumeration
 
+Prototype SetPatrollingEnemyProc(*Enemy)
+
 Structure TEnemy Extends TGameObject
   *Player.TGameObject
   CurrentState.a
@@ -793,6 +795,76 @@ Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Posit
   
   
 EndProcedure
+
+;switch *enemy to patrolling state
+;*setpatrollingenemy if set must be a procedure that will change values
+;for the *enemy as it enters the patrolling state
+;timerpatrolling is the time that *enemy will spend on this state
+Procedure SwitchToPatrollingEnemy(*Enemy.TEnemy,
+                                  *SetPatrollingEnemy.SetPatrollingEnemyProc = #Null,
+                                  TimerPatrolling.f = 1.0)
+  SwitchStateEnemy(*Enemy, #EnemyPatrolling)
+  *Enemy\StateTimer = TimerPatrolling
+  If *SetPatrollingEnemy <> #Null
+    *SetPatrollingEnemy(*Enemy)
+  EndIf
+  
+EndProcedure
+
+Procedure SetPatrollingPineapple(*Pineapple.TEnemy)
+  Protected HalfScreenWidth.f = ScreenWidth() / 2
+  Protected HalfScreenHeight.f = ScreenHeight() / 2
+  
+  UpdateMiddlePositionGameObject(*Pineapple)
+  
+  If *Pineapple\MiddlePosition\x < HalfScreenWidth
+    *Pineapple\Velocity\x = 100
+  Else
+    *Pineapple\Velocity\x = -100
+  EndIf
+  
+  If *Pineapple\MiddlePosition\y < HalfScreenHeight
+    *Pineapple\Velocity\y = 100
+  Else
+    *Pineapple\Velocity\y = -100
+  EndIf
+  
+  
+  
+  
+  
+EndProcedure
+
+Procedure UpdatePineappleEnemy(*Pineapple.TEnemy, TimeSlice.f)
+  If *Pineapple\CurrentState = #EnemyNoState
+    ;SwitchStateEnemy(*Pineapple, #EnemyPatrolling)
+    SwitchToPatrollingEnemy(*Pineapple, @SetPatrollingPineapple(), 2.0)
+    ProcedureReturn
+  EndIf
+  
+  ;put more states here...
+  ;If *Pineapple\CurrentState
+  
+EndProcedure
+
+Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                             SpriteNum.i, ZoomFactor.f)
+  
+  InitEnemy(*Pineapple, *Player, #Null)
+  
+  *Pineapple\Health = 5.0
+  
+  InitGameObject(*Pineapple, *Position, SpriteNum, @UpdatePineappleEnemy(), @DrawEnemy(),
+                 #True, ZoomFactor)
+  
+  *Pineapple\MaxVelocity\x = 150.0
+  *Pineapple\MaxVelocity\y = 150.0
+  
+  *Pineapple\CurrentState = #EnemyNoState
+  
+  
+EndProcedure
+
 
 
 Procedure KillEnemy(*Enemy.TEnemy)

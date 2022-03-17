@@ -14,6 +14,7 @@ Enumeration ESprites
   #Seed1
   #Tangerine
   #Gomo1
+  #PineApple
 EndEnumeration
 
 DisableExplicit

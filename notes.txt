@@ -1,0 +1,3 @@
+﻿;idea for the tangerine boomerang movement
+the way points must be rotated by the tangerine angle relative To the player,
+plus 180 degrees!!!

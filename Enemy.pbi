@@ -843,7 +843,31 @@ Procedure UpdatePineappleEnemy(*Pineapple.TEnemy, TimeSlice.f)
   EndIf
   
   ;put more states here...
-  ;If *Pineapple\CurrentState
+  If *Pineapple\CurrentState = #EnemyPatrolling
+    *Pineapple\StateTimer - TimeSlice
+    If *Pineapple\StateTimer <= 0
+      SwitchToWaitingEnemy(*Pineapple, 2.0)
+      ProcedureReturn
+    EndIf
+  ElseIf *Pineapple\CurrentState = #EnemyWaiting
+    ;check if the player is near enough to attack it
+    UpdateMiddlePositionGameObject(*Pineapple)
+    UpdateMiddlePositionGameObject(*Pineapple\Player)
+    
+    Protected PositionPineapple.TVector2d = *Pineapple\MiddlePosition
+    Protected PositionPlayer.TVector2D = *Pineapple\Player\MiddlePosition
+    
+    If DistanceBetweenPoints(PositionPineapple\x, PositionPineapple\y, PositionPlayer\x,
+                             PositionPlayer\y) <= *Pineapple\Width * 2.5
+      
+      ;got to a red around player, and updates after every 0.5 second?
+      ;SwitchToGoingToObjectiveRectEnemy(
+      
+    EndIf
+    
+    
+  EndIf
+  
   
 EndProcedure
 

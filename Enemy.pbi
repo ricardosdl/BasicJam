@@ -858,16 +858,55 @@ Procedure UpdatePineappleEnemy(*Pineapple.TEnemy, TimeSlice.f)
     Protected PositionPlayer.TVector2D = *Pineapple\Player\MiddlePosition
     
     If DistanceBetweenPoints(PositionPineapple\x, PositionPineapple\y, PositionPlayer\x,
-                             PositionPlayer\y) <= *Pineapple\Width * 2.5
+                             PositionPlayer\y) <= *Pineapple\Width * 5
       
-      ;got to a red around player, and updates after every 0.5 second?
-      ;SwitchToGoingToObjectiveRectEnemy(
+      SwitchToFollowingPlayerEnemy(*Pineapple, 2.0)
       
+      ProcedureReturn
+    EndIf
+    
+    *Pineapple\WaitTimer - TimeSlice
+    If *Pineapple\WaitTimer <= 0
+      SwitchStateEnemy(*Pineapple, #EnemyNoState)
+      ProcedureReturn
+    EndIf
+    
+  ElseIf *Pineapple\CurrentState = #EnemyFollowingPlayer
+    Protected *Player.TGameObject = *Pineapple\Player
+    
+    UpdateMiddlePositionGameObject(*Pineapple)
+    UpdateMiddlePositionGameObject(*Player)
+    
+    Protected DeltaX.f = *Player\MiddlePosition\x - *Pineapple\MiddlePosition\x
+    Protected DeltaY.f = *Player\MiddlePosition\y - *Pineapple\MiddlePosition\y
+    Protected Angle.f = ATan2(DeltaX, DeltaY)
+    
+    *Pineapple\Velocity\x = Cos(Angle) * *Pineapple\MaxVelocity\x * 1.5
+    *Pineapple\Velocity\y = Sin(Angle) * *Pineapple\MaxVelocity\y * 1.5
+    
+    *Pineapple\StateTimer - TimeSlice
+    If *Pineapple\StateTimer <= 0
+      SwitchStateEnemy(*Pineapple, #EnemyNoState)
+      ProcedureReturn
     EndIf
     
     
   EndIf
   
+  UpdateGameObject(*Pineapple, TimeSlice)
+  
+  
+EndProcedure
+
+Procedure DrawPineappleEnemy(*Pineapple.TEnemy)
+  If *Pineapple\CurrentState = #EnemyGoingToObjectiveRect
+    StartDrawing(ScreenOutput())
+    Box(*Pineapple\ObjectiveRect\Position\x, *Pineapple\ObjectiveRect\Position\y,
+        *Pineapple\ObjectiveRect\Width, *Pineapple\ObjectiveRect\Height, RGB($87, $198, $127))
+    StopDrawing()
+  EndIf
+  
+  DrawEnemy(*Pineapple)
   
 EndProcedure
 
@@ -878,11 +917,11 @@ Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.T
   
   *Pineapple\Health = 5.0
   
-  InitGameObject(*Pineapple, *Position, SpriteNum, @UpdatePineappleEnemy(), @DrawEnemy(),
+  InitGameObject(*Pineapple, *Position, SpriteNum, @UpdatePineappleEnemy(), @DrawPineappleEnemy(),
                  #True, ZoomFactor)
   
-  *Pineapple\MaxVelocity\x = 150.0
-  *Pineapple\MaxVelocity\y = 150.0
+  *Pineapple\MaxVelocity\x = 100.0
+  *Pineapple\MaxVelocity\y = 100.0
   
   *Pineapple\CurrentState = #EnemyNoState
   

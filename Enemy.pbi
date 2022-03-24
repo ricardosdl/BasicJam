@@ -674,8 +674,10 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     ;the second point is beyond (to the left or tight) of the first
     Protected SecondWayPoint.TRect\Position = FirstWayPoint\Position
     Protected.f CosSecondWayPoint, SinSecondWayPoint
-    CosSecondWayPoint = Cos(Angle + Radian(30 * Sign(Angle)))
-    SinSecondWayPoint = Sin(Angle + Radian(30 * Sign(Angle)))
+    ;CosSecondWayPoint = Cos(Angle + Radian(40 * Sign(Angle)))
+    ;SinSecondWayPoint = Sin(Angle + Radian(40 * Sign(Angle)))
+    CosSecondWayPoint = Cos(Angle)
+    SinSecondWayPoint = Sin(Angle)
     SecondWayPoint\Position\x + CosSecondWayPoint * 4 * *Target\Width
     SecondWayPoint\Position\y + SinSecondWayPoint * 4 * *Target\Width
     
@@ -683,13 +685,15 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     WayPoints()\Position = SecondWayPoint\Position
     
     ;the third way point is the first one rotated 60 degrees around the tangerine position
-    ;Protected ThirdWayPoint.TRect\Position = SecondWayPoint\Position
-    ;ThirdWayPoint\Position\x + (4 * *Target\Width)
-    ;ThirdWayPoint\Position\y + (2 * *Target\Height)
-    ;RotateAroundPoint(FirstWayPoint\Position, @ThirdWayPoint\Position, Angle + #PI)
+    Protected ThirdWayPoint.TRect\Position = FirstWayPoint\Position
+    Protected.f CosThirdWayPoint, SinThirdWayPoint
+    CosThirdWayPoint = Cos(Angle + Radian(40 * Sign(Angle)))
+    SinThirdWayPoint = Sin(Angle + Radian(40 * Sign(Angle)))
+    ThirdWayPoint\Position\x + CosThirdWayPoint * 4 * *Target\Width
+    ThirdWayPoint\Position\y + SinThirdWayPoint * 4 * *Target\Width
     
-    ;AddElement(WayPoints())
-    ;WayPoints()\Position = ThirdWayPoint\Position
+    AddElement(WayPoints())
+    WayPoints()\Position = ThirdWayPoint\Position
     
     
     ;the fourth waypoint is at the tangerineenemy position, because the projectile will

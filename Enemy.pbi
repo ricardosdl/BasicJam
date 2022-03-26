@@ -653,6 +653,7 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     DeltaY = *Target\MiddlePosition\y - *TangerineEnemy\MiddlePosition\y
     ;Distance = Sqr(DeltaX * DeltaX + DeltaY * DeltaY)
     Protected Angle.f = ATan2(DeltaX, DeltaY)
+    Debug Degree(Angle)
     
     InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, Angle, #ProjectileGomo1,
                    #False, 0, *TangerineEnemy)
@@ -672,20 +673,26 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     AddElement(WayPoints())
     WayPoints() = FirstWayPoint
     
-    
-    ;the second point is beyond (to the left or tight) of the first and rotated 30 degrees
+    ;the second point is beyond (to the left or tight) of the first
     Protected SecondWayPoint.TRect\Position = FirstWayPoint\Position
-    Protected SignDeltaX.f = Sign(*Target\Position\x - *TangerineEnemy\Position\x)
-    SecondWayPoint\Position\x + (3 * *Target\Width) * SignDeltaX
-    RotateAroundPoint(FirstWayPoint\Position, @SecondWayPoint\Position, Radian(30))
+    Protected.f CosSecondWayPoint, SinSecondWayPoint
+    ;CosSecondWayPoint = Cos(Angle + Radian(40 * Sign(Angle)))
+    ;SinSecondWayPoint = Sin(Angle + Radian(40 * Sign(Angle)))
+    CosSecondWayPoint = Cos(Angle)
+    SinSecondWayPoint = Sin(Angle)
+    SecondWayPoint\Position\x + CosSecondWayPoint * 4 * *Target\Width
+    SecondWayPoint\Position\y + SinSecondWayPoint * 4 * *Target\Width
     
     AddElement(WayPoints())
     WayPoints()\Position = SecondWayPoint\Position
     
     ;the third way point is the first one rotated 60 degrees around the tangerine position
     Protected ThirdWayPoint.TRect\Position = FirstWayPoint\Position
-    ThirdWayPoint\Position\y + (3 * *Target\Width) * (Sign(*Target\Position\y - *TangerineEnemy\Position\y))
-    RotateAroundPoint(FirstWayPoint\Position, @ThirdWayPoint\Position, Radian(30))
+    Protected.f CosThirdWayPoint, SinThirdWayPoint
+    CosThirdWayPoint = Cos(Angle + Radian(40 * Sign(Angle)))
+    SinThirdWayPoint = Sin(Angle + Radian(40 * Sign(Angle)))
+    ThirdWayPoint\Position\x + CosThirdWayPoint * 4 * *Target\Width
+    ThirdWayPoint\Position\y + SinThirdWayPoint * 4 * *Target\Width
     
     AddElement(WayPoints())
     WayPoints()\Position = ThirdWayPoint\Position

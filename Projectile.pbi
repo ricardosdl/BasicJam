@@ -10,6 +10,7 @@ Enumeration EProjectileTypes
   #ProjectileGrape1
   #ProjectileSeed1
   #ProjectileGomo1
+  #ProjectileAcid1
 EndEnumeration
 
 

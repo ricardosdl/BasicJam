@@ -15,6 +15,8 @@ Enumeration ESprites
   #Tangerine
   #Gomo1
   #PineApple
+  #Lemon
+  #Acid1
 EndEnumeration
 
 DisableExplicit

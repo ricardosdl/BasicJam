@@ -1,3 +1,6 @@
 ﻿;idea for the tangerine boomerang movement
 the way points must be rotated by the tangerine angle relative To the player,
 plus 180 degrees!!!
+
+;lemon enemy
+the lemon enemy will release pools of acid that hur the player

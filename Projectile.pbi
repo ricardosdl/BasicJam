@@ -196,6 +196,13 @@ Procedure UpdateGomo1Projectile(*Projectile.TProjectile, TimeSlice.f)
   UpdateProjectile(*Projectile, TimeSlice)
 EndProcedure
 
+Procedure UpdateAcid1Projectile(*Acid1.TProjectile, TimeSlice.f)
+  *Acid1\Velocity\x = 0.0
+  *Acid1\Velocity\y = 0.0
+  
+  UpdateProjectile(*Acid1, TimeSlice)
+EndProcedure
+
 Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
                          ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False,
                          AliveTimer.f = 0.0, *Owner.TGameObject = #Null)
@@ -231,6 +238,12 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       Power = 2.0
       Health = 1.0
       *UpdateProjectileProc = @UpdateGomo1Projectile()
+      
+    Case #ProjectileAcid1
+      SpriteNum = #Acid1
+      Power = 3.0
+      Health = 1.0
+      *UpdateProjectileProc = @UpdateAcid1Projectile()
   EndSelect
   
   Velocity = GetProjectileVelocity(Type)

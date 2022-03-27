@@ -935,6 +935,110 @@ Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.T
   
 EndProcedure
 
+Procedure SetPatrollingLemon(*Lemon.TEnemy)
+  Dim Directions.b(3)
+  ;   y -axis           x - axis            y - axis             x - axis
+  Directions(0) = -1 : Directions(1) = 1 : Directions(2) = 1 : Directions(3) = -1
+  
+  Protected RandomDirection.a = Random(3, 0)
+  If RandomDirection % 2
+    ;y axis
+    *Lemon\Velocity\x = 0.0
+    *Lemon\Velocity\y = Directions(RandomDirection) * 120.0
+  Else
+    ;x axis
+    *Lemon\Velocity\x = Directions(RandomDirection) * 120.0
+    *Lemon\Velocity\y = 0.0
+  EndIf
+  
+  
+  
+  
+  
+EndProcedure
+
+Procedure ShootLemonEnemy(*Lemon.TEnemy, TimeSlice.f)
+  Protected *Projectile.TProjectile = GetInactiveProjectile(*Lemon\Projectiles)
+  If *Projectile = #Null
+    ProcedureReturn #True
+  EndIf
+  
+  Protected RandomAngle.f = Radian(Random(359, 0))
+  
+  InitProjectile(*Projectile, @*Lemon\Position, #True, #SPRITES_ZOOM, RandomAngle,
+                 #ProjectileAcid1, #True, 5.0)
+  
+  ProcedureReturn #True
+  
+EndProcedure
+
+Procedure UpdateLemon(*Lemon.TEnemy, TimeSlice.f)
+  If *Lemon\CurrentState = #EnemyNoState
+    SwitchToPatrollingEnemy(*Lemon, @SetPatrollingLemon(), 3.0)
+    ProcedureReturn
+  EndIf
+  
+  If *Lemon\CurrentState = #EnemyPatrolling
+    *Lemon\StateTimer - TimeSlice
+    If *Lemon\StateTimer <= 0
+      Protected ShotArea.TRect\Position\x = *Lemon\Position\x
+      ShotArea\Position\y = *Lemon\Position\y
+      ShotArea\Width = *Lemon\Width
+      ShotArea\Height = *Lemon\Height
+      
+      *Lemon\Velocity\x = 0
+      *Lemon\Velocity\y = 0
+      
+      SwitchToShootingAreaEnemy(*Lemon, @ShotArea, 1.0, 1)
+      ProcedureReturn
+    EndIf
+    
+    ;check if is going outside game area
+    If *Lemon\Position\x < 0 Or (*Lemon\Position\x + *Lemon\Width) > ScreenWidth() - 1
+      *Lemon\Velocity\x * -1
+    EndIf
+    
+    If *Lemon\Position\y < 0 Or (*Lemon\Position\y + *Lemon\Height) > ScreenHeight() - 1
+      *Lemon\Velocity\y * -1
+    EndIf
+    
+    
+  ElseIf *Lemon\CurrentState = #EnemyShooting
+    *Lemon\ShootingTimer - TimeSlice
+    If *Lemon\ShootingTimer <= 0
+      If ShootLemonEnemy(*Lemon, TimeSlice)
+        ;ended shooting
+        SwitchStateEnemy(*Lemon, #EnemyNoState)
+        ProcedureReturn
+      EndIf
+      
+    EndIf
+    
+    
+  EndIf
+  
+  UpdateGameObject(*Lemon, TimeSlice)
+  
+  
+EndProcedure
+
+Procedure InitLemonEnemy(*Lemon.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+  
+  InitEnemy(*Lemon, *Player, *ProjectilesList)
+  
+  *Lemon\Health = 6.0
+  
+  InitGameObject(*Lemon, *Position, SpriteNum, @UpdateLemon(), @DrawEnemy(),
+                 #True, ZoomFactor)
+  
+  *Lemon\MaxVelocity\x = 100.0
+  *Lemon\MaxVelocity\y = 100.0
+  
+  *Lemon\CurrentState = #EnemyNoState
+  
+EndProcedure
+
 
 
 Procedure KillEnemy(*Enemy.TEnemy)

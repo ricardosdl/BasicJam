@@ -153,6 +153,9 @@ Procedure.f GetProjectileVelocity(Type.a)
       
       ProcedureReturn 150.0
       
+    Case #ProjectileCocoSlice1
+      ProcedureReturn 175.0
+      
   EndSelect
 EndProcedure
 
@@ -245,6 +248,12 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       Power = 3.0
       Health = 1.0
       *UpdateProjectileProc = @UpdateAcid1Projectile()
+      
+    Case #ProjectileCocoSlice1
+      SpriteNum = #CocoSlice1
+      Power = 3.0
+      Health = 1.0
+      *UpdateProjectileProc = @UpdateSeed1Projectile()
   EndSelect
   
   Velocity = GetProjectileVelocity(Type)

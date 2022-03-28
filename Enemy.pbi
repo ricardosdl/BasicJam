@@ -148,6 +148,19 @@ Procedure SwitchToWaitingEnemy(*Enemy.TEnemy, WaitTimer.f = 1.5)
   SwitchStateEnemy(*Enemy, #EnemyWaiting)
 EndProcedure
 
+Procedure KillEnemy(*Enemy.TEnemy)
+  *Enemy\Active = #False
+EndProcedure
+
+
+Procedure HurtEnemy(*Enemy.TEnemy, Power.f)
+  *Enemy\Health - Power
+  If *Enemy\Health <= 0.0
+    KillEnemy(*Enemy)
+  EndIf
+  
+EndProcedure
+
 Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   
   If *BananaEnemy\CurrentState = #EnemyNoState
@@ -1098,6 +1111,8 @@ Procedure ShootCoconutEnemy(*Coconut.TEnemy, TimeSlice.f)
     NumShots - 1
   Wend
   
+  ProcedureReturn #True
+  
   
 EndProcedure
 
@@ -1130,7 +1145,7 @@ Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
       ProcedureReturn
     EndIf
     
-    If IsCloseEneoughToPlayerEnemy(*Coconut, 3 * *Coconut\Width)
+    If IsCloseEneoughToPlayerEnemy(*Coconut, 4 * *Coconut\Width)
       SwitchToShootingTargetEnemy(*Coconut, 2.0, *Coconut\Player, 1)
       ProcedureReturn
     EndIf
@@ -1141,6 +1156,7 @@ Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
       If ShootCoconutEnemy(*Coconut, TimeSlice)
         ;ended shooting
         SwitchStateEnemy(*Coconut, #EnemyNoState)
+        HurtEnemy(*Coconut, *Coconut\Health)
         ProcedureReturn
       EndIf
     EndIf
@@ -1152,6 +1168,11 @@ Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
   UpdateGameObject(*Coconut, TimeSlice)
 EndProcedure
 
+Procedure DrawCoconut(*Coconut.TEnemy)
+  ;TODO: add code to make it flash red when is about to shoot
+  DrawEnemy(*Coconut)
+EndProcedure
+
 Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVector2D,
                     SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
   
@@ -1159,28 +1180,13 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
   *Coconut\Health = 6.0
   
-  InitGameObject(*Coconut, *Position, SpriteNum, @UpdateCoconut(), @DrawEnemy(),
+  InitGameObject(*Coconut, *Position, SpriteNum, @UpdateCoconut(), @DrawCoconut(),
                  #True, ZoomFactor)
   
   *Coconut\MaxVelocity\x = 100.0
   *Coconut\MaxVelocity\y = 100.0
   
   *Coconut\CurrentState = #EnemyNoState
-  
-EndProcedure
-
-
-
-Procedure KillEnemy(*Enemy.TEnemy)
-  *Enemy\Active = #False
-EndProcedure
-
-
-Procedure HurtEnemy(*Enemy.TEnemy, Power.f)
-  *Enemy\Health - Power
-  If *Enemy\Health <= 0.0
-    KillEnemy(*Enemy)
-  EndIf
   
 EndProcedure
 

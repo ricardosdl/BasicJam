@@ -1039,6 +1039,111 @@ Procedure InitLemonEnemy(*Lemon.TEnemy, *Player.TGameObject, *Position.TVector2D
   
 EndProcedure
 
+Procedure SetPatrollingCoconut(*Coconut.TEnemy)
+  *Coconut\Velocity\x = 0
+  *Coconut\Velocity\y = 0
+  UpdateMiddlePositionGameObject(*Coconut)
+  If Random(1, 0) = 1
+    ;move vertically
+    If *Coconut\MiddlePosition\y < ScreenHeight() / 2
+      *Coconut\Velocity\y = *Coconut\MaxVelocity\y
+    Else
+      *Coconut\Velocity\y = *Coconut\MaxVelocity\y * -1
+    EndIf
+  Else
+    ;move horizontally
+    If *Coconut\MiddlePosition\x < ScreenWidth() / 2
+      *Coconut\Velocity\x = *Coconut\MaxVelocity\x
+    Else
+      *Coconut\Velocity\x = *Coconut\MaxVelocity\x * -1
+    EndIf
+    
+    
+  EndIf
+  
+EndProcedure
+
+Procedure ShootCoconutEnemy(*Coconut.TEnemy, TimeSlice.f)
+  Protected NumShots.a = 4
+  Protected AngleIncrease.f = Radian(360 / NumShots)
+  Protected AngleStart.f = Radian(Random(359, 0))
+  
+  While NumShots
+    ;GetInactiveProjectile(
+    NumShots - 1
+  Wend
+  
+  
+EndProcedure
+
+Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
+  If *Coconut\CurrentState = #EnemyNoState
+    SwitchToPatrollingEnemy(*Coconut, @SetPatrollingCoconut(), 2.0)
+    ProcedureReturn
+  EndIf
+  
+  If *Coconut\CurrentState = #EnemyPatrolling
+    *Coconut\StateTimer - TimeSlice
+    If *Coconut\StateTimer <= 0
+      SwitchToWaitingEnemy(*Coconut, 2.0)
+      ProcedureReturn
+    EndIf
+    
+    ;check if is going outside game area
+    If *Coconut\Position\x < 0 Or (*Coconut\Position\x + *Coconut\Width) > ScreenWidth() - 1
+      *Coconut\Velocity\x * -1
+    EndIf
+    
+    If *Coconut\Position\y < 0 Or (*Coconut\Position\y + *Coconut\Height) > ScreenHeight() - 1
+      *Coconut\Velocity\y * -1
+    EndIf
+    
+  ElseIf *Coconut\CurrentState = #EnemyWaiting
+    *Coconut\WaitTimer - TimeSlice
+    If *Coconut\WaitTimer <= 0
+      SwitchStateEnemy(*Coconut, #EnemyNoState)
+      ProcedureReturn
+    EndIf
+    
+    If IsCloseEneoughToPlayerEnemy(*Coconut, 3 * *Coconut\Width)
+      SwitchToShootingTargetEnemy(*Coconut, 2.0, *Coconut\Player, 1)
+      ProcedureReturn
+    EndIf
+    
+  ElseIf *Coconut\CurrentState = #EnemyShooting
+    *Coconut\ShootingTimer - TimeSlice
+    If *Coconut\ShootingTimer <= 0
+      If ShootCoconutEnemy(*Coconut, TimeSlice)
+        ;ended shooting
+        SwitchStateEnemy(*Coconut, #EnemyNoState)
+        ProcedureReturn
+      EndIf
+    EndIf
+    
+    
+  EndIf
+  
+  
+  UpdateGameObject(*Coconut, TimeSlice)
+EndProcedure
+
+Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+  
+  InitEnemy(*Coconut, *Player, *ProjectilesList)
+  
+  *Coconut\Health = 6.0
+  
+  InitGameObject(*Coconut, *Position, SpriteNum, @UpdateLemon(), @DrawEnemy(),
+                 #True, ZoomFactor)
+  
+  *Coconut\MaxVelocity\x = 100.0
+  *Coconut\MaxVelocity\y = 100.0
+  
+  *Coconut\CurrentState = #EnemyNoState
+  
+EndProcedure
+
 
 
 Procedure KillEnemy(*Enemy.TEnemy)

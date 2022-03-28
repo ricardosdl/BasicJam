@@ -17,6 +17,7 @@ Enumeration ESprites
   #PineApple
   #Lemon
   #Acid1
+  #Coconut
 EndEnumeration
 
 DisableExplicit

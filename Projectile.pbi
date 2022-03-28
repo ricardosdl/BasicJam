@@ -11,6 +11,7 @@ Enumeration EProjectileTypes
   #ProjectileSeed1
   #ProjectileGomo1
   #ProjectileAcid1
+  #ProjectileCocoSlice1
 EndEnumeration
 
 

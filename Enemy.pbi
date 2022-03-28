@@ -1066,10 +1066,35 @@ EndProcedure
 Procedure ShootCoconutEnemy(*Coconut.TEnemy, TimeSlice.f)
   Protected NumShots.a = 4
   Protected AngleIncrease.f = Radian(360 / NumShots)
-  Protected AngleStart.f = Radian(Random(359, 0))
+  Protected AngleStart.f
+  If Random(1, 0) = 1
+    AngleStart = Radian(0)
+  Else
+    AngleStart = Radian(45)
+  EndIf
+  
+  UpdateMiddlePositionGameObject(*Coconut)
+  
+  
+  Protected *Projectile.TProjectile = #Null
   
   While NumShots
-    ;GetInactiveProjectile(
+    *Projectile = GetInactiveProjectile(*Coconut\Projectiles)
+    If *Projectile = #Null
+      NumShots - 1
+      Continue
+    EndIf
+    
+    Protected ProjectilePos.TVector2D
+    
+    InitProjectile(*Projectile, @ProjectilePos, #True, #SPRITES_ZOOM, AngleStart,
+                   #ProjectileCocoSlice1, #False)
+    
+    *Projectile\Position\x = *Coconut\MiddlePosition\x - *Projectile\Width / 2
+    *Projectile\Position\y = *Coconut\MiddlePosition\y - *Projectile\Height / 2
+    
+    AngleStart + AngleIncrease
+    
     NumShots - 1
   Wend
   
@@ -1134,7 +1159,7 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
   *Coconut\Health = 6.0
   
-  InitGameObject(*Coconut, *Position, SpriteNum, @UpdateLemon(), @DrawEnemy(),
+  InitGameObject(*Coconut, *Position, SpriteNum, @UpdateCoconut(), @DrawEnemy(),
                  #True, ZoomFactor)
   
   *Coconut\MaxVelocity\x = 100.0

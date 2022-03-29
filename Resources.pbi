@@ -19,6 +19,7 @@ Enumeration ESprites
   #Acid1
   #Coconut
   #CocoSlice1
+  #Jabuticaba
 EndEnumeration
 
 DisableExplicit

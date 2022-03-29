@@ -1169,7 +1169,26 @@ Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawCoconut(*Coconut.TEnemy)
-  ;TODO: add code to make it flash red when is about to shoot
+  If *Coconut\CurrentState = #EnemyShooting
+    ;let's flash the coconut red to show that it will explode
+    
+    ;convert the shooting timer to ms
+    Protected ShootingTimerMs = *Coconut\ShootingTimer * 1000
+    
+    ;after each 100 ms we will display the enemy using the red color
+    If (ShootingTimerMs / 100) % 2
+      ;if ShootingTimerMs / 100 is odd, we show the red
+      DisplayTransparentSprite(*Coconut\SpriteNum, Int(*Coconut\Position\x),
+                               Int(*Coconut\Position\y), $7f, RGB($eb, $1d, $13))
+    Else
+      ;if ShootingTimerMs / 100 is even, we show the regular sprite
+      DrawEnemy(*Coconut)
+    EndIf
+    
+    ProcedureReturn
+    
+  EndIf
+  
   DrawEnemy(*Coconut)
 EndProcedure
 

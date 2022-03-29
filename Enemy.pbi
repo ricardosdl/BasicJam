@@ -1209,6 +1209,41 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
 EndProcedure
 
+Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
+  If *Jabuticaba\CurrentState = #EnemyNoState
+    SwitchToWaitingEnemy(*Jabuticaba, 3.0)
+    ProcedureReturn
+  EndIf
+  
+  If *Jabuticaba\CurrentState = #EnemyWaiting
+    *Jabuticaba\WaitTimer - TimeSlice
+    If *Jabuticaba\WaitTimer <= 0.0
+      ;jump towards player
+    EndIf
+    
+  EndIf
+  
+  
+  UpdateGameObject(*Jabuticaba, TimeSlice)
+EndProcedure
+
+Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+  
+  InitEnemy(*Jabuticaba, *Player, *ProjectilesList)
+  
+  *Jabuticaba\Health = 6.0
+  
+  InitGameObject(*Jabuticaba, *Position, SpriteNum, @UpdateJabuticabaEnemy(), @DrawEnemy(),
+                 #True, ZoomFactor)
+  
+  *Jabuticaba\MaxVelocity\x = 100.0
+  *Jabuticaba\MaxVelocity\y = 100.0
+  
+  *Jabuticaba\CurrentState = #EnemyNoState
+  
+EndProcedure
+
 
 
 

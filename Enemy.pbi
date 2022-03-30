@@ -31,6 +31,11 @@ Structure TEnemy Extends TGameObject
   TimerBetweenShots.f
   CurrentTimerBetweenShots.f
   CurrentAngleShot.f
+  JumpPosition.TVector2D
+  JumpVelocity.f
+  JumpYDeslocation.f
+  Gravity.f
+  IsOnGround.a
 EndStructure
 
 
@@ -38,6 +43,8 @@ EndStructure
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList)
   *Enemy\Player = *Player
   *Enemy\Projectiles = *ProjectileList
+  
+  *Enemy\IsOnGround = #True
 EndProcedure
 
 Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
@@ -1209,6 +1216,28 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
 EndProcedure
 
+Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
+  
+  *Jabuticaba\JumpVelocity = -100
+  *Jabuticaba\Gravity = 65
+  *Jabuticaba\JumpYDeslocation = 0.0
+  
+  *Jabuticaba\JumpPosition = *Jabuticaba\Position
+  *Jabuticaba\IsOnGround = #False
+  
+  Protected DeltaX.f, DeltaY.f
+  DeltaX = *Jabuticaba\Player\MiddlePosition\x - *Jabuticaba\MiddlePosition\x
+  DeltaY = *Jabuticaba\Player\MiddlePosition\y - *Jabuticaba\MiddlePosition\y
+  
+  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  
+  *Jabuticaba\Velocity\x = Cos(Angle) * 100
+  *Jabuticaba\Velocity\y = Sin(Angle) * 100
+  
+
+  
+EndProcedure
+
 Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
   If *Jabuticaba\CurrentState = #EnemyNoState
     SwitchToWaitingEnemy(*Jabuticaba, 3.0)
@@ -1219,12 +1248,49 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
     *Jabuticaba\WaitTimer - TimeSlice
     If *Jabuticaba\WaitTimer <= 0.0
       ;jump towards player
+      SwitchToPatrollingEnemy(*Jabuticaba, @SetJumpingJabuticaba())
+      ProcedureReturn
     EndIf
+    
+  ElseIf *Jabuticaba\CurrentState = #EnemyPatrolling
+    ;we use #enemypatrolling as the jumping state
+    *Jabuticaba\JumpVelocity + *Jabuticaba\Gravity * TimeSlice
+    Protected JumpFrameDeslocation.f = *Jabuticaba\JumpVelocity * TimeSlice
+    ;*Jabuticaba\JumpPosition\y + JumpFrameDeslocation
+    
+    
+    ;we store how much the enemy has deslocated "up" when jumping
+    *Jabuticaba\JumpYDeslocation + JumpFrameDeslocation
+    Debug *Jabuticaba\JumpYDeslocation
+    
+    *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y + *Jabuticaba\JumpYDeslocation
+    
+    
+    *Jabuticaba\JumpPosition\x = *Jabuticaba\Position\x
+    
+    ;If *Jabuticaba\JumpPosition\y >= *Jabuticaba\Position\y
+    If *Jabuticaba\JumpYDeslocation >= 0
+      ;hit the gorund
+      *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y
+      *Jabuticaba\IsOnGround = #True
+      SwitchStateEnemy(*Jabuticaba, #EnemyNoState)
+      ProcedureReturn
+    EndIf
+    
+    
+    
     
   EndIf
   
   
+  
+  
   UpdateGameObject(*Jabuticaba, TimeSlice)
+EndProcedure
+
+Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
+  DisplayTransparentSprite(*Jabuticaba\SpriteNum, Int(*Jabuticaba\JumpPosition\x),
+                           Int(*Jabuticaba\JumpPosition\y))
 EndProcedure
 
 Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -1234,13 +1300,15 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
   
   *Jabuticaba\Health = 6.0
   
-  InitGameObject(*Jabuticaba, *Position, SpriteNum, @UpdateJabuticabaEnemy(), @DrawEnemy(),
+  InitGameObject(*Jabuticaba, *Position, SpriteNum, @UpdateJabuticabaEnemy(), @DrawJabuticabaEnemy(),
                  #True, ZoomFactor)
   
   *Jabuticaba\MaxVelocity\x = 100.0
   *Jabuticaba\MaxVelocity\y = 100.0
   
   *Jabuticaba\CurrentState = #EnemyNoState
+  
+  *Jabuticaba\JumpPosition = *Jabuticaba\Position
   
 EndProcedure
 

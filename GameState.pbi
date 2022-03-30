@@ -91,7 +91,7 @@ EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;enemies that we'll add
-  Protected NumEnemies = 4
+  Protected NumEnemies = 1
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   
@@ -139,7 +139,8 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #PineApple, #SPRITES_ZOOM)
     ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM)
     ;InitLemonEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
+    ;InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
+    InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
     
     *Enemy\Active = #True
     

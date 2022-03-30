@@ -1218,8 +1218,8 @@ EndProcedure
 
 Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   
-  *Jabuticaba\JumpVelocity = -100
-  *Jabuticaba\Gravity = 65
+  *Jabuticaba\JumpVelocity = -250
+  *Jabuticaba\Gravity = 180
   *Jabuticaba\JumpYDeslocation = 0.0
   
   *Jabuticaba\JumpPosition = *Jabuticaba\Position
@@ -1231,8 +1231,8 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   
   Protected Angle.f = ATan2(DeltaX, DeltaY)
   
-  *Jabuticaba\Velocity\x = Cos(Angle) * 100
-  *Jabuticaba\Velocity\y = Sin(Angle) * 100
+  *Jabuticaba\Velocity\x = Cos(Angle) * 200
+  *Jabuticaba\Velocity\y = Sin(Angle) * 200
   
 
   

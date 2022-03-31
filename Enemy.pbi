@@ -1278,27 +1278,25 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
     If Not *Jabuticaba\IsOnGround
       *Jabuticaba\JumpVelocity + *Jabuticaba\Gravity * TimeSlice
       Protected JumpFrameDeslocation.f = *Jabuticaba\JumpVelocity * TimeSlice
-      ;*Jabuticaba\JumpPosition\y + JumpFrameDeslocation
-      
       
       ;we store how much the enemy has deslocated "up" when jumping
       *Jabuticaba\JumpYDeslocation + JumpFrameDeslocation
-      Debug *Jabuticaba\JumpYDeslocation
       
       *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y + *Jabuticaba\JumpYDeslocation
-      
       
       *Jabuticaba\JumpPosition\x = *Jabuticaba\Position\x
     EndIf
   
     
-    ;If *Jabuticaba\JumpPosition\y >= *Jabuticaba\Position\y
+    Protected EndedJump.a = #False
+    
     If (Not *Jabuticaba\IsOnGround) And *Jabuticaba\JumpYDeslocation >= 0
       ;hit the gorund
       *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y
       *Jabuticaba\IsOnGround = #True
-      ;SwitchStateEnemy(*Jabuticaba, #EnemyNoState)
-      ;ProcedureReturn
+      
+      EndedJump = #True
+      
     EndIf
     
     Protected ReachedObjectiveRect.a = HasReachedObjectiveRectEnemy(*Jabuticaba)
@@ -1308,7 +1306,7 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
     EndIf
     
     
-    If HasReachedObjectiveRectEnemy(*Jabuticaba) And *Jabuticaba\IsOnGround
+    If EndedJump
       SwitchStateEnemy(*Jabuticaba, #EnemyNoState)
       ProcedureReturn
     EndIf

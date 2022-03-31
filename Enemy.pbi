@@ -200,6 +200,17 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawEnemy(*Enemy.TEnemy)
+  If *Enemy\CurrentState = #EnemyGoingToObjectiveRect
+    StartDrawing(ScreenOutput())
+    
+    Box(*Enemy\Position\x, *Enemy\Position\y,
+        *Enemy\Width, *Enemy\Height, RGB(123, 255, 255))
+    
+    Box(*Enemy\ObjectiveRect\Position\x, *Enemy\ObjectiveRect\Position\y,
+        *Enemy\ObjectiveRect\Width, *Enemy\ObjectiveRect\Height, RGB(100, 123, 255))
+    StopDrawing()
+  EndIf
+  
   DrawGameObject(*Enemy)
 EndProcedure
 
@@ -1225,14 +1236,23 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   *Jabuticaba\JumpPosition = *Jabuticaba\Position
   *Jabuticaba\IsOnGround = #False
   
+  Protected ObjectiveRect.TRect\Width = *Jabuticaba\Width * 0.5
+  ObjectiveRect\Height = *Jabuticaba\Height * 0.5
+  ObjectiveRect\Position\x = *Jabuticaba\Player\MiddlePosition\x - ObjectiveRect\Width / 2
+  ObjectiveRect\Position\y = *Jabuticaba\Player\MiddlePosition\y - ObjectiveRect\Height / 2
+  
   Protected DeltaX.f, DeltaY.f
-  DeltaX = *Jabuticaba\Player\MiddlePosition\x - *Jabuticaba\MiddlePosition\x
-  DeltaY = *Jabuticaba\Player\MiddlePosition\y - *Jabuticaba\MiddlePosition\y
+  DeltaX = ObjectiveRect\Position\x - *Jabuticaba\MiddlePosition\x
+  DeltaY = ObjectiveRect\Position\y - *Jabuticaba\MiddlePosition\y
   
   Protected Angle.f = ATan2(DeltaX, DeltaY)
   
-  *Jabuticaba\Velocity\x = Cos(Angle) * 200
-  *Jabuticaba\Velocity\y = Sin(Angle) * 200
+  *Jabuticaba\Velocity\x = Cos(Angle) * *Jabuticaba\MaxVelocity\x
+  *Jabuticaba\Velocity\y = Sin(Angle) * *Jabuticaba\MaxVelocity\y
+  
+  
+  
+  *Jabuticaba\ObjectiveRect = ObjectiveRect
   
 
   
@@ -1254,28 +1274,45 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
     
   ElseIf *Jabuticaba\CurrentState = #EnemyPatrolling
     ;we use #enemypatrolling as the jumping state
-    *Jabuticaba\JumpVelocity + *Jabuticaba\Gravity * TimeSlice
-    Protected JumpFrameDeslocation.f = *Jabuticaba\JumpVelocity * TimeSlice
-    ;*Jabuticaba\JumpPosition\y + JumpFrameDeslocation
     
-    
-    ;we store how much the enemy has deslocated "up" when jumping
-    *Jabuticaba\JumpYDeslocation + JumpFrameDeslocation
-    Debug *Jabuticaba\JumpYDeslocation
-    
-    *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y + *Jabuticaba\JumpYDeslocation
-    
-    
-    *Jabuticaba\JumpPosition\x = *Jabuticaba\Position\x
+    If Not *Jabuticaba\IsOnGround
+      *Jabuticaba\JumpVelocity + *Jabuticaba\Gravity * TimeSlice
+      Protected JumpFrameDeslocation.f = *Jabuticaba\JumpVelocity * TimeSlice
+      ;*Jabuticaba\JumpPosition\y + JumpFrameDeslocation
+      
+      
+      ;we store how much the enemy has deslocated "up" when jumping
+      *Jabuticaba\JumpYDeslocation + JumpFrameDeslocation
+      Debug *Jabuticaba\JumpYDeslocation
+      
+      *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y + *Jabuticaba\JumpYDeslocation
+      
+      
+      *Jabuticaba\JumpPosition\x = *Jabuticaba\Position\x
+    EndIf
+  
     
     ;If *Jabuticaba\JumpPosition\y >= *Jabuticaba\Position\y
-    If *Jabuticaba\JumpYDeslocation >= 0
+    If (Not *Jabuticaba\IsOnGround) And *Jabuticaba\JumpYDeslocation >= 0
       ;hit the gorund
       *Jabuticaba\JumpPosition\y = *Jabuticaba\Position\y
       *Jabuticaba\IsOnGround = #True
+      ;SwitchStateEnemy(*Jabuticaba, #EnemyNoState)
+      ;ProcedureReturn
+    EndIf
+    
+    Protected ReachedObjectiveRect.a = HasReachedObjectiveRectEnemy(*Jabuticaba)
+    If ReachedObjectiveRect
+      *Jabuticaba\Velocity\x = 0
+      *Jabuticaba\Velocity\y = 0
+    EndIf
+    
+    
+    If HasReachedObjectiveRectEnemy(*Jabuticaba) And *Jabuticaba\IsOnGround
       SwitchStateEnemy(*Jabuticaba, #EnemyNoState)
       ProcedureReturn
     EndIf
+    
     
     
     
@@ -1291,6 +1328,16 @@ EndProcedure
 Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
   DisplayTransparentSprite(*Jabuticaba\SpriteNum, Int(*Jabuticaba\JumpPosition\x),
                            Int(*Jabuticaba\JumpPosition\y))
+  If *Jabuticaba\CurrentState = #EnemyPatrolling
+    StartDrawing(ScreenOutput())
+    Box(*Jabuticaba\Position\x, *Jabuticaba\Position\y, *Jabuticaba\Width, *Jabuticaba\Height, RGB(200, 55, 55))
+    
+    Box(*Jabuticaba\ObjectiveRect\Position\x, *Jabuticaba\ObjectiveRect\Position\y,
+        *Jabuticaba\ObjectiveRect\Width, *Jabuticaba\ObjectiveRect\Height, RGB(55, 200, 55))
+    
+    StopDrawing()
+  EndIf
+  
 EndProcedure
 
 Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position.TVector2D,

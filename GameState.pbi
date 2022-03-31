@@ -131,7 +131,7 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     Protected Position.TVector2d\x = Random(MaxLeftEnemyX, MinLeftEnemyX)
     Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
-    ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5)
+    ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5, #Null)
     ;InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
     ;InitGrapeEnemy(*Enemy, *PlayState\Player, @Position, #Grape, 2.5, @*PlayState\EnemiesProjectiles)
     ;InitWatermelonEnemy(*Enemy, *PlayState\Player, @Position, #Watermelon, 2.5, @*PlayState\EnemiesProjectiles)

@@ -1236,16 +1236,27 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   *Jabuticaba\JumpPosition = *Jabuticaba\Position
   *Jabuticaba\IsOnGround = #False
   
-  Protected ObjectiveRect.TRect\Width = *Jabuticaba\Width * 0.5
-  ObjectiveRect\Height = *Jabuticaba\Height * 0.5
-  ObjectiveRect\Position\x = *Jabuticaba\Player\MiddlePosition\x - ObjectiveRect\Width / 2
-  ObjectiveRect\Position\y = *Jabuticaba\Player\MiddlePosition\y - ObjectiveRect\Height / 2
-  
   Protected DeltaX.f, DeltaY.f
+  DeltaX = *Jabuticaba\Player\MiddlePosition\x - *Jabuticaba\MiddlePosition\x
+  DeltaY = *Jabuticaba\Player\MiddlePosition\y - *Jabuticaba\MiddlePosition\y
+  
+  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  
+  Protected ObjectiveRect.TRect\Width = *Jabuticaba\Width * 0.3
+  ObjectiveRect\Height = *Jabuticaba\Height * 0.3
+  
+  ;we put the objective rect on the extreme of a circle around the player,
+  ;with the radius as half the player width
+  ;this way the jabuticaba enemy will land around the middle of the player
+  Protected Radius.f = *Jabuticaba\Player\Width / 2
+  ObjectiveRect\Position\x = (*Jabuticaba\Player\MiddlePosition\x) + Cos(Angle) * Radius
+  ObjectiveRect\Position\y = (*Jabuticaba\Player\MiddlePosition\y) + Sin(Angle) * Radius
+  
+  
   DeltaX = ObjectiveRect\Position\x - *Jabuticaba\MiddlePosition\x
   DeltaY = ObjectiveRect\Position\y - *Jabuticaba\MiddlePosition\y
   
-  Protected Angle.f = ATan2(DeltaX, DeltaY)
+  Angle = ATan2(DeltaX, DeltaY)
   
   *Jabuticaba\Velocity\x = Cos(Angle) * *Jabuticaba\MaxVelocity\x
   *Jabuticaba\Velocity\y = Sin(Angle) * *Jabuticaba\MaxVelocity\y

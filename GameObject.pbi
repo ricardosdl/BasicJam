@@ -29,6 +29,8 @@ Structure TGameObject
   
   Health.f
   
+  DrawOrder.l
+  
   
   
 EndStructure

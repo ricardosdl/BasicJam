@@ -1236,9 +1236,36 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   *Jabuticaba\JumpPosition = *Jabuticaba\Position
   *Jabuticaba\IsOnGround = #False
   
+  Protected IsCloseToPlayer.a = IsCloseEneoughToPlayerEnemy(*Jabuticaba,
+                                                            6 * *Jabuticaba\Width)
+  
+  Protected ObjectiveJumpPosition.TVector2D
+  If IsCloseToPlayer
+    ObjectiveJumpPosition = *Jabuticaba\Player\MiddlePosition
+  Else
+    Protected MinX.f = *Jabuticaba\MiddlePosition\x - 6 * *Jabuticaba\Width
+    Protected MaxX.f = *Jabuticaba\MiddlePosition\x + 6 * *Jabuticaba\Width
+    MinX = ClampF(MinX, 0, ScreenWidth() - 1)
+    MaxX = ClampF(MaxX, 0, ScreenWidth() - 1)
+    
+    ObjectiveJumpPosition\x = RandomInterval(MaxX, MinX)
+    
+    Protected MinY.f = *Jabuticaba\MiddlePosition\y - 6 * *Jabuticaba\Height
+    Protected MaxY.f = *Jabuticaba\MiddlePosition\y + 6 * *Jabuticaba\Height
+    
+    MinY = ClampF(MinY, 0, ScreenHeight() - 1)
+    MaxY = ClampF(MaxY, 0, ScreenHeight() - 1)
+    
+    ObjectiveJumpPosition\y = RandomInterval(MaxY, MinY)
+  EndIf
+  
+  
+  
+    
+  
   Protected DeltaX.f, DeltaY.f
-  DeltaX = *Jabuticaba\Player\MiddlePosition\x - *Jabuticaba\MiddlePosition\x
-  DeltaY = *Jabuticaba\Player\MiddlePosition\y - *Jabuticaba\MiddlePosition\y
+  DeltaX = ObjectiveJumpPosition\x - *Jabuticaba\MiddlePosition\x
+  DeltaY = ObjectiveJumpPosition\y - *Jabuticaba\MiddlePosition\y
   
   Protected Angle.f = ATan2(DeltaX, DeltaY)
   
@@ -1249,8 +1276,8 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   ;with the radius as half the player width
   ;this way the jabuticaba enemy will land around the middle of the player
   Protected Radius.f = *Jabuticaba\Player\Width / 2
-  ObjectiveRect\Position\x = (*Jabuticaba\Player\MiddlePosition\x) + Cos(Angle) * Radius
-  ObjectiveRect\Position\y = (*Jabuticaba\Player\MiddlePosition\y) + Sin(Angle) * Radius
+  ObjectiveRect\Position\x = (ObjectiveJumpPosition\x) + Cos(Angle) * Radius
+  ObjectiveRect\Position\y = (ObjectiveJumpPosition\y) + Sin(Angle) * Radius
   
   
   DeltaX = ObjectiveRect\Position\x - *Jabuticaba\MiddlePosition\x
@@ -1345,6 +1372,14 @@ Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
         *Jabuticaba\ObjectiveRect\Width, *Jabuticaba\ObjectiveRect\Height, RGB(55, 200, 55))
     
     StopDrawing()
+  ElseIf *Jabuticaba\CurrentState = #EnemyWaiting
+    StartDrawing(ScreenOutput())
+    DrawingMode(#PB_2DDrawing_Outlined)
+    Circle(*Jabuticaba\MiddlePosition\x, *Jabuticaba\MiddlePosition\y, 6 * *Jabuticaba\Width,
+           RGB(75, 233, 125))
+    
+    StopDrawing()
+    
   EndIf
   
 EndProcedure

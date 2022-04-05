@@ -26,6 +26,8 @@ Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
     Protected Position.TVector2D
     InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, PlayerShootingAngle, #ProjectileLaser1)
     
+    AddDrawItemDrawList(*Player\DrawList, *Projectile)
+    
     Position\x = *Player\MiddlePosition\x - *Projectile\Width / 2
     Position\y = *Player\MiddlePosition\y - *Projectile\Height / 2
     

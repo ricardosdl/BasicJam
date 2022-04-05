@@ -1,6 +1,7 @@
 ﻿XIncludeFile "GameObject.pbi"
 XIncludeFile "Resources.pbi"
 XIncludeFile "Util.pbi"
+XIncludeFile "DrawOrders.pbi"
 
 EnableExplicit
 
@@ -211,7 +212,7 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
                          ZoomFactor.f, Angle.f, Type.a, HasAliveTimer.a = #False,
                          AliveTimer.f = 0.0, *Owner.TGameObject = #Null)
   
-  Protected SpriteNum, Velocity.f, Power.f, Health.f
+  Protected SpriteNum, Velocity.f, Power.f, Health.f, DrawOrder.l
   Protected *UpdateProjectileProc = @UpdateProjectile()
   
   Select Type
@@ -256,9 +257,12 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
       *UpdateProjectileProc = @UpdateSeed1Projectile()
   EndSelect
   
+  DrawOrder = #ProjectileDrawOrder
+  
   Velocity = GetProjectileVelocity(Type)
   
-  InitGameObject(*Projectile, *Pos, SpriteNum, *UpdateProjectileProc, @DrawProjectile(), Active, ZoomFactor)
+  InitGameObject(*Projectile, *Pos, SpriteNum, *UpdateProjectileProc, @DrawProjectile(),
+                 Active, ZoomFactor, DrawOrder)
   *Projectile\Velocity\x = Cos(Angle) * Velocity
   *Projectile\Velocity\y = Sin(Angle) * Velocity
   

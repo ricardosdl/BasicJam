@@ -16,7 +16,10 @@ Structure TDrawList
 EndStructure
 
 Procedure InitDrawList(*DrawList.TDrawList)
-  ClearList(*DrawList\DrawList())
+  ForEach *DrawList\DrawList()
+    *DrawList\DrawList()\Active = #False
+  Next
+  
   *DrawList\Changed = #False
 EndProcedure
 
@@ -24,16 +27,17 @@ Procedure DrawDrawList(*DrawList.TDrawList, ReorderIfChanged.a = #True)
   If ReorderIfChanged And *DrawList\Changed
     SortStructuredList(*DrawList\DrawList(), #PB_Sort_Ascending,
                        OffsetOf(TDrawListItem\DrawOrder), TypeOf(TDrawListItem\DrawOrder))
+    *DrawList\Changed = #False
   EndIf
   
-  FirstElement(*DrawList\DrawList())
-  
   ForEach *DrawList\DrawList()
-    *DrawList\DrawList()\GameObject\Draw(*DrawList\DrawList()\GameObject)
+    If *DrawList\DrawList()\Active
+      *DrawList\DrawList()\GameObject\Draw(*DrawList\DrawList()\GameObject)
+    EndIf
   Next
 EndProcedure
 
-Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject, )
+Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
   ;first we try to add the *gameobject to an already created drawitem that is inactive
   ForEach *DrawList\DrawList()
     If *DrawList\DrawList()\Active = #False

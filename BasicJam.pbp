@@ -7,11 +7,14 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2022-04-01 15:58" user="ricardo.lima" host="686-D-00000537"/>
+    <lastopen date="2022-04-04 16:57" user="ricardo.lima" host="686-D-00000537"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
+    </file>
+    <file name="DrawList.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="Enemy.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
@@ -39,9 +42,6 @@
     </file>
     <file name="Util.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
-    </file>
-    <file name="DrawList.pbi">
-      <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
     </file>
   </section>
   <section name="targets">

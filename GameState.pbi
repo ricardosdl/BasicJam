@@ -277,31 +277,10 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
 EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
-  *PlayState\Player\Draw(*PlayState\Player)
-  Protected i
-  Protected EnemiesEndIdx = ArraySize(*PlayState\Enemies())
-  
-  For i = 0 To EnemiesEndIdx
-    If *PlayState\Enemies(i)\Active
-      *PlayState\Enemies(i)\Draw(@*PlayState\Enemies(i))
-    EndIf
-    
-  Next
+  DrawDrawList(*PlayState\DrawList)
   
   
-  ;draw player projectiles
-  ForEach *PlayState\PlayerProjectiles\Projectiles()
-    If *PlayState\PlayerProjectiles\Projectiles()\Active
-      *PlayState\PlayerProjectiles\Projectiles()\Draw(@*PlayState\PlayerProjectiles\Projectiles())
-    EndIf
-  Next
   
-  ;draw enemies projectiles
-  ForEach *PlayState\EnemiesProjectiles\Projectiles()
-    If *PlayState\EnemiesProjectiles\Projectiles()\Active
-      *PlayState\EnemiesProjectiles\Projectiles()\Draw(@*PlayState\EnemiesProjectiles\Projectiles())
-    EndIf
-  Next
   
 EndProcedure
 

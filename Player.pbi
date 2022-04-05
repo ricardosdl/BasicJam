@@ -91,6 +91,8 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   
   *Player\IsShooting = IsShooting
   
+  *Player\DrawList = *DrawList
+  
   *Player\MaxVelocity\x = 500
   *Player\MaxVelocity\y = 500
   

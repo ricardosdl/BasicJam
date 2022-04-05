@@ -30,11 +30,23 @@ Procedure DrawDrawList(*DrawList.TDrawList, ReorderIfChanged.a = #True)
     *DrawList\Changed = #False
   EndIf
   
+  ;Debug "size:" + ListSize(*DrawList\DrawList())
+  
+  Protected count = 0
+  Protected NumDrawn = 0, NotDrawn = 0
   ForEach *DrawList\DrawList()
-    If *DrawList\DrawList()\Active
+    count + 1
+    If *DrawList\DrawList()\GameObject\Active
       *DrawList\DrawList()\GameObject\Draw(*DrawList\DrawList()\GameObject)
+      NumDrawn + 1
+    Else
+      *DrawList\DrawList()\Active = #False
+      NotDrawn + 1
     EndIf
   Next
+  Debug "num drawn:" + NumDrawn
+  Debug "not drawn:" + NotDrawn
+  ;Debug "iterated size:" + Count
 EndProcedure
 
 Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)

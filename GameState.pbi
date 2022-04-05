@@ -168,7 +168,7 @@ Procedure StartPlayState(*PlayState.TPlayState)
   PlayerPos\y = ScreenHeight() / 2
   
   
-  InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #Player1, 2.5, @*PlayState\DrawList)
+  InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #False, 2.5, @*PlayState\DrawList)
   
   AddDrawItemDrawList(@*PlayState\DrawList, *Player)
   

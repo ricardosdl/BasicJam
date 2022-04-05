@@ -2,6 +2,8 @@
 XIncludeFile "Math.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "Projectile.pbi"
+XIncludeFile "DrawList.pbi"
+XIncludeFile "DrawOrders.pbi"
 
 EnableExplicit
 
@@ -40,7 +42,8 @@ EndStructure
 
 
 
-Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList)
+Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList,
+                    *DrawList.TDrawList)
   *Enemy\Player = *Player
   *Enemy\Projectiles = *ProjectileList
   
@@ -215,14 +218,15 @@ Procedure DrawEnemy(*Enemy.TEnemy)
 EndProcedure
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
+                          *DrawList.TDrawList)
   
-  InitEnemy(*BananaEnemy, *Player, *ProjectileList)
+  InitEnemy(*BananaEnemy, *Player, *ProjectileList, *DrawList)
   
   *BananaEnemy\Health = 1.0
   
   InitGameObject(*BananaEnemy, *Position, SpriteNum, @UpdateBananaEnemy(), @DrawEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *BananaEnemy\MaxVelocity\x = 100.0
   *BananaEnemy\MaxVelocity\y = 100.0
@@ -379,14 +383,15 @@ Procedure DrawAppleEnemy(*AppleEnemy.TEnemy)
 EndProcedure
 
 Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
+                         *DrawList.TDrawList)
   
-  InitEnemy(*AppleEnemy, *Player, *ProjectileList)
+  InitEnemy(*AppleEnemy, *Player, *ProjectileList, *DrawList)
   
   *AppleEnemy\Health = 2.0
   
   InitGameObject(*AppleEnemy, *Position, SpriteNum, @UpdateAppleEnemy(), @DrawAppleEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *AppleEnemy\MaxVelocity\x = 80.0
   *AppleEnemy\MaxVelocity\y = 80.0
@@ -492,14 +497,15 @@ Procedure UpdateGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
+                         *DrawList.TDrawList)
   
-  InitEnemy(*GrapeEnemy, *Player, *ProjectileList)
+  InitEnemy(*GrapeEnemy, *Player, *ProjectileList, *DrawList)
   
   *GrapeEnemy\Health = 2.0
   
   InitGameObject(*GrapeEnemy, *Position, SpriteNum, @UpdateGrapeEnemy(), @DrawAppleEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *GrapeEnemy\MaxVelocity\x = 80.0
   *GrapeEnemy\MaxVelocity\y = 80.0
@@ -637,14 +643,15 @@ Procedure DrawWatermelonEnemy(*WatermelonEnemy.TEnemy)
 EndProcedure
 
 Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                         SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+                              SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
+                              *DrawList.TDrawList)
   
-  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList)
+  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList, *DrawList)
   
   *WatermelonEnemy\Health = 3.0
   
   InitGameObject(*WatermelonEnemy, *Position, SpriteNum, @UpdateWatermelonEnemy(), @DrawWatermelonEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *WatermelonEnemy\MaxVelocity\x = 80.0
   *WatermelonEnemy\MaxVelocity\y = 80.0
@@ -817,14 +824,15 @@ Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
 EndProcedure
 
 Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                            SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList)
+                             SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
+                             *DrawList.TDrawList)
   
-  InitEnemy(*TangerineEnemy, *Player, *ProjectileList)
+  InitEnemy(*TangerineEnemy, *Player, *ProjectileList, *DrawList)
   
   *TangerineEnemy\Health = 4.0
   
   InitGameObject(*TangerineEnemy, *Position, SpriteNum, @UpdateTangerineEnemy(), @DrawTangerineEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *TangerineEnemy\MaxVelocity\x = 80.0
   *TangerineEnemy\MaxVelocity\y = 80.0
@@ -949,14 +957,14 @@ Procedure DrawPineappleEnemy(*Pineapple.TEnemy)
 EndProcedure
 
 Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                             SpriteNum.i, ZoomFactor.f)
+                             SpriteNum.i, ZoomFactor.f, *DrawList.TDrawList)
   
-  InitEnemy(*Pineapple, *Player, #Null)
+  InitEnemy(*Pineapple, *Player, #Null, *DrawList)
   
   *Pineapple\Health = 5.0
   
   InitGameObject(*Pineapple, *Position, SpriteNum, @UpdatePineappleEnemy(), @DrawPineappleEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *Pineapple\MaxVelocity\x = 100.0
   *Pineapple\MaxVelocity\y = 100.0
@@ -1054,14 +1062,15 @@ Procedure UpdateLemon(*Lemon.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure InitLemonEnemy(*Lemon.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+                         SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
+                         *DrawList.TDrawList)
   
-  InitEnemy(*Lemon, *Player, *ProjectilesList)
+  InitEnemy(*Lemon, *Player, *ProjectilesList, *DrawList)
   
   *Lemon\Health = 6.0
   
   InitGameObject(*Lemon, *Position, SpriteNum, @UpdateLemon(), @DrawEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *Lemon\MaxVelocity\x = 100.0
   *Lemon\MaxVelocity\y = 100.0
@@ -1211,14 +1220,15 @@ Procedure DrawCoconut(*Coconut.TEnemy)
 EndProcedure
 
 Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+                           SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
+                           *DrawList.TDrawList)
   
-  InitEnemy(*Coconut, *Player, *ProjectilesList)
+  InitEnemy(*Coconut, *Player, *ProjectilesList, *DrawList)
   
   *Coconut\Health = 6.0
   
   InitGameObject(*Coconut, *Position, SpriteNum, @UpdateCoconut(), @DrawCoconut(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *Coconut\MaxVelocity\x = 100.0
   *Coconut\MaxVelocity\y = 100.0
@@ -1385,14 +1395,15 @@ Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
 EndProcedure
 
 Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position.TVector2D,
-                    SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList)
+                              SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
+                              *DrawList.TDrawList)
   
-  InitEnemy(*Jabuticaba, *Player, *ProjectilesList)
+  InitEnemy(*Jabuticaba, *Player, *ProjectilesList, *DrawList)
   
   *Jabuticaba\Health = 6.0
   
   InitGameObject(*Jabuticaba, *Position, SpriteNum, @UpdateJabuticabaEnemy(), @DrawJabuticabaEnemy(),
-                 #True, ZoomFactor)
+                 #True, ZoomFactor, #EnemyDrawOrder)
   
   *Jabuticaba\MaxVelocity\x = 100.0
   *Jabuticaba\MaxVelocity\y = 100.0

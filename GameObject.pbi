@@ -56,7 +56,7 @@ EndProcedure
 
 Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum.i,
                          *UpdateProc.UpdateGameObjectProc, *DrawProc.DrawGameObjectProc,
-                         Active.a, ZoomFactor.f = 1.0)
+                         Active.a, ZoomFactor.f = 1.0, DrawOrder.l = 0)
   
   *GameObject\Position\x = *Position\x
   *GameObject\Position\y = *Position\y
@@ -77,6 +77,8 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   *GameObject\Draw = *DrawProc
   
   *GameObject\Active = Active
+  
+  *GameObject\DrawOrder = DrawOrder
   
   
   

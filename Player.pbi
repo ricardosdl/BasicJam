@@ -1,6 +1,8 @@
 ﻿XIncludeFile "GameObject.pbi"
 XIncludeFile "Projectile.pbi"
 XIncludeFile "Resources.pbi"
+XIncludeFile "DrawList.pbi"
+XIncludeFile "DrawOrders.pbi"
 
 EnableExplicit
 
@@ -11,6 +13,7 @@ Structure TPlayer Extends TGameObject
   IsShooting.a
   ShootTimer.f
   LastMovementAngle.f;in radians
+  *DrawList.TDrawList
 EndStructure
 
 Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
@@ -78,8 +81,9 @@ Procedure DrawPlayer(*Player.TPlayer)
 EndProcedure
 
 
-Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f)
-  InitGameObject(*Player, *Pos, #Player1, @UpdatePlayer(), @DrawPlayer(), #True, ZoomFactor)
+Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f, *DrawList.TDrawList)
+  InitGameObject(*Player, *Pos, #Player1, @UpdatePlayer(), @DrawPlayer(), #True, ZoomFactor,
+                 #PlayerDrawOrder)
   
   *Player\Projectiles = *ProjectilesList
   

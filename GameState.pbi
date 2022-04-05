@@ -5,6 +5,8 @@ XIncludeFile "Player.pbi"
 XIncludeFile "Projectile.pbi"
 XIncludeFile "Resources.pbi"
 XIncludeFile "Util.pbi"
+XIncludeFile "DrawList.pbi"
+
 EnableExplicit
 
 Prototype StartGameStateProc(*GameState)
@@ -44,6 +46,7 @@ Structure TPlayState Extends TGameState
   MaxLevel.a
   PlayerProjectiles.TProjectileList
   EnemiesProjectiles.TProjectileList
+  DrawList.TDrawList
 EndStructure
 
 Global GameStateManager.TGameStateManager, PlayState.TPlayState
@@ -140,9 +143,12 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM)
     ;InitLemonEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
     ;InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
+    InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
+                        @*PlayState\DrawList)
     
     *Enemy\Active = #True
+    
+    AddDrawItemDrawList(@*PlayState\DrawList, *Enemy)
     
     EnemiesToAdd - 1
   Wend
@@ -155,13 +161,16 @@ Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
   *PlayState\MaxLevel = 1;TODO: more levels
   
+  InitDrawList(@*PlayState\DrawList)
+  
   Protected *Player.TPlayer = @*PlayState\Player
   Protected PlayerPos.TVector2D\x = ScreenWidth() / 2
   PlayerPos\y = ScreenHeight() / 2
   
   
-  InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #Player1, 2.5)
-  ;InitPlayer(*Player, #Null, @PlayerPos, #Player1, 2.5)
+  InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #Player1, 2.5, @*PlayState\DrawList)
+  
+  AddDrawItemDrawList(@*PlayState\DrawList, *Player)
   
   InitEnemiesPlayState(*PlayState)
   

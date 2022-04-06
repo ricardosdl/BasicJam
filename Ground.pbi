@@ -28,9 +28,6 @@ Procedure InitGround(*Ground.TGround)
   InitGameObject(*Ground, @Position, #Ground, #Null, @DrawGround(), #True, #SPRITES_ZOOM,
                  #GroundDrawOrder)
   
-  Debug *Ground\Width
-  Debug *Ground\Height
-  
   
 EndProcedure
 

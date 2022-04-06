@@ -62,6 +62,14 @@ Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
   
   *DrawList\Changed = #True
 EndProcedure
+
+Procedure UpdateDrawOrderDrawList(*DrawList.TDrawList)
+  ForEach *DrawList\DrawList()
+    If *DrawList\DrawList()\Active
+      *DrawList\DrawList()\DrawOrder = *DrawList\DrawList()\GameObject\DrawOrder
+    EndIf
+  Next
+EndProcedure
   
   
 

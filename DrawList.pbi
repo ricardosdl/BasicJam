@@ -42,7 +42,7 @@ Procedure DrawDrawList(*DrawList.TDrawList, ReorderIfChanged.a = #True)
   Next
 EndProcedure
 
-Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
+Procedure.a AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
   ;first we try to add the *gameobject to an already created drawitem that is inactive
   ForEach *DrawList\DrawList()
     If *DrawList\DrawList()\Active = #False
@@ -50,17 +50,22 @@ Procedure AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
       *DrawList\DrawList()\Active = #True
       *DrawList\DrawList()\DrawOrder = *GameObject\DrawOrder
       *DrawList\Changed = #True
-      ProcedureReturn
+      ProcedureReturn #True
     EndIf
   Next
   
   ;here we create a new drawlisteitem
   Protected *DrawListItem.TDrawListItem = AddElement(*DrawList\DrawList())
+  If *DrawListItem = 0
+    ProcedureReturn #False
+  EndIf
+  
   *DrawListItem\Active = #True
   *DrawListItem\GameObject = *GameObject
   *DrawListItem\DrawOrder = *GameObject\DrawOrder
   
   *DrawList\Changed = #True
+  ProcedureReturn #True
 EndProcedure
 
 Procedure UpdateDrawOrderDrawList(*DrawList.TDrawList)

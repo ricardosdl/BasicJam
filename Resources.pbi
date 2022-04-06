@@ -20,6 +20,7 @@ Enumeration ESprites
   #Coconut
   #CocoSlice1
   #Jabuticaba
+  #Ground
 EndEnumeration
 
 DisableExplicit

@@ -6,6 +6,7 @@ XIncludeFile "Projectile.pbi"
 XIncludeFile "Resources.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "DrawList.pbi"
+XIncludeFile "Ground.pbi"
 
 EnableExplicit
 
@@ -47,6 +48,7 @@ Structure TPlayState Extends TGameState
   PlayerProjectiles.TProjectileList
   EnemiesProjectiles.TProjectileList
   DrawList.TDrawList
+  Ground.TGround
 EndStructure
 
 Global GameStateManager.TGameStateManager, PlayState.TPlayState
@@ -156,6 +158,13 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   
 EndProcedure
 
+Procedure InitGroundPlayState(*PlayState.TPlayState)
+  InitGround(*PlayState\Ground)
+  
+  AddDrawItemDrawList(*PlayState\DrawList, *PlayState\Ground)
+  
+  
+EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
@@ -173,6 +182,8 @@ Procedure StartPlayState(*PlayState.TPlayState)
   AddDrawItemDrawList(@*PlayState\DrawList, *Player)
   
   InitEnemiesPlayState(*PlayState)
+  
+  InitGroundPlayState(*PlayState)
   
   
 EndProcedure

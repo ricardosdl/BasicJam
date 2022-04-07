@@ -3,7 +3,7 @@
 
 EnableExplicit
 
-Structure TDrawListItem
+Structure TDrawItem
   *GameObject.TGameObject
   Active.a
   DrawOrder.l
@@ -12,7 +12,7 @@ EndStructure
 
 Structure TDrawList
   Changed.a
-  List DrawList.TDrawListItem()
+  List DrawList.TDrawItem()
 EndStructure
 
 Procedure InitDrawList(*DrawList.TDrawList)
@@ -26,7 +26,7 @@ EndProcedure
 Procedure DrawDrawList(*DrawList.TDrawList, ReorderIfChanged.a = #True)
   If ReorderIfChanged And *DrawList\Changed
     SortStructuredList(*DrawList\DrawList(), #PB_Sort_Ascending,
-                       OffsetOf(TDrawListItem\DrawOrder), TypeOf(TDrawListItem\DrawOrder))
+                       OffsetOf(TDrawItem\DrawOrder), TypeOf(TDrawItem\DrawOrder))
     *DrawList\Changed = #False
   EndIf
   
@@ -55,7 +55,7 @@ Procedure.a AddDrawItemDrawList(*DrawList.TDrawList, *GameObject.TGameObject)
   Next
   
   ;here we create a new drawlisteitem
-  Protected *DrawListItem.TDrawListItem = AddElement(*DrawList\DrawList())
+  Protected *DrawListItem.TDrawItem = AddElement(*DrawList\DrawList())
   If *DrawListItem = 0
     ProcedureReturn #False
   EndIf

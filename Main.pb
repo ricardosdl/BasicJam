@@ -30,6 +30,7 @@ Procedure LoadSprites()
   LoadSprite(#CocoSlice1, "data\img\cocoslice1.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Jabuticaba, "data\img\jabuticaba.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Ground, "data\img\ground.png", #PB_Sprite_AlphaBlending)
+  LoadSprite(#JabuticabaShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending)
 EndProcedure
 
 Procedure LoadResources()

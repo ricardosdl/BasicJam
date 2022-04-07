@@ -38,6 +38,8 @@ Structure TEnemy Extends TGameObject
   JumpYDeslocation.f
   Gravity.f
   IsOnGround.a
+  Shadow.TGameObject
+  *DrawList.TDrawList
 EndStructure
 
 
@@ -48,6 +50,7 @@ Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProject
   *Enemy\Projectiles = *ProjectileList
   
   *Enemy\IsOnGround = #True
+  *Enemy\DrawList = *DrawList
 EndProcedure
 
 Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
@@ -160,6 +163,7 @@ EndProcedure
 
 Procedure KillEnemy(*Enemy.TEnemy)
   *Enemy\Active = #False
+  *Enemy\Shadow\Active = #False
 EndProcedure
 
 
@@ -1237,6 +1241,10 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
 EndProcedure
 
+Procedure DrawJabuticabaShadow(*JabuticabaShadow.TGameObject)
+  DrawGameObject(*JabuticabaShadow)
+EndProcedure
+
 Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   
   *Jabuticaba\JumpVelocity = -250
@@ -1302,6 +1310,10 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   
   *Jabuticaba\ObjectiveRect = ObjectiveRect
   
+  AddDrawItemDrawList(*Jabuticaba\DrawList, @*Jabuticaba\Shadow)
+  InitGameObject(@*Jabuticaba\Shadow, @*Jabuticaba\Position, #JabuticabaShadow, #Null,
+                 @DrawJabuticabaShadow(), #True, #SPRITES_ZOOM, #ShadowDrawOrder)
+  
 
   
 EndProcedure
@@ -1344,6 +1356,11 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
       *Jabuticaba\IsOnGround = #True
       
       EndedJump = #True
+      ;deactivate the shadow
+      *Jabuticaba\Shadow\Active = #False
+    Else
+      ;update the position of the shadow
+      *Jabuticaba\Shadow\Position = *Jabuticaba\Position
       
     EndIf
     
@@ -1375,8 +1392,8 @@ Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
   DisplayTransparentSprite(*Jabuticaba\SpriteNum, Int(*Jabuticaba\JumpPosition\x),
                            Int(*Jabuticaba\JumpPosition\y))
   If *Jabuticaba\CurrentState = #EnemyPatrolling
+    ;DisplayTransparentSprite(#JabuticabaShadow, *Jabuticaba\Position\x, *Jabuticaba\Position\y)
     StartDrawing(ScreenOutput())
-    Box(*Jabuticaba\Position\x, *Jabuticaba\Position\y, *Jabuticaba\Width, *Jabuticaba\Height, RGB(200, 55, 55))
     
     Box(*Jabuticaba\ObjectiveRect\Position\x, *Jabuticaba\ObjectiveRect\Position\y,
         *Jabuticaba\ObjectiveRect\Width, *Jabuticaba\ObjectiveRect\Height, RGB(55, 200, 55))

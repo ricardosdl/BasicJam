@@ -21,6 +21,7 @@ Enumeration ESprites
   #CocoSlice1
   #Jabuticaba
   #Ground
+  #JabuticabaShadow
 EndEnumeration
 
 DisableExplicit

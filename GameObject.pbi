@@ -4,6 +4,7 @@ EnableExplicit
 
 Prototype UpdateGameObjectProc(*GameObject, TimeSlice.f)
 Prototype DrawGameObjectProc(*GameObject)
+Prototype.a GetCollisionRectGameObjectProc(*GameObject, *CollisonRect.TRect)
 
 Structure TGameObject
   Position.TVector2D
@@ -31,6 +32,8 @@ Structure TGameObject
   
   DrawOrder.l
   
+  GetCollisionRect.GetCollisionRectGameObjectProc
+  
   
   
 EndStructure
@@ -51,6 +54,15 @@ Procedure GetSpriteOriginalWidthAndHeight(SpriteNum.i, *OriginalWidth.Integer, *
   ZoomSprite(SpriteNum, CurrentWidth, CurrentHeight)
   
   
+EndProcedure
+
+Procedure.a GetCollisionRectGameObject(*GameObject.TGameObject, *CollisionRect.TRect)
+  ;this default implementation just uses the current position, width and height of
+  ;*GameObject and always returns the *GameObject as collidable
+  *CollisionRect\Position = *GameObject\Position
+  *CollisionRect\Width = *GameObject\Width
+  *CollisionRect\Height = *GameObject\Height
+  ProcedureReturn #True
 EndProcedure
 
 
@@ -79,6 +91,8 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   *GameObject\Active = Active
   
   *GameObject\DrawOrder = DrawOrder
+  
+  *GameObject\GetCollisionRect = @GetCollisionRectGameObject()
   
   
   

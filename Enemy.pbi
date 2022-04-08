@@ -1411,6 +1411,18 @@ Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
   
 EndProcedure
 
+Procedure.a GetCollisionRectJabuticaba(*Jabuticaba.TEnemy, *CollisionRect.TRect)
+  If *Jabuticaba\CurrentState <> #EnemyPatrolling
+    ;use the regular collision code
+    ProcedureReturn GetCollisionRectGameObject(*Jabuticaba, *CollisionRect)
+  EndIf
+  
+  ;the *jabuticaba enemy is jumping, or the currentstate is #EnemyPatrolling
+  ;so we just return that the enemy is not collidable for now
+  ProcedureReturn #False
+  
+EndProcedure
+
 Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position.TVector2D,
                               SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                               *DrawList.TDrawList)
@@ -1428,6 +1440,9 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
   *Jabuticaba\CurrentState = #EnemyNoState
   
   *Jabuticaba\JumpPosition = *Jabuticaba\Position
+  
+  ;overwirte the default collision code
+  *Jabuticaba\GetCollisionRect = @GetCollisionRectJabuticaba()
   
 EndProcedure
 

@@ -80,8 +80,24 @@ EndProcedure
 
 Procedure DrawPlayer(*Player.TPlayer)
   DrawGameObject(*Player)
+  Protected PlayerRect.TRect
+  *Player\GetCollisionRect(*Player, @PlayerRect)
+  StartDrawing(ScreenOutput())
+  Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
+      RGB(192, 33, 87))
+  StopDrawing()
 EndProcedure
 
+Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)
+  *CollisionRect\Width = *Player\Width * 0.3
+  *CollisionRect\Height = *Player\Height * 0.3
+  
+  *CollisionRect\Position\x = (*Player\Position\x + *Player\Width / 2) - *CollisionRect\Width / 2
+  *CollisionRect\Position\y = (*Player\Position\y + *Player\Height / 2) - *CollisionRect\Height / 2
+  
+  ProcedureReturn #True
+  
+EndProcedure
 
 Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f, *DrawList.TDrawList)
   InitGameObject(*Player, *Pos, #Player1, @UpdatePlayer(), @DrawPlayer(), #True, ZoomFactor,
@@ -95,6 +111,8 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   
   *Player\MaxVelocity\x = 500
   *Player\MaxVelocity\y = 500
+  
+  *Player\GetCollisionRect = @GetCollisionRectPlayer()
   
 EndProcedure
 

@@ -222,6 +222,35 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
   
 EndProcedure
 
+Procedure CollisionPlayerEnemies(*PlayState.TPlayState, TimeSlice.f)
+  Protected PlayerRect.TRect
+  If Not *PlayState\Player\GetCollisionRect(@*PlayState\Player, @PlayerRect)
+    ;player is not collidable, nothing to do
+    ProcedureReturn
+  EndIf
+  
+  ;collisions between player and enemies
+  Protected i, EnemiesEndIdx = ArraySize(*PlayState\Enemies())
+  
+  For i = 0 To EnemiesEndIdx
+    Protected *Enemy.TEnemy = *PlayState\Enemies(i)
+    Protected EnemyRect.TRect
+    If Not *Enemy\Active Or *Enemy\GetCollisionRect(*Enemy, @EnemyRect) = #False
+      Continue
+    EndIf
+    
+    If CollisionRectRect(EnemyRect\Position\x, EnemyRect\Position\y, EnemyRect\Width,
+                         EnemyRect\Height, PlayerRect\Position\x, PlayerRect\Position\y,
+                         PlayerRect\Width, PlayerRect\Height)
+      
+      Debug "hurt player:" + ElapsedMilliseconds()
+      
+      
+    EndIf
+    
+    
+  Next
+EndProcedure
 
 Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
   ;collisions of player projectiles and enemies
@@ -231,6 +260,8 @@ Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
       CollisionPlayerProjectileEnemies(*PlayState, *Projectile, TimeSlice)
     EndIf
   Next
+  
+  CollisionPlayerEnemies(*PlayState, TimeSlice)
 EndProcedure
 
 Procedure.a FinishedEnemiesPlayState(*PlayState.TPlayState)

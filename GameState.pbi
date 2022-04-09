@@ -246,7 +246,7 @@ Procedure CollisionPlayerEnemies(*PlayState.TPlayState, TimeSlice.f)
                          EnemyRect\Height, PlayerRect\Position\x, PlayerRect\Position\y,
                          PlayerRect\Width, PlayerRect\Height)
       
-      Debug "hurt player:" + ElapsedMilliseconds()
+      HurtPlayer(@*PlayState\Player, 1.0)
       
       
     EndIf

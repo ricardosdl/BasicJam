@@ -14,6 +14,7 @@ Structure TPlayer Extends TGameObject
   ShootTimer.f
   LastMovementAngle.f;in radians
   *DrawList.TDrawList
+  HurtTimer.f
 EndStructure
 
 Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
@@ -73,13 +74,27 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
     PlayerShoot(*Player, TimeSlice)
   EndIf
   
+  If *Player\HurtTimer > 0.0
+    *Player\HurtTimer - TimeSlice
+  EndIf
+  
   
   UpdateGameObject(*Player, TimeSlice)
   
 EndProcedure
 
 Procedure DrawPlayer(*Player.TPlayer)
-  DrawGameObject(*Player)
+  If *Player\HurtTimer <= 0
+    DrawGameObject(*Player)
+  Else
+    Protected HurtTimerMs = *Player\HurtTimer * 1000
+    
+    Protected IsOpaque = (HurtTimerMs / 100) % 2
+    
+    ;after each 100 ms we will display the player transparent
+    DrawGameObject(*Player, 255 * IsOpaque)
+  EndIf
+  
   Protected PlayerRect.TRect
   *Player\GetCollisionRect(*Player, @PlayerRect)
   StartDrawing(ScreenOutput())
@@ -95,7 +110,8 @@ Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)
   *CollisionRect\Position\x = (*Player\Position\x + *Player\Width / 2) - *CollisionRect\Width / 2
   *CollisionRect\Position\y = (*Player\Position\y + *Player\Height / 2) - *CollisionRect\Height / 2
   
-  ProcedureReturn #True
+  ;if the player is hurt we don't return it as collidable
+  ProcedureReturn Bool(*Player\HurtTimer <= 0)
   
 EndProcedure
 
@@ -114,7 +130,22 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   
   *Player\GetCollisionRect = @GetCollisionRectPlayer()
   
+  *Player\Health = 5.0
+  
+  *Player\HurtTimer = 0.0
+  
 EndProcedure
+
+Procedure HurtPlayer(*Player.TPlayer, Power.f)
+  *Player\Health - Power
+  *Player\HurtTimer = 2.5
+  If *Player\Health <= 0
+    ;TODO: kill the player
+    Debug "player died"
+  EndIf
+  
+EndProcedure
+
 
 
 

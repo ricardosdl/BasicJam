@@ -204,9 +204,12 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
       EndIf
       
       
-      Protected ProjectileRect.TRect\Position = *Projectile\Position
-      ProjectileRect\Width = *Projectile\Width
-      ProjectileRect\Height = *Projectile\Height
+      Protected ProjectileRect.TRect
+      If Not *Projectile\GetCollisionRect(*Projectile, @ProjectileRect)
+        ;the projectile is not collidable, ignore
+        Continue
+      EndIf
+      
       
       If CollisionRectRect(EnemyRect\Position\x, EnemyRect\Position\y, EnemyRect\Width,
                            EnemyRect\Height, ProjectileRect\Position\x,

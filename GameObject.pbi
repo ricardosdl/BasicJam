@@ -99,8 +99,9 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   
 EndProcedure
 
-Procedure DrawGameObject(*GameObject.TGameObject)
-  DisplayTransparentSprite(*GameObject\SpriteNum, Int(*GameObject\Position\x), Int(*GameObject\Position\y))
+Procedure DrawGameObject(*GameObject.TGameObject, Intensity = 255)
+  DisplayTransparentSprite(*GameObject\SpriteNum, Int(*GameObject\Position\x),
+                           Int(*GameObject\Position\y), Intensity)
 EndProcedure
 
 Macro UpdateMiddlePositionGameObject(GameObject)

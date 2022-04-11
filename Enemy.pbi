@@ -1431,6 +1431,65 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
   
 EndProcedure
 
+Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
+  If *Tomato\CurrentState = #EnemyNoState
+    SwitchToWaitingEnemy(*Tomato, 2.5)
+    ProcedureReturn
+  EndIf
+  
+  If *Tomato\CurrentState = #EnemyWaiting
+    *Tomato\WaitTimer - TimeSlice
+    If *Tomato\WaitTimer <= 0.0
+      ;get an random objective rect arund the tomato position
+      Protected RandomRect.TRect\Width = *Tomato\Width * 0.8
+      RandomRect\Height = *Tomato\Height * 0.8
+      Protected Radius.f = RandomInterval(10 * *Tomato\Width, 5 * *Tomato\Width)
+      Protected Angle.f = Radian(Random(359, 0))
+      
+      RandomRect\Position\x = *Tomato\Position\x + Cos(Angle) * Radius
+      RandomRect\Position\y = *Tomato\Position\y + Sin(Angle) * Radius
+      
+      RandomRect\Position\x = ClampF(RandomRect\Position\x, 0, ScreenWidth() - 1 - RandomRect\Width)
+      RandomRect\Position\y = ClampF(RandomRect\Position\y, 0, ScreenHeight() - 1 - RandomRect\Height)
+      
+      SwitchToGoingToObjectiveRectEnemy(*Tomato, RandomRect)
+      ProcedureReturn
+    EndIf
+  ElseIf  *Tomato\CurrentState = #EnemyGoingToObjectiveRect
+    If HasReachedObjectiveRectEnemy(*Tomato)
+      SwitchStateEnemy(*Tomato, #EnemyNoState)
+      ProcedureReturn
+    EndIf
+    
+  EndIf
+  
+  UpdateGameObject(*Tomato, TimeSlice)
+  
+  
+EndProcedure
+
+Procedure DrawTomatoEnemy(*Tomato.TEnemy)
+  DrawEnemy(*Tomato)
+EndProcedure
+
+Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                              SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
+                              *DrawList.TDrawList)
+  
+  InitEnemy(*Tomato, *Player, *ProjectilesList, *DrawList)
+  
+  *Tomato\Health = 7.0
+  
+  InitGameObject(*Tomato, *Position, SpriteNum, @UpdateTomatoEnemy(), @DrawTomatoEnemy(),
+                 #True, ZoomFactor, #EnemyDrawOrder)
+  
+  *Tomato\MaxVelocity\x = 120.0
+  *Tomato\MaxVelocity\y = 120.0
+  
+  *Tomato\CurrentState = #EnemyNoState
+  
+EndProcedure
+
 
 
 

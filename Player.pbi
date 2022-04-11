@@ -81,6 +81,28 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   
   UpdateGameObject(*Player, TimeSlice)
   
+  ;limits the playe to the play area (game screen)
+  If *Player\Position\x < 0
+    *Player\Position\x = 0
+  EndIf
+  
+  If *Player\Position\y < 0
+    *Player\Position\y = 0
+  EndIf
+  
+  If *Player\Position\x + *Player\Width > ScreenWidth() - 1
+    *Player\Position\x = (ScreenWidth() - 1) - *Player\Width
+  EndIf
+  
+  If *Player\Position\y + *Player\Height > ScreenHeight() - 1
+    *Player\Position\y = (ScreenHeight() - 1) - *Player\Height
+  EndIf
+  
+  
+  
+  
+    
+  
 EndProcedure
 
 Procedure DrawPlayer(*Player.TPlayer)

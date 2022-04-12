@@ -18,6 +18,14 @@ EndEnumeration
 
 Prototype SetPatrollingEnemyProc(*Enemy)
 
+;the clone is just a position and a timer
+;we use it to show a "clone", a copy of the
+;enemy sprite in a postion for the duration of the timer
+Structure TEnemyClone Extends TVector2D
+  Timer.f
+  Active.a
+EndStructure
+
 Structure TEnemy Extends TGameObject
   *Player.TGameObject
   CurrentState.a
@@ -40,7 +48,12 @@ Structure TEnemy Extends TGameObject
   IsOnGround.a
   Shadow.TGameObject
   *DrawList.TDrawList
+  List Clones.TEnemyClone()
+  CloneTimer.f
 EndStructure
+
+#TOMATO_CLONING_TIMER = 0.15
+#TOMATO_CLONE_TIMER = 7 * #TOMATO_CLONING_TIMER
 
 
 
@@ -1431,9 +1444,27 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
   
 EndProcedure
 
+Procedure GetInativeTomatoClone(*Tomato.TEnemy)
+  ForEach *Tomato\Clones()
+    If Not *Tomato\Clones()\Active
+      ;return an existing one
+      ProcedureReturn @*Tomato\Clones()
+    EndIf
+  Next
+  
+  ;we need to create a new one
+  Protected *TomatoClone = AddElement(*Tomato\Clones())
+  If *TomatoClone <> 0
+    ProcedureReturn *TomatoClone
+  EndIf
+  
+  ProcedureReturn #Null
+  
+EndProcedure
+
 Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
   If *Tomato\CurrentState = #EnemyNoState
-    SwitchToWaitingEnemy(*Tomato, 2.5)
+    SwitchToWaitingEnemy(*Tomato, 0.150)
     ProcedureReturn
   EndIf
   
@@ -1443,7 +1474,7 @@ Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
       ;get an random objective rect arund the tomato position
       Protected RandomRect.TRect\Width = *Tomato\Width * 0.8
       RandomRect\Height = *Tomato\Height * 0.8
-      Protected Radius.f = RandomInterval(10 * *Tomato\Width, 5 * *Tomato\Width)
+      Protected Radius.f = RandomInterval(12 * *Tomato\Width, 8 * *Tomato\Width)
       Protected Angle.f = Radian(Random(359, 0))
       
       RandomRect\Position\x = *Tomato\Position\x + Cos(Angle) * Radius
@@ -1453,6 +1484,7 @@ Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
       RandomRect\Position\y = ClampF(RandomRect\Position\y, 0, ScreenHeight() - 1 - RandomRect\Height)
       
       SwitchToGoingToObjectiveRectEnemy(*Tomato, RandomRect)
+      *Tomato\CloneTimer = #TOMATO_CLONING_TIMER;after this time the *tomato will generate a clone
       ProcedureReturn
     EndIf
   ElseIf  *Tomato\CurrentState = #EnemyGoingToObjectiveRect
@@ -1461,7 +1493,40 @@ Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
       ProcedureReturn
     EndIf
     
+    *Tomato\CloneTimer - TimeSlice
+    If *Tomato\CloneTimer <= 0.0
+      ;time to generate a clone
+      Protected *TomatoClone.TEnemyClone = GetInativeTomatoClone(*Tomato)
+      If *TomatoClone <> #Null
+        ;we got an available clone
+        *TomatoClone\Active = #True
+        ;we add 0.5 + timeslice because the clone will be processed at this frame
+        *TomatoClone\Timer = #TOMATO_CLONE_TIMER + TimeSlice
+        *TomatoClone\x = *Tomato\Position\x
+        *TomatoClone\y = *Tomato\Position\y
+      EndIf
+      
+      *Tomato\CloneTimer = #TOMATO_CLONING_TIMER
+      
+    EndIf
+    
+    
   EndIf
+  
+  ForEach *Tomato\Clones()
+    If Not *Tomato\Clones()\Active
+      Continue
+    EndIf
+    *Tomato\Clones()\Timer - TimeSlice
+    If *Tomato\Clones()\Timer <= 0
+      *Tomato\Clones()\Active = #False
+    EndIf
+    
+    
+  Next
+  
+  
+  
   
   UpdateGameObject(*Tomato, TimeSlice)
   
@@ -1470,6 +1535,25 @@ EndProcedure
 
 Procedure DrawTomatoEnemy(*Tomato.TEnemy)
   DrawEnemy(*Tomato)
+  
+  ForEach *Tomato\Clones()
+    If *Tomato\Clones()\Active
+      Protected Position.TVector2D\x = *Tomato\Clones()\x
+      Position\y = *Tomato\Clones()\y
+      
+      DisplayTransparentSprite(*Tomato\SpriteNum, Int(Position\x), Int(Position\y))
+    EndIf
+    
+  Next
+  
+EndProcedure
+
+Procedure InitTomatoClones(*Tomato.TEnemy)
+  ForEach *Tomato\Clones()
+    *Tomato\Clones()\Active = #False
+    *Tomato\Clones()\Timer = 0.0
+  Next
+  
 EndProcedure
 
 Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -1487,6 +1571,9 @@ Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector
   *Tomato\MaxVelocity\y = 120.0
   
   *Tomato\CurrentState = #EnemyNoState
+  
+  *Tomato\CloneTimer = 0.0
+  InitTomatoClones(*Tomato)
   
 EndProcedure
 

@@ -145,8 +145,10 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM)
     ;InitLemonEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
     ;InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
-                        @*PlayState\DrawList)
+    ;InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
+    ;                    @*PlayState\DrawList)
+    InitTomatoEnemy(*Enemy, *PlayState\Player, @Position, #Tomato, #SPRITES_ZOOM,
+                    @*PlayState\EnemiesProjectiles, @*PlayState\DrawList)
     
     *Enemy\Active = #True
     

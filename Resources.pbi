@@ -22,6 +22,7 @@ Enumeration ESprites
   #Jabuticaba
   #Ground
   #JabuticabaShadow
+  #Tomato
 EndEnumeration
 
 DisableExplicit

@@ -2,12 +2,12 @@
 
 <project xmlns="http://www.purebasic.com/namespace" version="1.0" creator="PureBasic 5.73 LTS (Windows - x64)">
   <section name="config">
-    <options closefiles="1" openmode="0" name="New Project"/>
+    <options closefiles="1" openmode="0" name="BasicJam"/>
   </section>
   <section name="data">
     <explorer view="" pattern="7"/>
     <log show="1"/>
-    <lastopen date="2022-04-11 14:31" user="ricardo.lima" host="686-D-00000537"/>
+    <lastopen date="2022-04-12 15:07" user="ricardo.lima" host="686-D-00000537"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
@@ -57,6 +57,7 @@
     <target name="Default Target" enabled="1" default="1">
       <inputfile value="Main.pb"/>
       <outputfile value="BJ"/>
+      <executable value="BJ.exe"/>
       <options xpskin="1" debug="1"/>
     </target>
   </section>

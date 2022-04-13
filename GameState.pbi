@@ -7,6 +7,7 @@ XIncludeFile "Resources.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "Ground.pbi"
+XIncludeFile "DrawText.pbi"
 
 EnableExplicit
 
@@ -328,7 +329,8 @@ EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
   DrawDrawList(*PlayState\DrawList)
-  
+  DrawTextWithStandardFont(20, 70, "JOE'S BAR",
+                           #STANDARD_FONT_WIDTH * 3, #STANDARD_FONT_HEIGHT * 3)
   
   
   

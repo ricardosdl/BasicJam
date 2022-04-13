@@ -23,6 +23,7 @@ Enumeration ESprites
   #Ground
   #JabuticabaShadow
   #Tomato
+  #StandardFont
 EndEnumeration
 
 DisableExplicit

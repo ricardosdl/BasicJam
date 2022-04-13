@@ -1499,7 +1499,7 @@ Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
       RandomRect\Position\y = ClampF(RandomRect\Position\y, 0, ScreenHeight() - 1 - RandomRect\Height)
       
       SwitchToGoingToObjectiveRectEnemy(*Tomato, RandomRect)
-      *Tomato\CloneTimer = #TOMATO_CLONING_TIMER;after this time the *tomato will generate a clone
+      *Tomato\CloneTimer = 0;after this time the *tomato will generate a clone
       ProcedureReturn
     EndIf
   ElseIf  *Tomato\CurrentState = #EnemyGoingToObjectiveRect

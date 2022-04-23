@@ -23,7 +23,7 @@ Procedure DrawTextWithStandardFont(x.f, y.f, Text.s, CharWidthPx.f = #STANDARD_F
                LetterLine * #STANDARD_FONT_HEIGHT + PaddingLine, #STANDARD_FONT_WIDTH,
                #STANDARD_FONT_HEIGHT)
     ZoomSprite(#StandardFont, CharWidthPx, CharHeightPx)
-    DisplayTransparentSprite(#StandardFont, Int(x) + (i - 1) * CharWidthPx, Int(y))
+    DisplayTransparentSprite(#StandardFont, Int(x + (i - 1) * CharWidthPx), Int(y))
   Next
   
 EndProcedure

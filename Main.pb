@@ -59,7 +59,7 @@ UsePNGImageDecoder()
 LoadResources()
 
 InitGameSates()
-SwitchGameState(@GameStateManager, #PlayState)
+SwitchGameState(@GameStateManager, #MainMenuState)
 
 SimulationTime = ElapsedMilliseconds()
 

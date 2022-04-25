@@ -18,7 +18,7 @@ Prototype DrawGameStateProc(*GameState)
 
 Enumeration EGameStates
   #NoGameState
-  #MenuState
+  #MainMenuState
   #PlayState
   #GameOverState
 EndEnumeration
@@ -52,7 +52,15 @@ Structure TPlayState Extends TGameState
   Ground.TGround
 EndStructure
 
-Global GameStateManager.TGameStateManager, PlayState.TPlayState
+Structure TMainMenuState Extends TGameState
+  GameTitle.s
+  GameTitleX.f
+  GameTitleY.f
+  GameTitleFontWidth.f
+  GameTitleFontHeight.f
+EndStructure
+
+Global GameStateManager.TGameStateManager, PlayState.TPlayState, MainMenuState.TMainMenuState
 
 Procedure DrawCurrentStateGameSateManager(*GameStateManager.TGameStateManager)
   Protected *GameState.TGameState = *GameStateManager\GameStates(*GameStateManager\CurrentGameState)
@@ -336,6 +344,31 @@ Procedure DrawPlayState(*PlayState.TPlayState)
   
 EndProcedure
 
+Procedure StartMainMenuState(*MainMenuState.TMainMenuState)
+  *MainMenuState\GameTitle = "FRUIT WARS v0.9999..."
+  *MainMenuState\GameTitleFontWidth = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 0.5)
+  *MainMenuState\GameTitleFontHeight = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 0.5)
+  Protected GameTitleWidth.f = Len(*MainMenuState\GameTitle) * *MainMenuState\GameTitleFontWidth
+  
+  *MainMenuState\GameTitleX = (ScreenWidth() / 2) - GameTitleWidth / 2
+  *MainMenuState\GameTitleY = ScreenHeight() / 5
+  
+EndProcedure
+
+Procedure EndMainMenuState(*MainMenuState.TMainMenuState)
+  
+EndProcedure
+
+Procedure UpdateMainMenuState(*MainMenuState.TMainMenuState, TimeSlice.f)
+  
+EndProcedure
+
+Procedure DrawMainMenuState(*MainMenuState.TMainMenuState, TimeSlice.f)
+  DrawTextWithStandardFont(*MainMenuState\GameTitleX, *MainMenuState\GameTitleY,
+                           *MainMenuState\GameTitle, *MainMenuState\GameTitleFontWidth,
+                           *MainMenuState\GameTitleFontHeight)
+EndProcedure
+
 Procedure InitGameSates()
   ;@GameStateManager\GameStates(#PlayState)
   PlayState\GameState = #PlayState
@@ -345,9 +378,18 @@ Procedure InitGameSates()
   PlayState\UpdateGameState = @UpdatePlayState()
   PlayState\DrawGameState = @DrawPlayState()
   
+  MainMenuState\GameState = #MainMenuState
+  MainMenuState\StartGameState = @StartMainMenuState()
+  MainMenuState\EndGameState = @EndMainMenuState()
+  MainMenuState\UpdateGameState = @UpdateMainMenuState()
+  MainMenuState\DrawGameState = @DrawMainMenuState()
+  
   GameStateManager\GameStates(#PlayState) = @PlayState
+  GameStateManager\GameStates(#MainMenuState) = @MainMenuState
+  
   GameStateManager\CurrentGameState = #NoGameState
   GameStateManager\LastGameState = #NoGameState
+  
 EndProcedure
 
 

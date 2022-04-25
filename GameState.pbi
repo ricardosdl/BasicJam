@@ -346,8 +346,8 @@ EndProcedure
 
 Procedure StartMainMenuState(*MainMenuState.TMainMenuState)
   *MainMenuState\GameTitle = "FRUIT WARS v0.9999..."
-  *MainMenuState\GameTitleFontWidth = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 0.5)
-  *MainMenuState\GameTitleFontHeight = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 0.5)
+  *MainMenuState\GameTitleFontWidth = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 2.5)
+  *MainMenuState\GameTitleFontHeight = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 2.5)
   Protected GameTitleWidth.f = Len(*MainMenuState\GameTitle) * *MainMenuState\GameTitleFontWidth
   
   *MainMenuState\GameTitleX = (ScreenWidth() / 2) - GameTitleWidth / 2

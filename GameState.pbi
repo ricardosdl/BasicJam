@@ -58,6 +58,12 @@ Structure TMainMenuState Extends TGameState
   GameTitleY.f
   GameTitleFontWidth.f
   GameTitleFontHeight.f
+  
+  GameStart.s
+  GameStartX.f
+  GameStartY.f
+  GameStartFontWidth.f
+  GameStartFontHeight.f
 EndStructure
 
 Global GameStateManager.TGameStateManager, PlayState.TPlayState, MainMenuState.TMainMenuState
@@ -345,13 +351,25 @@ Procedure DrawPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure StartMainMenuState(*MainMenuState.TMainMenuState)
+  Protected MainMenuHeightOffset.f = ScreenHeight() / 5
+  
+  ;game title text
   *MainMenuState\GameTitle = "FRUIT WARS v0.9999..."
   *MainMenuState\GameTitleFontWidth = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 2.5)
   *MainMenuState\GameTitleFontHeight = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 2.5)
   Protected GameTitleWidth.f = Len(*MainMenuState\GameTitle) * *MainMenuState\GameTitleFontWidth
   
   *MainMenuState\GameTitleX = (ScreenWidth() / 2) - GameTitleWidth / 2
-  *MainMenuState\GameTitleY = ScreenHeight() / 5
+  *MainMenuState\GameTitleY = MainMenuHeightOffset
+  
+  ;start game text
+  *MainMenuState\GameStart = "PRESS ENTER TO START"
+  *MainMenuState\GameStartFontWidth = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM)
+  *MainMenuState\GameStartFontHeight = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM)
+  Protected GameStartWidth.f = Len(*MainMenuState\GameStart) * *MainMenuState\GameStartFontWidth
+  
+  *MainMenuState\GameStartX = (ScreenWidth() / 2) - GameStartWidth / 2
+  *MainMenuState\GameStartY = MainMenuHeightOffset + *MainMenuState\GameTitleFontHeight + 40
   
 EndProcedure
 
@@ -360,6 +378,11 @@ Procedure EndMainMenuState(*MainMenuState.TMainMenuState)
 EndProcedure
 
 Procedure UpdateMainMenuState(*MainMenuState.TMainMenuState, TimeSlice.f)
+  If KeyboardPushed(#PB_Key_Return)
+    SwitchGameState(@GameStateManager, #PlayState)
+    ProcedureReturn
+  EndIf
+  
   
 EndProcedure
 
@@ -367,6 +390,9 @@ Procedure DrawMainMenuState(*MainMenuState.TMainMenuState, TimeSlice.f)
   DrawTextWithStandardFont(*MainMenuState\GameTitleX, *MainMenuState\GameTitleY,
                            *MainMenuState\GameTitle, *MainMenuState\GameTitleFontWidth,
                            *MainMenuState\GameTitleFontHeight)
+  
+  DrawTextWithStandardFont(*MainMenuState\GameStartX, *MainMenuState\GameStartY, *MainMenuState\GameStart,
+                           *MainMenuState\GameStartFontWidth, *MainMenuState\GameStartFontHeight)
 EndProcedure
 
 Procedure InitGameSates()

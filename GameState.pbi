@@ -50,6 +50,7 @@ Structure TPlayState Extends TGameState
   EnemiesProjectiles.TProjectileList
   DrawList.TDrawList
   Ground.TGround
+  StartTimer.f
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -187,6 +188,8 @@ Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
   *PlayState\MaxLevel = 1;TODO: more levels
   
+  *PlayState\StartTimer = 3.0
+  
   InitDrawList(@*PlayState\DrawList)
   
   Protected *Player.TPlayer = @*PlayState\Player
@@ -307,6 +310,12 @@ Procedure EndLevelPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
+  If *PlayState\StartTimer > 0.0
+    ;just wait the timer to start the game
+    *PlayState\StartTimer - TimeSlice
+    ProcedureReturn
+  EndIf
+  
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
   ;update player projectiles
   ForEach *PlayState\PlayerProjectiles\Projectiles()
@@ -343,8 +352,21 @@ EndProcedure
 
 Procedure DrawPlayState(*PlayState.TPlayState)
   DrawDrawList(*PlayState\DrawList)
-  DrawTextWithStandardFont(20, 70, "JOE'S BAR",
-                           #STANDARD_FONT_WIDTH * 3, #STANDARD_FONT_HEIGHT * 3)
+  
+  If *PlayState\StartTimer > 0.0
+    ;shows a timer when the game starts
+    Protected StartTimer.s = FormatNumber(*PlayState\StartTimer, 1)
+    Protected StartTimerSize = Len(StartTimer)
+    Protected FontWidth.f = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 0.5)
+    Protected FontHeight.f = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 0.5)
+    
+    Protected StartTimerWidth.f = StartTimerSize * FontWidth
+    
+    Protected StartTimerX.f = (ScreenWidth() / 2) - (StartTimerWidth / 2)
+    
+    DrawTextWithStandardFont(StartTimerX, ScreenHeight() / 2, StartTimer, FontWidth, FontHeight)
+  EndIf
+
   
   
   

@@ -355,10 +355,11 @@ Procedure DrawPlayState(*PlayState.TPlayState)
   
   If *PlayState\StartTimer > 0.0
     ;shows a timer when the game starts
-    Protected StartTimer.s = FormatNumber(*PlayState\StartTimer, 1)
+    Protected StartTimerRounded.f = Round(*PlayState\StartTimer, #PB_Round_Up)
+    Protected StartTimer.s = StrF(StartTimerRounded, 0)
     Protected StartTimerSize = Len(StartTimer)
-    Protected FontWidth.f = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 0.5)
-    Protected FontHeight.f = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 0.5)
+    Protected FontWidth.f = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 2.5)
+    Protected FontHeight.f = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 2.5)
     
     Protected StartTimerWidth.f = StartTimerSize * FontWidth
     

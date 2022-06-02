@@ -51,6 +51,8 @@ Structure TPlayState Extends TGameState
   DrawList.TDrawList
   Ground.TGround
   StartTimer.f
+  EnemySpawnerTimer.f;time until an enemyspawner will spawn an enemy
+  NextEnemySpawnerWaveTimer.f;time until we get more enemyspawners
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -187,6 +189,7 @@ EndProcedure
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
   *PlayState\MaxLevel = 1;TODO: more levels
+  *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
   
   *PlayState\StartTimer = 3.0
   
@@ -200,8 +203,6 @@ Procedure StartPlayState(*PlayState.TPlayState)
   InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #False, 2.5, @*PlayState\DrawList)
   
   AddDrawItemDrawList(@*PlayState\DrawList, *Player)
-  
-  InitEnemiesPlayState(*PlayState)
   
   InitGroundPlayState(*PlayState)
   
@@ -309,12 +310,22 @@ Procedure EndLevelPlayState(*PlayState.TPlayState)
   
 EndProcedure
 
+Procedure UpdateEnemySpawners(*PlayState.TPlayState, TimeSlice.f)
+  If *PlayState\NextEnemySpawnerWaveTimer <= 0
+    InitEnemiesPlayState(*PlayState)
+    *PlayState\NextEnemySpawnerWaveTimer = 30.0
+  EndIf
+  *PlayState\NextEnemySpawnerWaveTimer - TimeSlice
+EndProcedure
+
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   If *PlayState\StartTimer > 0.0
     ;just wait the timer to start the game
     *PlayState\StartTimer - TimeSlice
     ProcedureReturn
   EndIf
+  
+  UpdateEnemySpawners(*PlayState, TimeSlice)
   
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
   ;update player projectiles

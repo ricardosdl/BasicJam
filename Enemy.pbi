@@ -1592,6 +1592,29 @@ Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector
   
 EndProcedure
 
+Procedure UpdateEnemySpawner(*EnemySpawner.TEnemy, TimeSlice.f)
+  
+EndProcedure
+
+Procedure DrawEnemySpawner(*EnemySpawner.TEnemy)
+  DrawEnemy(*EnemySpawner)
+EndProcedure
+
+Procedure InitEnemySpawner(*EnemySpawner.TEnemy, *Player.TGameObject, *Position.TVector2D,
+                           SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
+                           *DrawList.TDrawList)
+  
+  InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList)
+  
+  *EnemySpawner\Health = 3.0
+  
+  InitGameObject(*EnemySpawner, *Position, SpriteNum, @UpdateEnemySpawner(), @DrawEnemySpawner(),
+                 #True, ZoomFactor, #EnemyDrawOrder)
+  
+  *EnemySpawner\CurrentState = #EnemyNoState
+  
+EndProcedure
+
 
 
 

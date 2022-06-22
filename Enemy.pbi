@@ -17,6 +17,7 @@ Enumeration EEnemyStates
 EndEnumeration
 
 Prototype SetPatrollingEnemyProc(*Enemy)
+Prototype.a SpawnEnemyProc(*Data)
 
 ;the clone is just a position and a timer
 ;we use it to show a "clone", a copy of the
@@ -50,6 +51,7 @@ Structure TEnemy Extends TGameObject
   *DrawList.TDrawList
   List Clones.TEnemyClone()
   CloneTimer.f
+  *SpawnEnemy.SpawnEnemyProc
 EndStructure
 
 #TOMATO_CLONING_TIMER = 0.15
@@ -1593,16 +1595,35 @@ Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector
 EndProcedure
 
 Procedure UpdateEnemySpawner(*EnemySpawner.TEnemy, TimeSlice.f)
+  If *EnemySpawner\CurrentState = #EnemyNoState
+    SwitchToWaitingEnemy(*EnemySpawner, 5.0)
+    ProcedureReturn
+  EndIf
+  
+  If *EnemySpawner\CurrentState = #EnemyWaiting
+    *EnemySpawner\WaitTimer - TimeSlice
+    If *EnemySpawner\WaitTimer <= 0.0
+      *EnemySpawner\SpawnEnemy(*EnemySpawner)
+      KillEnemy(*EnemySpawner)
+      ProcedureReturn
+    EndIf
+  EndIf
+  
+  UpdateGameObject(*EnemySpawner, TimeSlice)
   
 EndProcedure
 
 Procedure DrawEnemySpawner(*EnemySpawner.TEnemy)
-  DrawEnemy(*EnemySpawner)
+  
+  Protected TimerMs = *EnemySpawner\WaitTimer * 1000
+  Protected IsOpaque = (TimerMs / 30) % 2
+  ;after each 30 ms we will display the player transparent
+  DrawGameObject(*EnemySpawner, 255 * IsOpaque)
 EndProcedure
 
-Procedure InitEnemySpawner(*EnemySpawner.TEnemy, *Player.TGameObject, *Position.TVector2D,
+Procedure InitEnemySpawnerEnemy(*EnemySpawner.TEnemy, *Player.TGameObject, *Position.TVector2D,
                            SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
-                           *DrawList.TDrawList)
+                           *DrawList.TDrawList, *SpawnEnemy.SpawnEnemyProc)
   
   InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList)
   
@@ -1612,6 +1633,8 @@ Procedure InitEnemySpawner(*EnemySpawner.TEnemy, *Player.TGameObject, *Position.
                  #True, ZoomFactor, #EnemyDrawOrder)
   
   *EnemySpawner\CurrentState = #EnemyNoState
+  
+  *EnemySpawner\SpawnEnemy = *SpawnEnemy
   
 EndProcedure
 

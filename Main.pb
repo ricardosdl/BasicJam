@@ -33,6 +33,7 @@ Procedure LoadSprites()
   LoadSprite(#JabuticabaShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#Tomato, "data\img\tomato.png", #PB_Sprite_AlphaBlending)
   LoadSprite(#StandardFont, "data\img\font.png", #PB_Sprite_AlphaBlending)
+  LoadSprite(#EnemySpawner, "data\img\enemyspawner.png", #PB_Sprite_AlphaBlending)
 EndProcedure
 
 Procedure LoadResources()

@@ -112,6 +112,10 @@ Procedure.i GetInactiveEnemyPlayState(*PlayState.TPlayState)
     
 EndProcedure
 
+Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
+  
+EndProcedure
+
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
   ;enemies that we'll add
   Protected NumEnemies = 10
@@ -165,8 +169,10 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     ;InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
     ;InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
     ;                    @*PlayState\DrawList)
-    InitTomatoEnemy(*Enemy, *PlayState\Player, @Position, #Tomato, #SPRITES_ZOOM,
-                    @*PlayState\EnemiesProjectiles, @*PlayState\DrawList)
+    ;InitTomatoEnemy(*Enemy, *PlayState\Player, @Position, #Tomato, #SPRITES_ZOOM,
+    ;                @*PlayState\EnemiesProjectiles, @*PlayState\DrawList)
+    InitEnemySpawnerEnemy(*Enemy, *PlayState\Player, @Position, #EnemySpawner, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
+                          @*PlayState\DrawList, @SpawnEnemyPlayState())
     
     *Enemy\Active = #True
     

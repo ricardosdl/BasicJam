@@ -22,7 +22,7 @@ Procedure.a LoadSprites()
   LoadedAll = LoadedAll & Bool(LoadSprite(#Grape1, "data\img\grape1.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#Watermelon, "data\img\watermelon.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#Seed1, "data\img\seed1.png", #PB_Sprite_AlphaBlending))
-  LoadedAll = LoadedAll & Bool(LoadSprite(#Tangerine, "data\1img\tangerine.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Tangerine, "data\img\tangerine.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#Gomo1, "data\img\gomo1.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#PineApple, "data\img\pineapple.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#Lemon, "data\img\lemon.png", #PB_Sprite_AlphaBlending))
@@ -42,6 +42,8 @@ Procedure.a LoadResources()
     MessageRequester("ERROR", "Error loading sprites! Couldn't find data.")
     ProcedureReturn #False
   EndIf
+  
+  ProcedureReturn #True
   
 EndProcedure
 

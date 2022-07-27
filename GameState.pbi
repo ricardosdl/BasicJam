@@ -50,9 +50,9 @@ Structure TPlayState Extends TGameState
   EnemiesProjectiles.TProjectileList
   DrawList.TDrawList
   Ground.TGround
-  StartTimer.f
   EnemySpawnerTimer.f;time until an enemyspawner will spawn an enemy
   NextEnemySpawnerWaveTimer.f;time until we get more enemyspawners
+  FinishedWaveEarly.a
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -224,8 +224,7 @@ Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
   *PlayState\MaxLevel = 10;TODO: more levels
   *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
-  
-  *PlayState\StartTimer = 3.0
+  *PlayState\FinishedWaveEarly = #False
   
   InitDrawList(@*PlayState\DrawList)
   
@@ -350,17 +349,12 @@ Procedure UpdateEnemySpawners(*PlayState.TPlayState, TimeSlice.f)
   If *PlayState\NextEnemySpawnerWaveTimer <= 0
     InitEnemiesPlayState(*PlayState)
     *PlayState\NextEnemySpawnerWaveTimer = 30.0
+    *PlayState\FinishedWaveEarly = #False
   EndIf
   *PlayState\NextEnemySpawnerWaveTimer - TimeSlice
 EndProcedure
 
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
-  If *PlayState\StartTimer > 0.0
-    ;just wait the timer to start the game
-    *PlayState\StartTimer - TimeSlice
-    ProcedureReturn
-  EndIf
-  
   UpdateEnemySpawners(*PlayState, TimeSlice)
   
   *PlayState\Player\Update(*PlayState\Player, TimeSlice)
@@ -389,8 +383,10 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
   
-  If FinishedEnemiesPlayState(*PlayState)
-    EndLevelPlayState(*PlayState)
+  If Not *PlayState\FinishedWaveEarly And FinishedEnemiesPlayState(*PlayState)
+    ;EndLevelPlayState(*PlayState)
+    *PlayState\NextEnemySpawnerWaveTimer = 6.0;6 seconds of rest
+    *PlayState\FinishedWaveEarly = #True
     ProcedureReturn
   EndIf
   
@@ -400,20 +396,24 @@ EndProcedure
 Procedure DrawPlayState(*PlayState.TPlayState)
   DrawDrawList(*PlayState\DrawList)
   
-  If *PlayState\StartTimer > 0.0
-    ;shows a timer when the game starts
-    Protected StartTimerRounded.f = Round(*PlayState\StartTimer, #PB_Round_Up)
-    Protected StartTimer.s = StrF(StartTimerRounded, 0)
-    Protected StartTimerSize = Len(StartTimer)
-    Protected FontWidth.f = #STANDARD_FONT_WIDTH * (#SPRITES_ZOOM + 2.5)
-    Protected FontHeight.f = #STANDARD_FONT_HEIGHT * (#SPRITES_ZOOM + 2.5)
+  Protected FontWidth.f, FontHeight.f
+  
+  If *PlayState\FinishedWaveEarly
+    ;shows how much time until the next wave
+    Protected TimeUntilNexWave.s = "Next Wave:" + StrF(*PlayState\NextEnemySpawnerWaveTimer, 1)
+    Protected TimeUntilNexWaveSize = Len(TimeUntilNexWave)
+    FontWidth.f = #STANDARD_FONT_WIDTH * #SPRITES_ZOOM
+    FontHeight.f = #STANDARD_FONT_HEIGHT * #SPRITES_ZOOM
     
-    Protected StartTimerWidth.f = StartTimerSize * FontWidth
+    Protected TimeUntilNexWaveWidth.f = TimeUntilNexWaveSize * FontWidth
+    Protected TimeUntilNexWaveHeight.f = FontHeight
     
-    Protected StartTimerX.f = (ScreenWidth() / 2) - (StartTimerWidth / 2)
+    Protected TimeUntilNextWaveX.f = (ScreenWidth() / 2) - (TimeUntilNexWaveWidth / 2)
+    Protected TimeUntilNextWaveY.f = ScreenHeight() - TimeUntilNexWaveHeight - 10
+    DrawTextWithStandardFont(TimeUntilNextWaveX, TimeUntilNextWaveY, TimeUntilNexWave, FontWidth, FontHeight)
     
-    DrawTextWithStandardFont(StartTimerX, ScreenHeight() / 2, StartTimer, FontWidth, FontHeight)
   EndIf
+  
 
   
   

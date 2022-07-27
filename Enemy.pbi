@@ -16,6 +16,20 @@ Enumeration EEnemyStates
   #EnemyFollowingPlayer
 EndEnumeration
 
+Enumeration EEnemyType
+  #EnemyBanana
+  #EnemyApple
+  #EnemyGrape
+  #EnemyWatermelon
+  #EnemyTangerine
+  #EnemyPineapple
+  #EnemyLemon
+  #EnemyCoconut
+  #EnemyJabuticaba
+  #EnemyTomato
+  #EnemySpawner_
+EndEnumeration
+
 Prototype SetPatrollingEnemyProc(*Enemy)
 Prototype.a SpawnEnemyProc(*Data)
 
@@ -52,20 +66,35 @@ Structure TEnemy Extends TGameObject
   List Clones.TEnemyClone()
   CloneTimer.f
   *SpawnEnemy.SpawnEnemyProc
+  EnemyType.a
 EndStructure
 
 #TOMATO_CLONING_TIMER = 0.15
 #TOMATO_CLONE_TIMER = 7 * #TOMATO_CLONING_TIMER
 
+Procedure.a GetRandomEnemyType(StartEnemyType.a, EndEnemyType.a)
+  If StartEnemyType < #EnemyBanana
+    StartEnemyType = #EnemyBanana
+  EndIf
+  
+  If EndEnemyType > #EnemyTomato
+    EndEnemyType = #EnemyTomato
+  EndIf
+  
+  ProcedureReturn Random(EndEnemyType, StartEnemyType)
+  
+  
+EndProcedure
 
 
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList,
-                    *DrawList.TDrawList)
+                    *DrawList.TDrawList, EnemyType.a)
   *Enemy\Player = *Player
   *Enemy\Projectiles = *ProjectileList
   
   *Enemy\IsOnGround = #True
   *Enemy\DrawList = *DrawList
+  *Enemy\EnemyType = EnemyType
 EndProcedure
 
 Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
@@ -240,7 +269,7 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
                           SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                           *DrawList.TDrawList)
   
-  InitEnemy(*BananaEnemy, *Player, *ProjectileList, *DrawList)
+  InitEnemy(*BananaEnemy, *Player, *ProjectileList, *DrawList, #EnemyBanana)
   
   *BananaEnemy\Health = 1.0
   
@@ -405,7 +434,7 @@ Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVec
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                          *DrawList.TDrawList)
   
-  InitEnemy(*AppleEnemy, *Player, *ProjectileList, *DrawList)
+  InitEnemy(*AppleEnemy, *Player, *ProjectileList, *DrawList, #EnemyApple)
   
   *AppleEnemy\Health = 2.0
   
@@ -519,7 +548,7 @@ Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVec
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                          *DrawList.TDrawList)
   
-  InitEnemy(*GrapeEnemy, *Player, *ProjectileList, *DrawList)
+  InitEnemy(*GrapeEnemy, *Player, *ProjectileList, *DrawList, #EnemyGrape)
   
   *GrapeEnemy\Health = 2.0
   
@@ -665,7 +694,7 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
                               SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                               *DrawList.TDrawList)
   
-  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList, *DrawList)
+  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList, *DrawList, #EnemyWatermelon)
   
   *WatermelonEnemy\Health = 3.0
   
@@ -846,7 +875,7 @@ Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Posit
                              SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                              *DrawList.TDrawList)
   
-  InitEnemy(*TangerineEnemy, *Player, *ProjectileList, *DrawList)
+  InitEnemy(*TangerineEnemy, *Player, *ProjectileList, *DrawList, #EnemyTangerine)
   
   *TangerineEnemy\Health = 4.0
   
@@ -978,7 +1007,7 @@ EndProcedure
 Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.TVector2D,
                              SpriteNum.i, ZoomFactor.f, *DrawList.TDrawList)
   
-  InitEnemy(*Pineapple, *Player, #Null, *DrawList)
+  InitEnemy(*Pineapple, *Player, #Null, *DrawList, #EnemyPineapple)
   
   *Pineapple\Health = 5.0
   
@@ -1084,7 +1113,7 @@ Procedure InitLemonEnemy(*Lemon.TEnemy, *Player.TGameObject, *Position.TVector2D
                          SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                          *DrawList.TDrawList)
   
-  InitEnemy(*Lemon, *Player, *ProjectilesList, *DrawList)
+  InitEnemy(*Lemon, *Player, *ProjectilesList, *DrawList, #EnemyLemon)
   
   *Lemon\Health = 6.0
   
@@ -1242,7 +1271,7 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
                            SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                            *DrawList.TDrawList)
   
-  InitEnemy(*Coconut, *Player, *ProjectilesList, *DrawList)
+  InitEnemy(*Coconut, *Player, *ProjectilesList, *DrawList, #EnemyCoconut)
   
   *Coconut\Health = 6.0
   
@@ -1442,7 +1471,7 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
                               SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                               *DrawList.TDrawList)
   
-  InitEnemy(*Jabuticaba, *Player, *ProjectilesList, *DrawList)
+  InitEnemy(*Jabuticaba, *Player, *ProjectilesList, *DrawList, #EnemyJabuticaba)
   
   *Jabuticaba\Health = 6.0
   
@@ -1577,7 +1606,7 @@ Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector
                               SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                               *DrawList.TDrawList)
   
-  InitEnemy(*Tomato, *Player, *ProjectilesList, *DrawList)
+  InitEnemy(*Tomato, *Player, *ProjectilesList, *DrawList, #EnemyTomato)
   
   *Tomato\Health = 7.0
   
@@ -1625,7 +1654,7 @@ Procedure InitEnemySpawnerEnemy(*EnemySpawner.TEnemy, *Player.TGameObject, *Posi
                            SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                            *DrawList.TDrawList, *SpawnEnemy.SpawnEnemyProc)
   
-  InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList)
+  InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList, #EnemySpawner_)
   
   *EnemySpawner\Health = 3.0
   

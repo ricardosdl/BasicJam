@@ -112,7 +112,35 @@ Procedure.i GetInactiveEnemyPlayState(*PlayState.TPlayState)
     
 EndProcedure
 
+
+
 Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
+  Protected CurrentLevel.a = PlayState\CurrentLevel
+  
+  Protected EnemyType.a = GetRandomEnemyType(#EnemyBanana, CurrentLevel)
+  Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(@PlayState)
+  Protected Position.TVector2D = *EnemySpawner\Position
+  
+  Select EnemyType
+    Case #EnemyBanana
+      InitBananaEnemy(*Enemy, @PlayState\Player, @Position, #Banana, 2.5, #Null, @PlayState\DrawList)
+    Case #EnemyApple
+      InitAppleEnemy(*Enemy, @PlayState\Player, @Position, #Apple, 2.5, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
+    Case #EnemyGrape
+    Case #EnemyWatermelon
+    Case #EnemyTangerine
+    Case #EnemyPineapple
+    Case #EnemyLemon
+    Case #EnemyCoconut
+    Case #EnemyJabuticaba
+    Case #EnemyTomato
+      
+      
+  EndSelect
+  
+  *Enemy\Active = #True
+  AddDrawItemDrawList(@PlayState\DrawList, *Enemy)
+  
   
 EndProcedure
 
@@ -194,7 +222,7 @@ EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 1
-  *PlayState\MaxLevel = 1;TODO: more levels
+  *PlayState\MaxLevel = 10;TODO: more levels
   *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
   
   *PlayState\StartTimer = 3.0
@@ -307,10 +335,12 @@ Procedure.a FinishedEnemiesPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure EndLevelPlayState(*PlayState.TPlayState)
-  If *PlayState\CurrentLevel = *PlayState\MaxLevel
+  *PlayState\CurrentLevel + 1
+  If *PlayState\CurrentLevel >= *PlayState\MaxLevel
     ;finished the game
     ;for now just restart the game
     SwitchGameState(@GameStateManager, #PlayState)
+    *PlayState\CurrentLevel = *PlayState\MaxLevel
     ProcedureReturn
   EndIf
   

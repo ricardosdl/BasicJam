@@ -53,6 +53,7 @@ Structure TPlayState Extends TGameState
   EnemySpawnerTimer.f;time until an enemyspawner will spawn an enemy
   NextEnemySpawnerWaveTimer.f;time until we get more enemyspawners
   FinishedWaveEarly.a
+  NumEnemiesToAdd.a
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -145,8 +146,9 @@ Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
 EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
+  Debug *PlayState\CurrentLevel
   ;enemies that we'll add
-  Protected NumEnemies = 10
+  Protected NumEnemies = 10 * Pow(1.15, *PlayState\CurrentLevel - 1)
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   
@@ -225,6 +227,7 @@ Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\MaxLevel = 10;TODO: more levels
   *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
   *PlayState\FinishedWaveEarly = #False
+  *PlayState\NumEnemiesToAdd = 10
   
   InitDrawList(@*PlayState\DrawList)
   

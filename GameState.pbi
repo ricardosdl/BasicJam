@@ -296,6 +296,12 @@ Procedure CollisionPlayerEnemies(*PlayState.TPlayState, TimeSlice.f)
       Continue
     EndIf
     
+    If *Enemy\EnemyType = #EnemySpawner_
+      ;don't collide the player with the spawners
+      Continue
+    EndIf
+    
+    
     If CollisionRectRect(EnemyRect\Position\x, EnemyRect\Position\y, EnemyRect\Width,
                          EnemyRect\Height, PlayerRect\Position\x, PlayerRect\Position\y,
                          PlayerRect\Width, PlayerRect\Height)

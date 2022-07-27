@@ -11,33 +11,41 @@ OpenWindowedScreen(WindowID(1),0,0,800,600,0,0,0)
 Global SimulationTime.q = 0, RealTime.q, GameTick = 5
 Global LastTimeInMs.q
 
-Procedure LoadSprites()
-  LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Banana, "data\img\banana.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Laser1, "data\img\laser1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Apple, "data\img\apple.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Barf1, "data\img\barf1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Grape, "data\img\grape.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Grape1, "data\img\grape1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Watermelon, "data\img\watermelon.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Seed1, "data\img\seed1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Tangerine, "data\img\tangerine.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Gomo1, "data\img\gomo1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#PineApple, "data\img\pineapple.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Lemon, "data\img\lemon.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Acid1, "data\img\acid1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Coconut, "data\img\coconut.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#CocoSlice1, "data\img\cocoslice1.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Jabuticaba, "data\img\jabuticaba.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Ground, "data\img\ground.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#JabuticabaShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#Tomato, "data\img\tomato.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#StandardFont, "data\img\font.png", #PB_Sprite_AlphaBlending)
-  LoadSprite(#EnemySpawner, "data\img\enemyspawner.png", #PB_Sprite_AlphaBlending)
+Procedure.a LoadSprites()
+  Protected LoadedAll = #True
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Player1, "data\img\player1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Banana, "data\img\banana.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Laser1, "data\img\laser1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Apple, "data\img\apple.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Barf1, "data\img\barf1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Grape, "data\img\grape.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Grape1, "data\img\grape1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Watermelon, "data\img\watermelon.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Seed1, "data\img\seed1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Tangerine, "data\img\tangerine.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Gomo1, "data\img\gomo1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#PineApple, "data\img\pineapple.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Lemon, "data\img\lemon.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Acid1, "data\img\acid1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Coconut, "data\img\coconut.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#CocoSlice1, "data\img\cocoslice1.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Jabuticaba, "data\img\jabuticaba.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Ground, "data\img\ground.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#JabuticabaShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#Tomato, "data\img\tomato.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#StandardFont, "data\img\font.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#EnemySpawner, "data\img\enemyspawner.png", #PB_Sprite_AlphaBlending))
+  ProcedureReturn LoadedAll
 EndProcedure
 
-Procedure LoadResources()
-  LoadSprites()
+Procedure.a LoadResources()
+  If LoadSprites() = #False
+    MessageRequester("ERROR", "Error loading sprites! Couldn't find data.")
+    ProcedureReturn #False
+  EndIf
+  
+  ProcedureReturn #True
+  
 EndProcedure
 
 Procedure UpdateWorld(TimeSlice.f)
@@ -57,7 +65,11 @@ EndProcedure
 
 UsePNGImageDecoder()
 
-LoadResources()
+If (LoadResources() = #False)
+  ;error loading resources, can't ryb the game this way
+  End 1
+EndIf
+
 
 InitGameSates()
 SwitchGameState(@GameStateManager, #MainMenuState)

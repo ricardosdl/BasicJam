@@ -117,7 +117,7 @@ EndProcedure
 Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
   Protected CurrentLevel.a = PlayState\CurrentLevel
   
-  Protected EnemyType.a = GetRandomEnemyType(#EnemyBanana, CurrentLevel)
+  Protected EnemyType.a = GetRandomEnemyType(#EnemyBanana, CurrentLevel - 1)
   Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(@PlayState)
   Protected Position.TVector2D = *EnemySpawner\Position
   

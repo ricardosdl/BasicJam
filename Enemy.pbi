@@ -366,6 +366,8 @@ Procedure ShootAppleEnemy(*AppleEnemy.TEnemy)
   *Projectile\HasAliveTimer = #True
   *Projectile\AliveTimer = ProjectileAliveTimer
   
+  AddDrawItemDrawList(*AppleEnemy\DrawList, *Projectile)
+  
 EndProcedure
 
 

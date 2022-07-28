@@ -146,9 +146,10 @@ Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
 EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
-  Debug *PlayState\CurrentLevel
+  Debug "currentlevel:" + *PlayState\CurrentLevel
   ;enemies that we'll add
   Protected NumEnemies = 10 * Pow(1.15, *PlayState\CurrentLevel - 1)
+  Debug "numenemies:" + NumEnemies
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   
@@ -223,7 +224,7 @@ Procedure InitGroundPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
-  *PlayState\CurrentLevel = 1
+  *PlayState\CurrentLevel = 0
   *PlayState\MaxLevel = 10;TODO: more levels
   *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
   *PlayState\FinishedWaveEarly = #False
@@ -356,6 +357,9 @@ EndProcedure
 
 Procedure UpdateEnemySpawners(*PlayState.TPlayState, TimeSlice.f)
   If *PlayState\NextEnemySpawnerWaveTimer <= 0
+    ;30 seconds has passed and we must increase the level
+    *PlayState\CurrentLevel + 1
+    
     InitEnemiesPlayState(*PlayState)
     *PlayState\NextEnemySpawnerWaveTimer = 30.0
     *PlayState\FinishedWaveEarly = #False
@@ -396,6 +400,7 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
     ;EndLevelPlayState(*PlayState)
     *PlayState\NextEnemySpawnerWaveTimer = 6.0;6 seconds of rest
     *PlayState\FinishedWaveEarly = #True
+    ;*PlayState\CurrentLevel + 1
     ProcedureReturn
   EndIf
   

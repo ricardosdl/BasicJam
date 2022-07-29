@@ -357,7 +357,7 @@ EndProcedure
 
 Procedure UpdateEnemySpawners(*PlayState.TPlayState, TimeSlice.f)
   If *PlayState\NextEnemySpawnerWaveTimer <= 0
-    ;30 seconds has passed and we must increase the level
+    ;the next wave starts now and we must increase the level
     *PlayState\CurrentLevel + 1
     
     InitEnemiesPlayState(*PlayState)

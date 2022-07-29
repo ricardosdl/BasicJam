@@ -480,6 +480,8 @@ Procedure ShootGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
     
     *Projectile\Position = Position
     
+    AddDrawItemDrawList(*GrapeEnemy\DrawList, *Projectile)
+    
     *GrapeEnemy\NumShots - 1
     If *GrapeEnemy\NumShots < 1
       ;ended the shots
@@ -622,6 +624,8 @@ Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
     Protected ProjectileAliveTimer.f = Distance / ProjectileVel
     *Projectile\HasAliveTimer = #True
     *Projectile\AliveTimer = ProjectileAliveTimer
+    
+    AddDrawItemDrawList(*WatermelonEnemy\DrawList, *Projectile)
     
     *WatermelonEnemy\NumShots - 1
     
@@ -799,6 +803,8 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     Next
     
     SetWayPointsProjectile(*Projectile, WayPoints())
+    
+    AddDrawItemDrawList(*TangerineEnemy\DrawList, *Projectile)
     
     ProcedureReturn #False
     
@@ -1057,6 +1063,8 @@ Procedure ShootLemonEnemy(*Lemon.TEnemy, TimeSlice.f)
   InitProjectile(*Projectile, @*Lemon\Position, #True, #SPRITES_ZOOM, RandomAngle,
                  #ProjectileAcid1, #True, 5.0)
   
+  AddDrawItemDrawList(*Lemon\DrawList, *Projectile)
+  
   ProcedureReturn #True
   
 EndProcedure
@@ -1182,6 +1190,8 @@ Procedure ShootCoconutEnemy(*Coconut.TEnemy, TimeSlice.f)
     
     *Projectile\Position\x = *Coconut\MiddlePosition\x - *Projectile\Width / 2
     *Projectile\Position\y = *Coconut\MiddlePosition\y - *Projectile\Height / 2
+    
+    AddDrawItemDrawList(*Coconut\DrawList, *Projectile)
     
     AngleStart + AngleIncrease
     

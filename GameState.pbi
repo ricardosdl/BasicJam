@@ -124,17 +124,27 @@ Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
   
   Select EnemyType
     Case #EnemyBanana
-      InitBananaEnemy(*Enemy, @PlayState\Player, @Position, #Banana, 2.5, #Null, @PlayState\DrawList)
+      InitBananaEnemy(*Enemy, @PlayState\Player, @Position, #Banana, #SPRITES_ZOOM, #Null, @PlayState\DrawList)
     Case #EnemyApple
-      InitAppleEnemy(*Enemy, @PlayState\Player, @Position, #Apple, 2.5, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
+      InitAppleEnemy(*Enemy, @PlayState\Player, @Position, #Apple, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyGrape
+      InitGrapeEnemy(*Enemy, @PlayState\Player, @Position, #Grape, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyWatermelon
+      InitWatermelonEnemy(*Enemy, @PlayState\Player, @Position, #Watermelon, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyTangerine
+      InitTangerineEnemy(*Enemy, @PlayState\Player, @Position, #Tangerine, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyPineapple
+      InitPineappleEnemy(*Enemy, @PlayState\Player, @Position, #PineApple, #SPRITES_ZOOM, @PlayState\DrawList)
     Case #EnemyLemon
+      InitLemonEnemy(*Enemy, @PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyCoconut
+      InitCoconutEnemy(*Enemy, @PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles, @PlayState\DrawList)
     Case #EnemyJabuticaba
+      InitJabuticabaEnemy(*Enemy, @PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles,
+                        @PlayState\DrawList)
     Case #EnemyTomato
+      InitTomatoEnemy(*Enemy, @PlayState\Player, @Position, #Tomato, #SPRITES_ZOOM, @PlayState\EnemiesProjectiles,
+                      @PlayState\DrawList)
       
       
   EndSelect
@@ -224,7 +234,7 @@ Procedure InitGroundPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
-  *PlayState\CurrentLevel = 0
+  *PlayState\CurrentLevel = 0;important to start at zero, it will be increased to one when the game starts
   *PlayState\MaxLevel = 10;TODO: more levels
   *PlayState\NextEnemySpawnerWaveTimer = 0.0;when we start we already create a wave of enemyspawners
   *PlayState\FinishedWaveEarly = #False

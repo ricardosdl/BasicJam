@@ -657,6 +657,9 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
       
       
       SwitchToShootingAreaEnemy(*WatermelonEnemy, @AreaAroundPlayer, 1.5, 9, 0.3)
+      ;stop the enemy movement
+      *WatermelonEnemy\Velocity\x = 0
+      *WatermelonEnemy\Velocity\y = 0
     EndIf
     
     *WatermelonEnemy\StateTimer - TimeSlice

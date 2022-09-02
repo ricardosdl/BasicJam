@@ -24,6 +24,7 @@ Enumeration ESprites
   #JabuticabaShadow
   #Tomato
   #StandardFont
+  #ShotFlash
 EndEnumeration
 
 DisableExplicit

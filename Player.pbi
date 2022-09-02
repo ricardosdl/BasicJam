@@ -6,7 +6,7 @@ XIncludeFile "DrawOrders.pbi"
 
 EnableExplicit
 
-#PLAYER_SHOOT_TIMER = 1.0 / 3.0
+#PLAYER_SHOOT_TIMER = 1.0 / 5
 
 Structure TPlayer Extends TGameObject
   *Projectiles.TProjectileList
@@ -15,9 +15,10 @@ Structure TPlayer Extends TGameObject
   LastMovementAngle.f;in radians
   *DrawList.TDrawList
   HurtTimer.f
+  HasShot.a
 EndStructure
 
-Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
+Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
   *Player\ShootTimer + TimeSlice
   If *Player\ShootTimer >= #PLAYER_SHOOT_TIMER
     ;shoot
@@ -35,12 +36,20 @@ Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
     *Projectile\Position = Position
     
     *Player\ShootTimer = 0.0
-    
+    ProcedureReturn #True
   EndIf
+  
+  ProcedureReturn #False
   
 EndProcedure
 
 Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
+  Protected DisplayedAtLasFrame.a = *Player\Displayed
+  If *Player\Displayed
+    *Player\Displayed = #False
+  EndIf
+  
+  
   *Player\Velocity\x = 0
   *Player\Velocity\y = 0
   
@@ -71,7 +80,13 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
     
   
   If *Player\IsShooting
-    PlayerShoot(*Player, TimeSlice)
+    If DisplayedAtLasFrame
+      *Player\HasShot = #False
+    EndIf
+    
+    If PlayerShoot(*Player, TimeSlice)
+      *Player\HasShot = #True
+    EndIf
   EndIf
   
   If *Player\HurtTimer > 0.0
@@ -117,12 +132,35 @@ Procedure DrawPlayer(*Player.TPlayer)
     DrawGameObject(*Player, 255 * IsOpaque)
   EndIf
   
-  Protected PlayerRect.TRect
-  *Player\GetCollisionRect(*Player, @PlayerRect)
+  If *Player\HasShot
+    
+    Protected.f ShotFlashX, ShotFlashY
+    ShotFlashX = *Player\MiddlePosition\x - SpriteWidth(#ShotFlash) / 2
+    ShotFlashY = *Player\MiddlePosition\y - SpriteHeight(#ShotFlash) / 2
+    
+    RotateSprite(#ShotFlash, Degree(*Player\LastMovementAngle), #PB_Absolute)
+    DisplayTransparentSprite(#ShotFlash, ShotFlashX, ShotFlashY)
+    
+    
+    
+    
+    
+  EndIf
+  
   StartDrawing(ScreenOutput())
-  Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
-      RGB(192, 33, 87))
-  StopDrawing()
+  Box(*Player\MiddlePosition\x, *Player\MiddlePosition\y, 2, 2, RGB(100, 240, 20))
+    StopDrawing()
+  
+  *Player\Displayed = #True
+  
+  
+  
+  ;Protected PlayerRect.TRect
+  ;*Player\GetCollisionRect(*Player, @PlayerRect)
+  ;StartDrawing(ScreenOutput())
+  ;Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
+  ;    RGB(192, 33, 87))
+  ;StopDrawing()
 EndProcedure
 
 Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)
@@ -155,6 +193,10 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   *Player\Health = 5.0
   
   *Player\HurtTimer = 0.0
+  
+  *Player\HasShot = #False
+  
+  *Player\Displayed = #False
   
 EndProcedure
 

@@ -34,10 +34,10 @@ Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
     
     Protected CircleAroundPlayer.TCircle
     CircleAroundPlayer\Position = *Player\MiddlePosition
-    CircleAroundPlayer\Radius = *Player\Width
+    CircleAroundPlayer\Radius = *Player\Width / 2
     
-    Position\x = CircleAroundPlayer\Position\x + Cos(PlayerShootingAngle) * CircleAroundPlayer\Radius
-    Position\y = CircleAroundPlayer\Position\y + Sin(PlayerShootingAngle) * CircleAroundPlayer\Radius
+    Position\x = (CircleAroundPlayer\Position\x + Cos(PlayerShootingAngle) * CircleAroundPlayer\Radius) - *Projectile\Width / 2
+    Position\y = (CircleAroundPlayer\Position\y + Sin(PlayerShootingAngle) * CircleAroundPlayer\Radius) - *Projectile\Height / 2
       
     *Projectile\Position = Position
     
@@ -140,9 +140,18 @@ Procedure DrawPlayer(*Player.TPlayer)
   
   If *Player\HasShot
     
+    Protected CircleAroundPlayer.TCircle
+    CircleAroundPlayer\Position = *Player\MiddlePosition
+    CircleAroundPlayer\Radius = *Player\Width / 2
+    
+    Protected Position.TVector2D
+    
+    Position\x = CircleAroundPlayer\Position\x + Cos(*Player\LastMovementAngle) * CircleAroundPlayer\Radius
+    Position\y = CircleAroundPlayer\Position\y + Sin(*Player\LastMovementAngle) * CircleAroundPlayer\Radius
+    
     Protected.f ShotFlashX, ShotFlashY
-    ShotFlashX = *Player\MiddlePosition\x - SpriteWidth(#ShotFlash) / 2
-    ShotFlashY = *Player\MiddlePosition\y - SpriteHeight(#ShotFlash) / 2
+    ShotFlashX = Position\x - SpriteWidth(#ShotFlash) / 2
+    ShotFlashY = Position\y - SpriteHeight(#ShotFlash) / 2
     
     RotateSprite(#ShotFlash, Degree(*Player\LastMovementAngle), #PB_Absolute)
     DisplayTransparentSprite(#ShotFlash, ShotFlashX, ShotFlashY)
@@ -153,9 +162,10 @@ Procedure DrawPlayer(*Player.TPlayer)
     
   EndIf
   
-  StartDrawing(ScreenOutput())
-  Box(*Player\MiddlePosition\x, *Player\MiddlePosition\y, 2, 2, RGB(100, 240, 20))
-    StopDrawing()
+  ;StartDrawing(ScreenOutput())
+  ;DrawingMode(#PB_2DDrawing_Outlined)
+  ;Box(*Player\Position\x, *Player\Position\y, *Player\Width, *Player\Height, RGB(100, 240, 20))
+  ;  StopDrawing()
   
   *Player\Displayed = #True
   

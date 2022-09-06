@@ -7,6 +7,7 @@ XIncludeFile "DrawOrders.pbi"
 EnableExplicit
 
 #PLAYER_SHOOT_TIMER = 1.0 / 5
+#PLAYER_SHOOT_ANGLE_VARIATION = 0.04363323003054;in radians
 
 Structure TPlayer Extends TGameObject
   *Projectiles.TProjectileList
@@ -23,6 +24,7 @@ Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
   If *Player\ShootTimer >= #PLAYER_SHOOT_TIMER
     ;shoot
     Protected PlayerShootingAngle.f = *Player\LastMovementAngle
+    PlayerShootingAngle + Sin(Random(359)) * #PLAYER_SHOOT_ANGLE_VARIATION
     Protected *Projectile.TProjectile = GetInactiveProjectile(*Player\Projectiles)
     
     Protected Position.TVector2D
@@ -30,9 +32,13 @@ Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
     
     AddDrawItemDrawList(*Player\DrawList, *Projectile)
     
-    Position\x = *Player\MiddlePosition\x - *Projectile\Width / 2
-    Position\y = *Player\MiddlePosition\y - *Projectile\Height / 2
+    Protected CircleAroundPlayer.TCircle
+    CircleAroundPlayer\Position = *Player\MiddlePosition
+    CircleAroundPlayer\Radius = *Player\Width
     
+    Position\x = CircleAroundPlayer\Position\x + Cos(PlayerShootingAngle) * CircleAroundPlayer\Radius
+    Position\y = CircleAroundPlayer\Position\y + Sin(PlayerShootingAngle) * CircleAroundPlayer\Radius
+      
     *Projectile\Position = Position
     
     *Player\ShootTimer = 0.0

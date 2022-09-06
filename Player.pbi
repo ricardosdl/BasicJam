@@ -6,7 +6,8 @@ XIncludeFile "DrawOrders.pbi"
 
 EnableExplicit
 
-#PLAYER_SHOOT_TIMER = 1.0 / 3.0
+#PLAYER_SHOOT_TIMER = 1.0 / 5
+#PLAYER_SHOOT_ANGLE_VARIATION = 0.04363323003054;in radians
 
 Structure TPlayer Extends TGameObject
   *Projectiles.TProjectileList
@@ -15,13 +16,15 @@ Structure TPlayer Extends TGameObject
   LastMovementAngle.f;in radians
   *DrawList.TDrawList
   HurtTimer.f
+  HasShot.a
 EndStructure
 
-Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
+Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
   *Player\ShootTimer + TimeSlice
   If *Player\ShootTimer >= #PLAYER_SHOOT_TIMER
     ;shoot
     Protected PlayerShootingAngle.f = *Player\LastMovementAngle
+    PlayerShootingAngle + Sin(Random(359)) * #PLAYER_SHOOT_ANGLE_VARIATION
     Protected *Projectile.TProjectile = GetInactiveProjectile(*Player\Projectiles)
     
     Protected Position.TVector2D
@@ -29,18 +32,30 @@ Procedure PlayerShoot(*Player.TPlayer, TimeSlice.f)
     
     AddDrawItemDrawList(*Player\DrawList, *Projectile)
     
-    Position\x = *Player\MiddlePosition\x - *Projectile\Width / 2
-    Position\y = *Player\MiddlePosition\y - *Projectile\Height / 2
+    Protected CircleAroundPlayer.TCircle
+    CircleAroundPlayer\Position = *Player\MiddlePosition
+    CircleAroundPlayer\Radius = *Player\Width / 2
     
+    Position\x = (CircleAroundPlayer\Position\x + Cos(PlayerShootingAngle) * CircleAroundPlayer\Radius) - *Projectile\Width / 2
+    Position\y = (CircleAroundPlayer\Position\y + Sin(PlayerShootingAngle) * CircleAroundPlayer\Radius) - *Projectile\Height / 2
+      
     *Projectile\Position = Position
     
     *Player\ShootTimer = 0.0
-    
+    ProcedureReturn #True
   EndIf
+  
+  ProcedureReturn #False
   
 EndProcedure
 
 Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
+  Protected DisplayedAtLasFrame.a = *Player\Displayed
+  If *Player\Displayed
+    *Player\Displayed = #False
+  EndIf
+  
+  
   *Player\Velocity\x = 0
   *Player\Velocity\y = 0
   
@@ -71,7 +86,13 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
     
   
   If *Player\IsShooting
-    PlayerShoot(*Player, TimeSlice)
+    If DisplayedAtLasFrame
+      *Player\HasShot = #False
+    EndIf
+    
+    If PlayerShoot(*Player, TimeSlice)
+      *Player\HasShot = #True
+    EndIf
   EndIf
   
   If *Player\HurtTimer > 0.0
@@ -117,12 +138,45 @@ Procedure DrawPlayer(*Player.TPlayer)
     DrawGameObject(*Player, 255 * IsOpaque)
   EndIf
   
-  Protected PlayerRect.TRect
-  *Player\GetCollisionRect(*Player, @PlayerRect)
-  StartDrawing(ScreenOutput())
-  Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
-      RGB(192, 33, 87))
-  StopDrawing()
+  If *Player\HasShot
+    
+    Protected CircleAroundPlayer.TCircle
+    CircleAroundPlayer\Position = *Player\MiddlePosition
+    CircleAroundPlayer\Radius = *Player\Width / 2
+    
+    Protected Position.TVector2D
+    
+    Position\x = CircleAroundPlayer\Position\x + Cos(*Player\LastMovementAngle) * CircleAroundPlayer\Radius
+    Position\y = CircleAroundPlayer\Position\y + Sin(*Player\LastMovementAngle) * CircleAroundPlayer\Radius
+    
+    Protected.f ShotFlashX, ShotFlashY
+    ShotFlashX = Position\x - SpriteWidth(#ShotFlash) / 2
+    ShotFlashY = Position\y - SpriteHeight(#ShotFlash) / 2
+    
+    RotateSprite(#ShotFlash, Degree(*Player\LastMovementAngle), #PB_Absolute)
+    DisplayTransparentSprite(#ShotFlash, ShotFlashX, ShotFlashY)
+    
+    
+    
+    
+    
+  EndIf
+  
+  ;StartDrawing(ScreenOutput())
+  ;DrawingMode(#PB_2DDrawing_Outlined)
+  ;Box(*Player\Position\x, *Player\Position\y, *Player\Width, *Player\Height, RGB(100, 240, 20))
+  ;  StopDrawing()
+  
+  *Player\Displayed = #True
+  
+  
+  
+  ;Protected PlayerRect.TRect
+  ;*Player\GetCollisionRect(*Player, @PlayerRect)
+  ;StartDrawing(ScreenOutput())
+  ;Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
+  ;    RGB(192, 33, 87))
+  ;StopDrawing()
 EndProcedure
 
 Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)
@@ -155,6 +209,10 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   *Player\Health = 5.0
   
   *Player\HurtTimer = 0.0
+  
+  *Player\HasShot = #False
+  
+  *Player\Displayed = #False
   
 EndProcedure
 

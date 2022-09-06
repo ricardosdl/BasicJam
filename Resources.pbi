@@ -25,6 +25,7 @@ Enumeration ESprites
   #Tomato
   #StandardFont
   #EnemySpawner
+  #ShotFlash
 EndEnumeration
 
 DisableExplicit

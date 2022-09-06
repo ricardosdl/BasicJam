@@ -34,6 +34,8 @@ Structure TGameObject
   
   GetCollisionRect.GetCollisionRectGameObjectProc
   
+  Displayed.a;when true means that the drawgameobjet has been called
+  
   
   
 EndStructure

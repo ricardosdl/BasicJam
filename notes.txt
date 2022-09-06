@@ -9,3 +9,5 @@ the lemon enemy will release pools of acid that hur the player
 https://0x72.itch.io/16x16-dungeon-tileset
 
 https://opengameart.org/content/basic-font
+
+https://opengameart.org/content/muzzle-flash-with-model

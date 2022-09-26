@@ -1,4 +1,5 @@
 ﻿XIncludeFile "GameObject.pbi"
+XIncludeFile "GameObject.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "Projectile.pbi"
@@ -250,7 +251,7 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   
 EndProcedure
 
-Procedure DrawEnemy(*Enemy.TEnemy)
+Procedure DrawEnemy(*Enemy.TEnemy, Intensity.a = 255)
   If *Enemy\CurrentState = #EnemyGoingToObjectiveRect
     StartDrawing(ScreenOutput())
     
@@ -262,7 +263,7 @@ Procedure DrawEnemy(*Enemy.TEnemy)
     StopDrawing()
   EndIf
   
-  DrawGameObject(*Enemy)
+  DrawGameObjectWithGameCamera(*Enemy, Intensity)
 EndProcedure
 
 Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -367,6 +368,7 @@ Procedure ShootAppleEnemy(*AppleEnemy.TEnemy)
   *Projectile\AliveTimer = ProjectileAliveTimer
   
   AddDrawItemDrawList(*AppleEnemy\DrawList, *Projectile)
+  *Projectile\GameCamera = *AppleEnemy\GameCamera
   
 EndProcedure
 
@@ -481,6 +483,7 @@ Procedure ShootGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
     *Projectile\Position = Position
     
     AddDrawItemDrawList(*GrapeEnemy\DrawList, *Projectile)
+    *Projectile\GameCamera = *GrapeEnemy\GameCamera
     
     *GrapeEnemy\NumShots - 1
     If *GrapeEnemy\NumShots < 1
@@ -626,6 +629,7 @@ Procedure ShootWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
     *Projectile\AliveTimer = ProjectileAliveTimer
     
     AddDrawItemDrawList(*WatermelonEnemy\DrawList, *Projectile)
+    *Projectile\GameCamera = *WatermelonEnemy\GameCamera
     
     *WatermelonEnemy\NumShots - 1
     
@@ -808,6 +812,7 @@ Procedure ShootTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
     SetWayPointsProjectile(*Projectile, WayPoints())
     
     AddDrawItemDrawList(*TangerineEnemy\DrawList, *Projectile)
+    *Projectile\GameCamera = *TangerineEnemy\GameCamera
     
     ProcedureReturn #False
     
@@ -1067,6 +1072,7 @@ Procedure ShootLemonEnemy(*Lemon.TEnemy, TimeSlice.f)
                  #ProjectileAcid1, #True, 5.0)
   
   AddDrawItemDrawList(*Lemon\DrawList, *Projectile)
+  *Projectile\GameCamera = *Lemon\GameCamera
   
   ProcedureReturn #True
   
@@ -1195,6 +1201,7 @@ Procedure ShootCoconutEnemy(*Coconut.TEnemy, TimeSlice.f)
     *Projectile\Position\y = *Coconut\MiddlePosition\y - *Projectile\Height / 2
     
     AddDrawItemDrawList(*Coconut\DrawList, *Projectile)
+    *Projectile\GameCamera = *Coconut\GameCamera
     
     AngleStart + AngleIncrease
     
@@ -1268,8 +1275,11 @@ Procedure DrawCoconut(*Coconut.TEnemy)
     ;after each 100 ms we will display the enemy using the red color
     If (ShootingTimerMs / 100) % 2
       ;if ShootingTimerMs / 100 is odd, we show the red
-      DisplayTransparentSprite(*Coconut\SpriteNum, Int(*Coconut\Position\x),
-                               Int(*Coconut\Position\y), $7f, RGB($eb, $1d, $13))
+      Protected.l PosX, PosY
+      PosX = Int(*Coconut\Position\x - *Coconut\GameCamera\Position\x)
+      PosY = Int(*Coconut\Position\y - *Coconut\GameCamera\Position\y)
+      DisplayTransparentSprite(*Coconut\SpriteNum, PosX, PosY, $7f, RGB($eb, $1d, $13))
+      
     Else
       ;if ShootingTimerMs / 100 is even, we show the regular sprite
       DrawEnemy(*Coconut)
@@ -1301,7 +1311,7 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
 EndProcedure
 
 Procedure DrawJabuticabaShadow(*JabuticabaShadow.TGameObject)
-  DrawGameObject(*JabuticabaShadow)
+  DrawGameObjectWithGameCamera(*JabuticabaShadow)
 EndProcedure
 
 Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
@@ -1372,6 +1382,7 @@ Procedure SetJumpingJabuticaba(*Jabuticaba.TEnemy)
   AddDrawItemDrawList(*Jabuticaba\DrawList, @*Jabuticaba\Shadow)
   InitGameObject(@*Jabuticaba\Shadow, @*Jabuticaba\Position, #JabuticabaShadow, #Null,
                  @DrawJabuticabaShadow(), #True, #SPRITES_ZOOM, #ShadowDrawOrder)
+  *Jabuticaba\Shadow\GameCamera = *Jabuticaba\GameCamera
   
 
   
@@ -1599,8 +1610,8 @@ Procedure DrawTomatoEnemy(*Tomato.TEnemy)
   
   ForEach *Tomato\Clones()
     If *Tomato\Clones()\Active
-      Protected Position.TVector2D\x = *Tomato\Clones()\x
-      Position\y = *Tomato\Clones()\y
+      Protected Position.TVector2D\x = *Tomato\Clones()\x - *Tomato\GameCamera\Position\x
+      Position\y = *Tomato\Clones()\y - *Tomato\GameCamera\Position\y
       
       DisplayTransparentSprite(*Tomato\SpriteNum, Int(Position\x), Int(Position\y))
     EndIf
@@ -1647,8 +1658,8 @@ Procedure UpdateEnemySpawner(*EnemySpawner.TEnemy, TimeSlice.f)
   If *EnemySpawner\CurrentState = #EnemyWaiting
     *EnemySpawner\WaitTimer - TimeSlice
     If *EnemySpawner\WaitTimer <= 0.0
-      *EnemySpawner\SpawnEnemy(*EnemySpawner)
       KillEnemy(*EnemySpawner)
+      *EnemySpawner\SpawnEnemy(*EnemySpawner)
       ProcedureReturn
     EndIf
   EndIf
@@ -1662,7 +1673,7 @@ Procedure DrawEnemySpawner(*EnemySpawner.TEnemy)
   Protected TimerMs = *EnemySpawner\WaitTimer * 1000
   Protected IsOpaque = (TimerMs / 30) % 2
   ;after each 30 ms we will display the player transparent
-  DrawGameObject(*EnemySpawner, 255 * IsOpaque)
+  DrawGameObjectWithGameCamera(*EnemySpawner, 255 * IsOpaque)
 EndProcedure
 
 Procedure InitEnemySpawnerEnemy(*EnemySpawner.TEnemy, *Player.TGameObject, *Position.TVector2D,

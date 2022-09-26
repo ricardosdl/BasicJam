@@ -8,6 +8,7 @@ XIncludeFile "Util.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "Ground.pbi"
 XIncludeFile "DrawText.pbi"
+XIncludeFile "Camera.pbi"
 
 EnableExplicit
 
@@ -54,6 +55,7 @@ Structure TPlayState Extends TGameState
   NextEnemySpawnerWaveTimer.f;time until we get more enemyspawners
   FinishedWaveEarly.a
   NumEnemiesToAdd.a
+  GameCamera.TCamera
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -118,9 +120,14 @@ EndProcedure
 Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
   Protected CurrentLevel.a = PlayState\CurrentLevel
   
-  Protected EnemyType.a = GetRandomEnemyType(#EnemyBanana, CurrentLevel - 1)
   Protected *Enemy.TEnemy = GetInactiveEnemyPlayState(@PlayState)
+  If *Enemy = #Null
+    ProcedureReturn
+  EndIf
+  
   Protected Position.TVector2D = *EnemySpawner\Position
+  
+  Protected EnemyType.a = GetRandomEnemyType(#EnemyBanana, CurrentLevel - 1)
   
   Select EnemyType
     Case #EnemyBanana
@@ -151,6 +158,7 @@ Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
   
   *Enemy\Active = #True
   AddDrawItemDrawList(@PlayState\DrawList, *Enemy)
+  *Enemy\GameCamera = @PlayState\GameCamera
   
   
 EndProcedure
@@ -218,6 +226,7 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     *Enemy\Active = #True
     
     AddDrawItemDrawList(@*PlayState\DrawList, *Enemy)
+    *Enemy\GameCamera = @*PlayState\GameCamera
     
     EnemiesToAdd - 1
   Wend
@@ -228,9 +237,17 @@ EndProcedure
 Procedure InitGroundPlayState(*PlayState.TPlayState)
   InitGround(*PlayState\Ground)
   
+  *PlayState\Ground\GameCamera = @*PlayState\GameCamera
+  
   AddDrawItemDrawList(*PlayState\DrawList, *PlayState\Ground)
   
   
+EndProcedure
+
+Procedure InitGameCameraPlayState(*PlayState.TPlayState)
+  Protected CameraPosition.TVector2D\x = 0.0
+  CameraPosition\y = 0.0
+  InitCamera(@*PlayState\GameCamera, @CameraPosition, ScreenWidth(), ScreenHeight())
 EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
@@ -242,12 +259,16 @@ Procedure StartPlayState(*PlayState.TPlayState)
   
   InitDrawList(@*PlayState\DrawList)
   
+  InitGameCameraPlayState(*PlayState)
+  
   Protected *Player.TPlayer = @*PlayState\Player
   Protected PlayerPos.TVector2D\x = ScreenWidth() / 2
   PlayerPos\y = ScreenHeight() / 2
   
   
   InitPlayer(*Player, @*PlayState\PlayerProjectiles, @PlayerPos, #False, 2.5, @*PlayState\DrawList)
+  
+  *Player\GameCamera = @*PlayState\GameCamera
   
   AddDrawItemDrawList(@*PlayState\DrawList, *Player)
   
@@ -377,6 +398,11 @@ Procedure UpdateEnemySpawners(*PlayState.TPlayState, TimeSlice.f)
   *PlayState\NextEnemySpawnerWaveTimer - TimeSlice
 EndProcedure
 
+Procedure UpdateGameCameraPlayState(*PlayState.TPlayState, TimeSlice.f)
+  *PlayState\GameCamera\Update(@*PlayState\GameCamera, TimeSlice)
+EndProcedure
+
+
 Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   UpdateEnemySpawners(*PlayState, TimeSlice)
   
@@ -402,7 +428,7 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
     EndIf
   Next
   
-  
+  UpdateGameCameraPlayState(*PlayState, TimeSlice)
   
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
   

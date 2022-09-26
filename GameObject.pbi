@@ -36,6 +36,8 @@ Structure TGameObject
   
   Displayed.a;when true means that the drawgameobjet has been called
   
+  *GameCamera.TGameObject;should be of the type TCamera
+  
   
   
 EndStructure
@@ -77,7 +79,9 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   
   
   Protected OriginalWidth.Integer, OriginalHeight.Integer
-  GetSpriteOriginalWidthAndHeight(SpriteNum, @OriginalWidth, @OriginalHeight)
+  If IsSprite(SpriteNum)
+    GetSpriteOriginalWidthAndHeight(SpriteNum, @OriginalWidth, @OriginalHeight)
+  EndIf
   
   *GameObject\OriginalWidth = OriginalWidth\i
   *GameObject\OriginalHeight = OriginalHeight\i
@@ -85,7 +89,9 @@ Procedure InitGameObject(*GameObject.TGameObject, *Position.TVector2D, SpriteNum
   *GameObject\Width = OriginalWidth\i * ZoomFactor
   *GameObject\Height = OriginalHeight\i * ZoomFactor
   *GameObject\SpriteNum = SpriteNum
-  ZoomSprite(*GameObject\SpriteNum, OriginalWidth\i * ZoomFactor, OriginalHeight\i * ZoomFactor)
+  If IsSprite(*GameObject\SpriteNum)
+    ZoomSprite(*GameObject\SpriteNum, OriginalWidth\i * ZoomFactor, OriginalHeight\i * ZoomFactor)
+  EndIf
   
   *GameObject\Update = *UpdateProc
   *GameObject\Draw = *DrawProc
@@ -104,6 +110,16 @@ EndProcedure
 Procedure DrawGameObject(*GameObject.TGameObject, Intensity = 255)
   DisplayTransparentSprite(*GameObject\SpriteNum, Int(*GameObject\Position\x),
                            Int(*GameObject\Position\y), Intensity)
+EndProcedure
+
+Procedure DrawGameObjectWithGameCamera(*GameObject.TGameObject, Intensity = 255)
+  Protected.l PosX, PosY
+  PosX = Int(*GameObject\Position\x - *GameObject\GameCamera\Position\x)
+  PosY = Int(*GameObject\Position\y - *GameObject\GameCamera\Position\y)
+  
+  DisplayTransparentSprite(*GameObject\SpriteNum, PosX, PosY, Intensity)
+  
+  
 EndProcedure
 
 Macro UpdateMiddlePositionGameObject(GameObject)

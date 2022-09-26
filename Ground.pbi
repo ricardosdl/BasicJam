@@ -14,7 +14,10 @@ Procedure DrawGround(*Ground.TGround)
   Protected NumGroundsHeight = ScreenHeight() / *Ground\Height
   For x = 0 To NumGroundsWidth - 1
     For y = 0 To NumGroundsHeight - 1
-      DisplayTransparentSprite(*Ground\SpriteNum, x * *Ground\Width, y * *Ground\Height)
+      Protected.l PosX, PosY
+      PosX = Int(x * *Ground\Width - *Ground\GameCamera\Position\x)
+      PosY = Int(y * *Ground\Height - *Ground\GameCamera\Position\y)
+      DisplayTransparentSprite(*Ground\SpriteNum, PosX, PosY)
     Next y
   Next x
   

@@ -128,14 +128,14 @@ EndProcedure
 
 Procedure DrawPlayer(*Player.TPlayer)
   If *Player\HurtTimer <= 0
-    DrawGameObject(*Player)
+    DrawGameObjectWithGameCamera(*Player)
   Else
     Protected HurtTimerMs = *Player\HurtTimer * 1000
     
     Protected IsOpaque = (HurtTimerMs / 100) % 2
     
     ;after each 100 ms we will display the player transparent
-    DrawGameObject(*Player, 255 * IsOpaque)
+    DrawGameObjectWithGameCamera(*Player, 255 * IsOpaque)
   EndIf
   
   If *Player\HasShot
@@ -162,21 +162,7 @@ Procedure DrawPlayer(*Player.TPlayer)
     
   EndIf
   
-  ;StartDrawing(ScreenOutput())
-  ;DrawingMode(#PB_2DDrawing_Outlined)
-  ;Box(*Player\Position\x, *Player\Position\y, *Player\Width, *Player\Height, RGB(100, 240, 20))
-  ;  StopDrawing()
-  
   *Player\Displayed = #True
-  
-  
-  
-  ;Protected PlayerRect.TRect
-  ;*Player\GetCollisionRect(*Player, @PlayerRect)
-  ;StartDrawing(ScreenOutput())
-  ;Box(PlayerRect\Position\x, PlayerRect\Position\y, PlayerRect\Width, PlayerRect\Height,
-  ;    RGB(192, 33, 87))
-  ;StopDrawing()
 EndProcedure
 
 Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)

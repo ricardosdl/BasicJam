@@ -5,9 +5,9 @@
     <options closefiles="1" openmode="0" name="BasicJam"/>
   </section>
   <section name="data">
-    <explorer view="" pattern="7"/>
+    <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2022-09-06 14:21" user="ricardo.lima" host="686-D-02700820"/>
+    <lastopen date="2022-09-26 12:09" user="ricardo.lima" host="686-D-02700820"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
@@ -53,6 +53,9 @@
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="Util.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+    <file name="Camera.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
   </section>

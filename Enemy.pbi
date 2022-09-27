@@ -5,6 +5,7 @@ XIncludeFile "Util.pbi"
 XIncludeFile "Projectile.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
+XIncludeFile "Camera.pbi"
 
 EnableExplicit
 
@@ -209,6 +210,7 @@ EndProcedure
 Procedure KillEnemy(*Enemy.TEnemy)
   *Enemy\Active = #False
   *Enemy\Shadow\Active = #False
+  ShakeCamera(*Enemy\GameCamera, 0.5)
 EndProcedure
 
 

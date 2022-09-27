@@ -3,7 +3,7 @@
 EnableExplicit
 
 Prototype UpdateGameObjectProc(*GameObject, TimeSlice.f)
-Prototype DrawGameObjectProc(*GameObject)
+Prototype DrawGameObjectProc(*GameObject, Intensity.a = 255)
 Prototype.a GetCollisionRectGameObjectProc(*GameObject, *CollisonRect.TRect)
 
 Structure TGameObject

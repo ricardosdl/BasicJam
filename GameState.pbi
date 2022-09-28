@@ -9,6 +9,7 @@ XIncludeFile "DrawList.pbi"
 XIncludeFile "Ground.pbi"
 XIncludeFile "DrawText.pbi"
 XIncludeFile "Camera.pbi"
+XIncludeFile "Particles.pbi"
 
 EnableExplicit
 
@@ -56,6 +57,7 @@ Structure TPlayState Extends TGameState
   FinishedWaveEarly.a
   NumEnemiesToAdd.a
   GameCamera.TCamera
+  ParticlesRepo.TParticlesRepository
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -250,6 +252,10 @@ Procedure InitGameCameraPlayState(*PlayState.TPlayState)
   InitCamera(@*PlayState\GameCamera, @CameraPosition, ScreenWidth(), ScreenHeight())
 EndProcedure
 
+Procedure InitParticlesRepositoryPlayState(*PlayState.TPlayState)
+  InitParticlesRepository(*PlayState\ParticlesRepo, *PlayState\GameCamera, #ParticlesDrawOrder)
+EndProcedure
+
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 0;important to start at zero, it will be increased to one when the game starts
   *PlayState\MaxLevel = 10;TODO: more levels
@@ -273,6 +279,8 @@ Procedure StartPlayState(*PlayState.TPlayState)
   AddDrawItemDrawList(@*PlayState\DrawList, *Player)
   
   InitGroundPlayState(*PlayState)
+  
+  InitParticlesRepositoryPlayState(*PlayState)
   
   
 EndProcedure

@@ -7,6 +7,7 @@ Enumeration 0 Step 5
   #EnemyDrawOrder
   #ProjectileDrawOrder
   #ShadowDrawOrder
+  #ParticlesDrawOrder
   #JumpingEnemydrawOrder
   
 EndEnumeration

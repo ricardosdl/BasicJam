@@ -166,10 +166,8 @@ Procedure SpawnEnemyPlayState(*EnemySpawner.TEnemy)
 EndProcedure
 
 Procedure InitEnemiesPlayState(*PlayState.TPlayState)
-  Debug "currentlevel:" + *PlayState\CurrentLevel
   ;enemies that we'll add
   Protected NumEnemies = 10 * Pow(1.15, *PlayState\CurrentLevel - 1)
-  Debug "numenemies:" + NumEnemies
   ;we add half on the left and half on the right
   Protected EnemiesToAdd = NumEnemies
   
@@ -209,19 +207,6 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
     Protected Position.TVector2d\x = Random(MaxLeftEnemyX, MinLeftEnemyX)
     Position\y = Random(MaxLeftEnemyY, MinLeftEnemyY)
     
-    ;InitBananaEnemy(*Enemy, *PlayState\Player, @Position, #Banana, 2.5, #Null)
-    ;InitAppleEnemy(*Enemy, *PlayState\Player, @Position, #Apple, 2.5, @*PlayState\EnemiesProjectiles)
-    ;InitGrapeEnemy(*Enemy, *PlayState\Player, @Position, #Grape, 2.5, @*PlayState\EnemiesProjectiles)
-    ;InitWatermelonEnemy(*Enemy, *PlayState\Player, @Position, #Watermelon, 2.5, @*PlayState\EnemiesProjectiles)
-    ;InitTangerineEnemy(*Enemy, *PlayState\Player, @Position, #Tangerine, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #PineApple, #SPRITES_ZOOM)
-    ;InitPineappleEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM)
-    ;InitLemonEnemy(*Enemy, *PlayState\Player, @Position, #Lemon, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    ;InitCoconutEnemy(*Enemy, *PlayState\Player, @Position, #Coconut, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles)
-    ;InitJabuticabaEnemy(*Enemy, *PlayState\Player, @Position, #Jabuticaba, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
-    ;                    @*PlayState\DrawList)
-    ;InitTomatoEnemy(*Enemy, *PlayState\Player, @Position, #Tomato, #SPRITES_ZOOM,
-    ;                @*PlayState\EnemiesProjectiles, @*PlayState\DrawList)
     InitEnemySpawnerEnemy(*Enemy, *PlayState\Player, @Position, #EnemySpawner, #SPRITES_ZOOM, @*PlayState\EnemiesProjectiles,
                           @*PlayState\DrawList, @SpawnEnemyPlayState())
     
@@ -254,6 +239,7 @@ EndProcedure
 
 Procedure InitParticlesRepositoryPlayState(*PlayState.TPlayState)
   InitParticlesRepository(*PlayState\ParticlesRepo, *PlayState\GameCamera, #ParticlesDrawOrder)
+  AddDrawItemDrawList(@*PlayState\DrawList, @*PlayState\ParticlesRepo)
 EndProcedure
 
 Procedure StartPlayState(*PlayState.TPlayState)
@@ -288,6 +274,28 @@ EndProcedure
 Procedure EndPlayState(*PlayState.TPlayState)
 EndProcedure
 
+Procedure SpawnProjectileHitParticlesPlayState(*PlayState.TPlayState, ProjectileVelX.f, ProjectileVelY.f,
+                                               *ImpactPosition.TVector2D)
+  Protected NumParticles.a = Random(10, 5)
+  Debug NumParticles
+  
+  Protected ProjectileAngle.f = ATan2(ProjectileVelX, ProjectileVelY)
+  
+  While NumParticles
+    Protected *Particle.TParticle = GetInactiveParticle(@*PlayState\ParticlesRepo)
+    If *Particle <> #Null
+      Protected ParticleSize.a = Random(5, 2)
+      Protected ParticleTimer.f = RandomFloat() * 0.1 + 0.1
+      InitParticle(*Particle, *ImpactPosition, ParticleSize, ParticleSize, Cos(ProjectileAngle) * 200, Sin(ProjectileAngle) * 200, 255,
+                   RGB(100, 120, 200), ParticleTimer)
+    EndIf
+    
+    NumParticles - 1
+  Wend
+  
+  
+EndProcedure
+
 Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TProjectile,
                                            TimeSlice.f)
   Protected i, IdxMax = ArraySize(*PlayState\Enemies())
@@ -313,7 +321,9 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
                            ProjectileRect\Position\y, ProjectileRect\Width, ProjectileRect\Height)
         HurtProjectile(*Projectile, 1.0)
         HurtEnemy(*Enemy, *Projectile\Power)
-        
+        Protected MidPoint.TVector2D
+        CalculateMidPoint(@*Enemy\MiddlePosition, @*Projectile\MiddlePosition, @MidPoint)
+        SpawnProjectileHitParticlesPlayState(*PlayState, *Projectile\Velocity\x, *Projectile\Velocity\y, @MidPoint)
       EndIf
       
     EndIf
@@ -435,6 +445,8 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
       *PlayState\EnemiesProjectiles\Projectiles()\Update(@*PlayState\EnemiesProjectiles\Projectiles(), TimeSlice)
     EndIf
   Next
+  
+  *PlayState\ParticlesRepo\Update(@*PlayState\ParticlesRepo, TimeSlice)
   
   UpdateGameCameraPlayState(*PlayState, TimeSlice)
   

@@ -277,7 +277,6 @@ EndProcedure
 Procedure SpawnProjectileHitParticlesPlayState(*PlayState.TPlayState, ProjectileVelX.f, ProjectileVelY.f,
                                                *ImpactPosition.TVector2D)
   Protected NumParticles.a = Random(10, 5)
-  Debug NumParticles
   
   Protected ProjectileAngle.f = ATan2(ProjectileVelX, ProjectileVelY)
   
@@ -286,8 +285,9 @@ Procedure SpawnProjectileHitParticlesPlayState(*PlayState.TPlayState, Projectile
     If *Particle <> #Null
       Protected ParticleSize.a = Random(5, 2)
       Protected ParticleTimer.f = RandomFloat() * 0.1 + 0.1
-      InitParticle(*Particle, *ImpactPosition, ParticleSize, ParticleSize, Cos(ProjectileAngle) * 200, Sin(ProjectileAngle) * 200, 255,
-                   RGB(100, 120, 200), ParticleTimer)
+      Protected ParticleAngle.f = ProjectileAngle + Radian(30) * Sin(Radian(Random(359, 0)))
+      InitParticle(*Particle, *ImpactPosition, ParticleSize, ParticleSize, Cos(ParticleAngle) * 200,
+                   Sin(ParticleAngle) * 200, 255, RGB(100, 120, 200), ParticleTimer)
     EndIf
     
     NumParticles - 1

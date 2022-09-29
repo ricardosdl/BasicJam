@@ -7,7 +7,7 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2022-09-28 17:02" user="ricardo.lima" host="686-D-02700820"/>
+    <lastopen date="2022-09-29 11:41" user="ricardo.lima" host="686-D-02700820"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
@@ -46,6 +46,9 @@
     <file name="notes.txt">
       <config load="0" scan="0" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
+    <file name="Particles.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
     <file name="Player.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
@@ -56,9 +59,6 @@
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="Util.pbi">
-      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
-    </file>
-    <file name="Particles.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
   </section>

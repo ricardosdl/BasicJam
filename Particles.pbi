@@ -128,7 +128,9 @@ Procedure DrawParticlesRepository(*ParticlesRepository.TParticlesRepository, Int
     EndIf
     
     ZoomSprite(*ParticlesRepository\SpriteNum, *Particle\Width, *Particle\Height)
-    DisplayTransparentSprite(*ParticlesRepository\SpriteNum, *Particle\Position\x, *Particle\Position\y,
+    DisplayTransparentSprite(*ParticlesRepository\SpriteNum,
+                             *Particle\Position\x - *ParticlesRepository\GameCamera\Position\x,
+                             *Particle\Position\y - *ParticlesRepository\GameCamera\Position\y,
                              *Particle\Intensity, *Particle\Color)
   Next
   

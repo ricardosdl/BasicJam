@@ -10,6 +10,7 @@ XIncludeFile "Ground.pbi"
 XIncludeFile "DrawText.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "Particles.pbi"
+XIncludeFile "SpriteVanisher.pbi"
 
 EnableExplicit
 
@@ -58,6 +59,7 @@ Structure TPlayState Extends TGameState
   NumEnemiesToAdd.a
   GameCamera.TCamera
   ParticlesRepo.TParticlesRepository
+  SpriteVanisher.TSpriteVanisher
 EndStructure
 
 Structure TMainMenuState Extends TGameState

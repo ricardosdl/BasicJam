@@ -1,4 +1,5 @@
 ﻿XIncludeFile "GameObject.pbi"
+XIncludeFile "Util.pbi"
 
 EnableExplicit
 

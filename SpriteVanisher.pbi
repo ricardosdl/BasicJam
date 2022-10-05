@@ -79,8 +79,10 @@ Procedure GetExplodingSpriteVanisher(*SpriteVanisher.TSpriteVanisher, *GameObjec
   Protected VanishingRectHeight.f = GameObjectHeight / NumRows
   
   Protected VanishingRectRelativePositon.TVector2D\x = 0 - HalfWidth
-  VanishingRectRelativePositon\y = 0 - HalfHeight
+  
   For i = 0 To NumColumns - 1
+    ;always restart the y position before the loop begins
+    VanishingRectRelativePositon\y = 0 - HalfHeight
     For j = 0 To NumRows - 1
       *VanishingRect = GetInactiveVanishingRect(*SpriteVanisher)
       If *VanishingRect = #Null
@@ -108,21 +110,42 @@ Procedure GetExplodingSpriteVanisher(*SpriteVanisher.TSpriteVanisher, *GameObjec
       *VanishingRect\VelX = Cos(VanishingRectAngle) * 200
       *VanishingRect\VelY = Sin(VanishingRectAngle) * 200
       
-    Next
+    Next j
   Next i
   
 EndProcedure
 
 Procedure DrawSpriteVanisher(*SpriteVanisher.TSpriteVanisher, Intensity.a = 255)
+  Protected NewList *VanishingRectsDrawn.TVanishingRect()
+  
   ForEach *SpriteVanisher\VanishingRects()
     If Not *SpriteVanisher\VanishingRects()\Active
       Continue
     EndIf
     
-    ;TODO:implement drawing
+    Protected *VanishingRect.TVanishingRect
+    *VanishingRect = @*SpriteVanisher\VanishingRects()
     
+    ClipSprite(*VanishingRect\SpriteNum, *VanishingRect\SpriteClipX, *VanishingRect\SpriteClipY,
+               *VanishingRect\Width, *VanishingRect\Height)
+    ZoomSprite(*VanishingRect\SpriteNum, *VanishingRect\Width, *VanishingRect\Height)
+    DisplayTransparentSprite(*VanishingRect\SpriteNum, Int(*VanishingRect\Position\x), Int(*VanishingRect\Position\y),
+                             *VanishingRect\Intensity)
+    ;save the sprite drawn so we can remove the clipping after the loop
+    AddElement(*VanishingRectsDrawn())
+    *VanishingRectsDrawn() = *VanishingRect
       
   Next
+  
+  If ListSize(*VanishingRectsDrawn()) > 0
+    ForEach *VanishingRectsDrawn()
+      ;remove the clipping and restores the zoom so the other gameobjects that uses the spritenum are not
+      ;affected
+      ClipSprite(*VanishingRectsDrawn()\SpriteNum, #PB_Default, #PB_Default, #PB_Default, #PB_Default)
+      ZoomSprite(*VanishingRectsDrawn()\SpriteNum, *VanishingRectsDrawn()\SpriteWidth, *VanishingRectsDrawn()\SpriteHeight)
+    Next
+  EndIf
+  
   
 EndProcedure
 
@@ -149,7 +172,7 @@ EndProcedure
 Procedure InitSpriteVanisher(*SpriteVanisher.TSpriteVanisher, *GameCamera.TCamera, DrawOrder.l)
   Protected Position.TVector2D\x = 0
   Position\y = 0
-  InitGameObject(*SpriteVanisher, @Position, -1, #Null, #Null, #True, #SPRITES_ZOOM, DrawOrder)
+  InitGameObject(*SpriteVanisher, @Position, -1, @UpdateSpriteVanisher(), @DrawSpriteVanisher(), #True, #SPRITES_ZOOM, DrawOrder)
   
   *SpriteVanisher\GameCamera = *GameCamera
   

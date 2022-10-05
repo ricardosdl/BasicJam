@@ -214,11 +214,14 @@ Procedure KillEnemy(*Enemy.TEnemy)
 EndProcedure
 
 
-Procedure HurtEnemy(*Enemy.TEnemy, Power.f)
+Procedure.a HurtEnemy(*Enemy.TEnemy, Power.f)
   *Enemy\Health - Power
   If *Enemy\Health <= 0.0
     KillEnemy(*Enemy)
+    ProcedureReturn #True
   EndIf
+  
+  ProcedureReturn #False
   
 EndProcedure
 

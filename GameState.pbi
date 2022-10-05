@@ -244,6 +244,11 @@ Procedure InitParticlesRepositoryPlayState(*PlayState.TPlayState)
   AddDrawItemDrawList(@*PlayState\DrawList, @*PlayState\ParticlesRepo)
 EndProcedure
 
+Procedure InitSpriteVanisherPlayState(*PlayState.TPlayState)
+  InitSpriteVanisher(@*PlayState\SpriteVanisher, @*PlayState\GameCamera, #EnemyDrawOrder)
+  AddDrawItemDrawList(@*PlayState\DrawList, @*PlayState\SpriteVanisher)
+EndProcedure
+
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 0;important to start at zero, it will be increased to one when the game starts
   *PlayState\MaxLevel = 10;TODO: more levels
@@ -269,6 +274,8 @@ Procedure StartPlayState(*PlayState.TPlayState)
   InitGroundPlayState(*PlayState)
   
   InitParticlesRepositoryPlayState(*PlayState)
+  
+  InitSpriteVanisherPlayState(*PlayState)
   
   
 EndProcedure
@@ -322,10 +329,14 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
                            EnemyRect\Height, ProjectileRect\Position\x,
                            ProjectileRect\Position\y, ProjectileRect\Width, ProjectileRect\Height)
         HurtProjectile(*Projectile, 1.0)
-        HurtEnemy(*Enemy, *Projectile\Power)
+        Protected EnemyWasKilled.a = HurtEnemy(*Enemy, *Projectile\Power)
         Protected MidPoint.TVector2D
         CalculateMidPoint(@*Enemy\MiddlePosition, @*Projectile\MiddlePosition, @MidPoint)
         SpawnProjectileHitParticlesPlayState(*PlayState, *Projectile\Velocity\x, *Projectile\Velocity\y, @MidPoint)
+        If EnemyWasKilled
+          GetExplodingSpriteVanisher(@*PlayState\SpriteVanisher, *Enemy)
+        EndIf
+        
       EndIf
       
     EndIf
@@ -449,6 +460,8 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   Next
   
   *PlayState\ParticlesRepo\Update(@*PlayState\ParticlesRepo, TimeSlice)
+  
+  *PlayState\SpriteVanisher\Update(@*PlayState\SpriteVanisher, TimeSlice)
   
   UpdateGameCameraPlayState(*PlayState, TimeSlice)
   

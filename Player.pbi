@@ -17,6 +17,10 @@ Structure TPlayer Extends TGameObject
   *DrawList.TDrawList
   HurtTimer.f
   HasShot.a
+  IsHopping.a
+  VerticalY.f
+  VerticalYVelocity.f
+  VerticalYAcceleration.f
 EndStructure
 
 Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
@@ -79,12 +83,6 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
     *Player\Velocity\y = 200
   EndIf
   
-  If (*Player\Velocity\x <> 0) Or (*Player\Velocity\y <> 0)
-    *Player\LastMovementAngle = ATan2(*Player\Velocity\x, *Player\Velocity\y)
-  EndIf
-  
-    
-  
   If *Player\IsShooting
     If DisplayedAtLasFrame
       *Player\HasShot = #False
@@ -98,6 +96,34 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   If *Player\HurtTimer > 0.0
     *Player\HurtTimer - TimeSlice
   EndIf
+  
+  Protected IsPlayerMoving.a = Bool((*Player\Velocity\x <> 0) Or (*Player\Velocity\y <> 0))
+  
+  If IsPlayerMoving
+    *Player\LastMovementAngle = ATan2(*Player\Velocity\x, *Player\Velocity\y)
+  EndIf
+  
+  If IsPlayerMoving And Not *Player\IsHopping
+    ;let's hop
+    *Player\VerticalYAcceleration = -50
+    *Player\IsHopping = #True
+    
+  EndIf
+  
+  If *Player\IsHopping
+    *Player\VerticalYVelocity + *Player\VerticalYAcceleration * TimeSlice
+    *Player\VerticalY + *Player\VerticalYVelocity * TimeSlice
+    *Player\VerticalYAcceleration + 100 * TimeSlice;gravity
+    
+    If *Player\VerticalY >= 0.0
+      *Player\VerticalY = 0.0
+      *Player\IsHopping = #False
+    EndIf
+    
+    
+  EndIf
+  
+  Debug *Player\VerticalY
   
   
   UpdateGameObject(*Player, TimeSlice)
@@ -199,6 +225,14 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   *Player\HasShot = #False
   
   *Player\Displayed = #False
+  
+  *Player\IsHopping = #False
+  
+  *Player\VerticalY = 0.0
+  
+  *Player\VerticalYVelocity = 0.0
+  
+  *Player\VerticalYAcceleration = 0.0
   
 EndProcedure
 

@@ -36,6 +36,7 @@ Procedure.a LoadSprites()
   LoadedAll = LoadedAll & Bool(LoadSprite(#StandardFont, "data\img\font.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#EnemySpawner, "data\img\enemyspawner.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#ShotFlash, "data\img\shotflash.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#PlayerShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending))
   
   ProcedureReturn LoadedAll
 EndProcedure

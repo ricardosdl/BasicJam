@@ -258,14 +258,14 @@ EndProcedure
 
 Procedure DrawEnemy(*Enemy.TEnemy, Intensity.a = 255)
   If *Enemy\CurrentState = #EnemyGoingToObjectiveRect
-    StartDrawing(ScreenOutput())
-    
-    Box(*Enemy\Position\x, *Enemy\Position\y,
-        *Enemy\Width, *Enemy\Height, RGB(123, 255, 255))
-    
-    Box(*Enemy\ObjectiveRect\Position\x, *Enemy\ObjectiveRect\Position\y,
-        *Enemy\ObjectiveRect\Width, *Enemy\ObjectiveRect\Height, RGB(100, 123, 255))
-    StopDrawing()
+;     StartDrawing(ScreenOutput())
+;     
+;     Box(*Enemy\Position\x, *Enemy\Position\y,
+;         *Enemy\Width, *Enemy\Height, RGB(123, 255, 255))
+;     
+;     Box(*Enemy\ObjectiveRect\Position\x, *Enemy\ObjectiveRect\Position\y,
+;         *Enemy\ObjectiveRect\Width, *Enemy\ObjectiveRect\Height, RGB(100, 123, 255))
+;     StopDrawing()
   EndIf
   
   DrawGameObjectWithGameCamera(*Enemy, Intensity)

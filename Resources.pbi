@@ -26,6 +26,7 @@ Enumeration ESprites
   #StandardFont
   #EnemySpawner
   #ShotFlash
+  #PlayerShadow
 EndEnumeration
 
 DisableExplicit

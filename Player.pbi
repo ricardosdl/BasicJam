@@ -9,6 +9,14 @@ EnableExplicit
 #PLAYER_SHOOT_TIMER = 1.0 / 5
 #PLAYER_SHOOT_ANGLE_VARIATION = 0.04363323003054;in radians
 
+Structure TPlayerShadow
+  Sprite.i
+  ZoomedOriginalWidth.f
+  ZoomedOriginalHeight.f
+  
+  
+EndStructure
+
 Structure TPlayer Extends TGameObject
   *Projectiles.TProjectileList
   IsShooting.a
@@ -21,6 +29,7 @@ Structure TPlayer Extends TGameObject
   VerticalY.f
   VerticalYVelocity.f
   VerticalYAcceleration.f
+  PlayerShadow.TPlayerShadow
 EndStructure
 
 Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
@@ -105,7 +114,7 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   
   If IsPlayerMoving And Not *Player\IsHopping
     ;let's hop
-    *Player\VerticalYAcceleration = -50
+    *Player\VerticalYAcceleration = -350
     *Player\IsHopping = #True
     
   EndIf
@@ -113,7 +122,7 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   If *Player\IsHopping
     *Player\VerticalYVelocity + *Player\VerticalYAcceleration * TimeSlice
     *Player\VerticalY + *Player\VerticalYVelocity * TimeSlice
-    *Player\VerticalYAcceleration + 100 * TimeSlice;gravity
+    *Player\VerticalYAcceleration + 2500 * TimeSlice;gravity
     
     If *Player\VerticalY >= 0.0
       *Player\VerticalY = 0.0
@@ -152,16 +161,59 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   
 EndProcedure
 
+Procedure PlayerDrawShadow(*Player.TPlayer)
+  ;first draw shadow
+  Protected ShadowWidth.i, ShadowHeight.i
+  
+  If *Player\IsHopping
+    ;when player is hopping just increase the shadow width and height a little
+    ZoomSprite(*Player\PlayerShadow\Sprite, *Player\PlayerShadow\ZoomedOriginalWidth * 1.2,
+               *Player\PlayerShadow\ZoomedOriginalHeight * 1.2)
+    ;get the new size for further calculations
+    ShadowWidth = SpriteWidth(*Player\PlayerShadow\Sprite)
+    ShadowHeight = SpriteHeight(*Player\PlayerShadow\Sprite)
+  Else
+    ;player not hopping, use the normal size
+    ZoomSprite(*Player\PlayerShadow\Sprite, *Player\PlayerShadow\ZoomedOriginalWidth,
+               *Player\PlayerShadow\ZoomedOriginalHeight)
+    ;get the new size for further calculations
+    ShadowWidth = SpriteWidth(*Player\PlayerShadow\Sprite)
+    ShadowHeight = SpriteHeight(*Player\PlayerShadow\Sprite)
+  EndIf
+  
+  
+  Protected ShadowX.f = *Player\MiddlePosition\x - (ShadowWidth / 2); + (ShadowWidth * 0.9)
+  Protected ShadowY.f = *Player\MiddlePosition\y + (ShadowHeight / 3)
+  DisplayTransparentSprite(*Player\PlayerShadow\Sprite, ShadowX, ShadowY)
+  
+EndProcedure
+
+Procedure DrawPlayerWithGameCamera(*Player.TPlayer, Intensity = 255)
+  Protected.l PosX, PosY
+  
+  PlayerDrawShadow(*Player)
+  
+  PosX = Int(*Player\Position\x - *Player\GameCamera\Position\x)
+  If *Player\IsHopping
+    PosY = Int((*Player\Position\y + *Player\VerticalY) - *Player\GameCamera\Position\y)
+  Else
+    PosY = Int(*Player\Position\y - *Player\GameCamera\Position\y)
+  EndIf
+  
+  DisplayTransparentSprite(*Player\SpriteNum, PosX, PosY, Intensity)
+  
+EndProcedure
+
 Procedure DrawPlayer(*Player.TPlayer)
   If *Player\HurtTimer <= 0
-    DrawGameObjectWithGameCamera(*Player)
+    DrawPlayerWithGameCamera(*Player)
   Else
     Protected HurtTimerMs = *Player\HurtTimer * 1000
     
     Protected IsOpaque = (HurtTimerMs / 100) % 2
     
     ;after each 100 ms we will display the player transparent
-    DrawGameObjectWithGameCamera(*Player, 255 * IsOpaque)
+    DrawPlayerWithGameCamera(*Player, 255 * IsOpaque)
   EndIf
   
   If *Player\HasShot
@@ -203,6 +255,13 @@ Procedure.a GetCollisionRectPlayer(*Player.TPlayer, *CollisionRect.TRect)
   
 EndProcedure
 
+Procedure PlayerSetupPlayerShadowSprite(*Player.TPlayer, ZoomFactor.f)
+  ZoomSprite(#PlayerShadow, SpriteWidth(#PlayerShadow) * ZoomFactor, SpriteHeight(#PlayerShadow) * ZoomFactor)
+  *Player\PlayerShadow\Sprite = #PlayerShadow
+  *Player\PlayerShadow\ZoomedOriginalWidth = SpriteWidth(#PlayerShadow)
+  *Player\PlayerShadow\ZoomedOriginalHeight = SpriteHeight(#PlayerShadow)
+EndProcedure
+
 Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f, *DrawList.TDrawList)
   InitGameObject(*Player, *Pos, #Player1, @UpdatePlayer(), @DrawPlayer(), #True, ZoomFactor,
                  #PlayerDrawOrder)
@@ -233,6 +292,8 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   *Player\VerticalYVelocity = 0.0
   
   *Player\VerticalYAcceleration = 0.0
+  
+  PlayerSetupPlayerShadowSprite(*Player, ZoomFactor)
   
 EndProcedure
 

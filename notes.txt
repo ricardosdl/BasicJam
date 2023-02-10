@@ -11,3 +11,6 @@ https://0x72.itch.io/16x16-dungeon-tileset
 https://opengameart.org/content/basic-font
 
 https://opengameart.org/content/muzzle-flash-with-model
+
+==idea
+create a player power up that activates every time the player hops

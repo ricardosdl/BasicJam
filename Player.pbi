@@ -9,11 +9,15 @@ EnableExplicit
 #PLAYER_SHOOT_TIMER = 1.0 / 5
 #PLAYER_SHOOT_ANGLE_VARIATION = 0.04363323003054;in radians
 
+#PLAYER_HOP_DURATION = 0.25;in seconds
+#PLAYER_SHADOW_MAX_ANGLE = 3.14159274101257;in radians
+#PLAYER_SHADOW_ANGLE_VELOCITY = #PLAYER_SHADOW_MAX_ANGLE / #PLAYER_HOP_DURATION
+
 Structure TPlayerShadow
   Sprite.i
   ZoomedOriginalWidth.f
   ZoomedOriginalHeight.f
-  
+  CurrentAngle.f
   
 EndStructure
 
@@ -26,10 +30,9 @@ Structure TPlayer Extends TGameObject
   HurtTimer.f
   HasShot.a
   IsHopping.a
-  VerticalY.f
-  VerticalYVelocity.f
-  VerticalYAcceleration.f
   PlayerShadow.TPlayerShadow
+  VerticalY.f
+  MaxVerticalY.f
 EndStructure
 
 Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
@@ -114,25 +117,21 @@ Procedure UpdatePlayer(*Player.TPlayer, TimeSlice.f)
   
   If IsPlayerMoving And Not *Player\IsHopping
     ;let's hop
-    *Player\VerticalYAcceleration = -350
+    *Player\PlayerShadow\CurrentAngle = 0
     *Player\IsHopping = #True
-    
   EndIf
   
   If *Player\IsHopping
-    *Player\VerticalYVelocity + *Player\VerticalYAcceleration * TimeSlice
-    *Player\VerticalY + *Player\VerticalYVelocity * TimeSlice
-    *Player\VerticalYAcceleration + 2500 * TimeSlice;gravity
+    *Player\PlayerShadow\CurrentAngle + #PLAYER_SHADOW_ANGLE_VELOCITY * TimeSlice
+    *Player\VerticalY = *Player\MaxVerticalY * Sin(*Player\PlayerShadow\CurrentAngle)
     
-    If *Player\VerticalY >= 0.0
+    If *Player\PlayerShadow\CurrentAngle >= #PLAYER_SHADOW_MAX_ANGLE
       *Player\VerticalY = 0.0
       *Player\IsHopping = #False
     EndIf
     
     
   EndIf
-  
-  Debug *Player\VerticalY
   
   
   UpdateGameObject(*Player, TimeSlice)
@@ -195,7 +194,7 @@ Procedure DrawPlayerWithGameCamera(*Player.TPlayer, Intensity = 255)
   
   PosX = Int(*Player\Position\x - *Player\GameCamera\Position\x)
   If *Player\IsHopping
-    PosY = Int((*Player\Position\y + *Player\VerticalY) - *Player\GameCamera\Position\y)
+    PosY = Int((*Player\Position\y + (*Player\VerticalY * -1)) - *Player\GameCamera\Position\y)
   Else
     PosY = Int(*Player\Position\y - *Player\GameCamera\Position\y)
   EndIf
@@ -260,6 +259,7 @@ Procedure PlayerSetupPlayerShadowSprite(*Player.TPlayer, ZoomFactor.f)
   *Player\PlayerShadow\Sprite = #PlayerShadow
   *Player\PlayerShadow\ZoomedOriginalWidth = SpriteWidth(#PlayerShadow)
   *Player\PlayerShadow\ZoomedOriginalHeight = SpriteHeight(#PlayerShadow)
+  *Player\PlayerShadow\CurrentAngle = 0.0
 EndProcedure
 
 Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f, *DrawList.TDrawList)
@@ -289,9 +289,7 @@ Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVe
   
   *Player\VerticalY = 0.0
   
-  *Player\VerticalYVelocity = 0.0
-  
-  *Player\VerticalYAcceleration = 0.0
+  *Player\MaxVerticalY = *Player\Height * 0.5
   
   PlayerSetupPlayerShadowSprite(*Player, ZoomFactor)
   

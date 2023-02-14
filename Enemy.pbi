@@ -257,17 +257,6 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawEnemy(*Enemy.TEnemy, Intensity.a = 255)
-  If *Enemy\CurrentState = #EnemyGoingToObjectiveRect
-;     StartDrawing(ScreenOutput())
-;     
-;     Box(*Enemy\Position\x, *Enemy\Position\y,
-;         *Enemy\Width, *Enemy\Height, RGB(123, 255, 255))
-;     
-;     Box(*Enemy\ObjectiveRect\Position\x, *Enemy\ObjectiveRect\Position\y,
-;         *Enemy\ObjectiveRect\Width, *Enemy\ObjectiveRect\Height, RGB(100, 123, 255))
-;     StopDrawing()
-  EndIf
-  
   DrawGameObjectWithGameCamera(*Enemy, Intensity)
 EndProcedure
 
@@ -425,18 +414,6 @@ Procedure DrawAppleEnemy(*AppleEnemy.TEnemy)
   DrawEnemy(*AppleEnemy)
   UpdateMiddlePositionGameObject(*AppleEnemy)
   UpdateMiddlePositionGameObject(*AppleEnemy\Player)
-  
-  If IsCloseEneoughToPlayerEnemy(*AppleEnemy, 6 * *AppleEnemy\Width)
-    
-    
-    StartDrawing(ScreenOutput())
-    LineXY(*AppleEnemy\MiddlePosition\x, *AppleEnemy\MiddlePosition\y, *AppleEnemy\Player\MiddlePosition\x,
-           *AppleEnemy\Player\MiddlePosition\y, RGB(150, 30, 30))
-    StopDrawing()
-    ;Debug "close enough to shoot"
-    ;SwitchToShootingTargetEnemy(*AppleEnemy, *AppleEnemy\Player)
-    ;ProcedureReturn
-  EndIf
 EndProcedure
 
 Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -882,13 +859,6 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
-  If *TangerineEnemy\CurrentState = #EnemyGoingToObjectiveRect
-    StartDrawing(ScreenOutput())
-    Box(*TangerineEnemy\ObjectiveRect\Position\x, *TangerineEnemy\ObjectiveRect\Position\y,
-        *TangerineEnemy\ObjectiveRect\Width, *TangerineEnemy\ObjectiveRect\Height, RGB($55, $65, $47))
-    StopDrawing()
-  EndIf
-  
   DrawEnemy(*TangerineEnemy)
 EndProcedure
 
@@ -1014,15 +984,7 @@ Procedure UpdatePineappleEnemy(*Pineapple.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawPineappleEnemy(*Pineapple.TEnemy)
-  If *Pineapple\CurrentState = #EnemyGoingToObjectiveRect
-    StartDrawing(ScreenOutput())
-    Box(*Pineapple\ObjectiveRect\Position\x, *Pineapple\ObjectiveRect\Position\y,
-        *Pineapple\ObjectiveRect\Width, *Pineapple\ObjectiveRect\Height, RGB($87, $198, $127))
-    StopDrawing()
-  EndIf
-  
   DrawEnemy(*Pineapple)
-  
 EndProcedure
 
 Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -1466,24 +1428,6 @@ EndProcedure
 Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
   DisplayTransparentSprite(*Jabuticaba\SpriteNum, Int(*Jabuticaba\JumpPosition\x),
                            Int(*Jabuticaba\JumpPosition\y))
-  If *Jabuticaba\CurrentState = #EnemyPatrolling
-    ;DisplayTransparentSprite(#JabuticabaShadow, *Jabuticaba\Position\x, *Jabuticaba\Position\y)
-    StartDrawing(ScreenOutput())
-    
-    Box(*Jabuticaba\ObjectiveRect\Position\x, *Jabuticaba\ObjectiveRect\Position\y,
-        *Jabuticaba\ObjectiveRect\Width, *Jabuticaba\ObjectiveRect\Height, RGB(55, 200, 55))
-    
-    StopDrawing()
-  ElseIf *Jabuticaba\CurrentState = #EnemyWaiting
-    StartDrawing(ScreenOutput())
-    DrawingMode(#PB_2DDrawing_Outlined)
-    Circle(*Jabuticaba\MiddlePosition\x, *Jabuticaba\MiddlePosition\y, 6 * *Jabuticaba\Width,
-           RGB(75, 233, 125))
-    
-    StopDrawing()
-    
-  EndIf
-  
 EndProcedure
 
 Procedure.a GetCollisionRectJabuticaba(*Jabuticaba.TEnemy, *CollisionRect.TRect)

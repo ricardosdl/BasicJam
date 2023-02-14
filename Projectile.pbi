@@ -71,22 +71,6 @@ EndProcedure
 Procedure DrawProjectile(*Projectile.TProjectile)
   RotateSprite(*Projectile\SpriteNum, Degree(*Projectile\Angle), #PB_Absolute)
   DrawGameObject(*Projectile)
-  
-  If ListSize(*Projectile\WayPoints())
-    StartDrawing(ScreenOutput())
-    Protected WayPointNum.a = 1
-    ForEach *Projectile\WayPoints()
-      Box(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y,
-          *Projectile\WayPoints()\Width, *Projectile\WayPoints()\Height, RGB($78, $23, $78))
-      DrawText(*Projectile\WayPoints()\Position\x, *Projectile\WayPoints()\Position\y, StrU(WayPointNum, #PB_Byte))
-      WayPointNum + 1
-    Next
-    
-    StopDrawing()
-  EndIf
-  
-  
-  
 EndProcedure
 
 Procedure UpdateProjectile(*Projectile.TProjectile, TimeSlice.f)

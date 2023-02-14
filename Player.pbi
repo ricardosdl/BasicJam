@@ -3,6 +3,7 @@ XIncludeFile "Projectile.pbi"
 XIncludeFile "Resources.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
+XIncludeFile "PowerUp.pbi"
 
 EnableExplicit
 

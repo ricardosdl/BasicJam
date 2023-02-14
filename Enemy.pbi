@@ -1,5 +1,4 @@
 ﻿XIncludeFile "GameObject.pbi"
-XIncludeFile "GameObject.pbi"
 XIncludeFile "Math.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "Projectile.pbi"

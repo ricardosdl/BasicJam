@@ -90,7 +90,8 @@ EndProcedure
 
 Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList, *Holder.TGameObject)
   
-  InitGameObject(*PowerUp, *Position, 0, @PowerUpUpdateShootAllDirections(), @DrawGameObject(), #True, #SPRITES_ZOOM, #PowerUpDrawOrder)
+  InitGameObject(*PowerUp, *Position, #PowerUpShootAllDirections, @PowerUpUpdateShootAllDirections(), @DrawGameObject(),
+                 #True, #SPRITES_ZOOM, #PowerUpDrawOrder)
   
   PowerUpInit(*PowerUp, #POWERUP_TYPE_SHOOT_ALL_DIRECTIONS, 3.0, -1, #POWERUP_SHOOT_ALL_DIRECTIONS_TIMER,
               *ProjectileList, *Holder)

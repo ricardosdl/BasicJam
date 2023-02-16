@@ -27,6 +27,7 @@ Enumeration ESprites
   #EnemySpawner
   #ShotFlash
   #PlayerShadow
+  #PowerUpShootAllDirections
 EndEnumeration
 
 DisableExplicit

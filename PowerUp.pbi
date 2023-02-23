@@ -27,7 +27,35 @@ Structure TPowerUp Extends TGameObject
   *ProjectileList.TProjectileList
   *Holder.TGameObject
   *DrawList.TDrawList
+  Equipped.a
 EndStructure
+
+Structure TPowerUpList
+  List PowerUps.TPowerUp()
+EndStructure
+
+Procedure PowerUpGetInactive(*PowerUpList.TPowerUpList, AddIfNotFound.a = #True)
+  ForEach *PowerUpList\PowerUps()
+    If Not *PowerUpList\PowerUps()\Active
+      ProcedureReturn @*PowerUpList\PowerUps()
+    EndIf  
+  Next
+  
+  If AddIfNotFound
+    If AddElement(*PowerUpList\PowerUps()) <> 0
+      ;sucessfully added a new element, now return it
+      ProcedureReturn @*PowerUpList\PowerUps()
+    Else
+      ;error allocating the element in the list
+      ProcedureReturn #Null
+    EndIf
+  EndIf
+  
+  
+  ProcedureReturn #Null
+  
+  
+EndProcedure
 
 Procedure PowerUpShootAllDirections(*PowerUp.TPowerUp)
   Protected NumShots.a = #POWERUP_SHOOT_ALL_DIRECTIONS_MAX_SHOTS, i.a = 0
@@ -58,6 +86,11 @@ EndProcedure
 
 
 Procedure PowerUpUpdateShootAllDirections(*PowerUp.TPowerUp, TimeSlice.f)
+  If Not *PowerUp\Equipped
+    UpdateGameObject(*PowerUp, TimeSlice)
+    ProcedureReturn
+  EndIf
+  
   *PowerUp\Timer - TimeSlice
   
   If *PowerUp\Timer <= 0.0
@@ -67,7 +100,8 @@ Procedure PowerUpUpdateShootAllDirections(*PowerUp.TPowerUp, TimeSlice.f)
   
   *PowerUp\ShootTimer + TimeSlice
   If *PowerUp\ShootTimer >= #POWERUP_SHOOT_ALL_DIRECTIONS_TIMER
-    
+    *PowerUp\ShootTimer = 0.0
+    PowerUpShootAllDirections(*PowerUp)
   EndIf
   
   
@@ -77,7 +111,8 @@ Procedure PowerUpUpdateShootAllDirections(*PowerUp.TPowerUp, TimeSlice.f)
   
 EndProcedure
 
-Procedure PowerUpInit(*PowerUp.TPowerUp, Type.a, Timer.f, Uses.b, ShootTimer.f, *ProjectileList.TProjectileList, *Holder.TGameObject)
+Procedure PowerUpInit(*PowerUp.TPowerUp, Type.a, Timer.f, Uses.b, ShootTimer.f, *ProjectileList.TProjectileList,
+                      *Holder.TGameObject, Equipped.a, *DrawList.TDrawList)
   *PowerUp\Type = Type
   
   *PowerUp\Timer = Timer
@@ -86,15 +121,31 @@ Procedure PowerUpInit(*PowerUp.TPowerUp, Type.a, Timer.f, Uses.b, ShootTimer.f, 
   *PowerUp\ProjectileList = *ProjectileList
   *PowerUp\Holder = *Holder
   *PowerUp\Active = #True
+  *PowerUp\Equipped = Equipped
+  *PowerUp\DrawList = *DrawList
 EndProcedure
 
-Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList, *Holder.TGameObject)
+Procedure PowerUpDraw(*PowerUp.TPowerUp, Intensity = 255)
+  If *PowerUp\Equipped
+    ProcedureReturn
+  EndIf
+  DrawGameObject(*PowerUp, 255)
+EndProcedure
+
+Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList,
+                                        *Holder.TGameObject, Equipped.a, *DrawList.TDrawList)
   
-  InitGameObject(*PowerUp, *Position, #PowerUpShootAllDirections, @PowerUpUpdateShootAllDirections(), @DrawGameObject(),
+  InitGameObject(*PowerUp, *Position, #PowerUpShootAllDirections, @PowerUpUpdateShootAllDirections(), @PowerUpDraw(),
                  #True, #SPRITES_ZOOM, #PowerUpDrawOrder)
   
   PowerUpInit(*PowerUp, #POWERUP_TYPE_SHOOT_ALL_DIRECTIONS, 3.0, -1, #POWERUP_SHOOT_ALL_DIRECTIONS_TIMER,
-              *ProjectileList, *Holder)
+              *ProjectileList, *Holder, Equipped, *DrawList)
+EndProcedure
+
+Procedure PowerUpEquip(*PowerUp.TPowerUp, *Holder.TGameObject, *ProjectileList.TProjectileList)
+  *PowerUp\Equipped = #True
+  *PowerUp\Holder = *Holder
+  *PowerUp\ProjectileList = *ProjectileList
 EndProcedure
 
 DisableExplicit

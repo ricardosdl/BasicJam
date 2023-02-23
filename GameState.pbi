@@ -11,6 +11,7 @@ XIncludeFile "DrawText.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "Particles.pbi"
 XIncludeFile "SpriteVanisher.pbi"
+XIncludeFile "PowerUp.pbi"
 
 EnableExplicit
 
@@ -60,6 +61,7 @@ Structure TPlayState Extends TGameState
   GameCamera.TCamera
   ParticlesRepo.TParticlesRepository
   SpriteVanisher.TSpriteVanisher
+  PowerUpsList.TPowerUpList
 EndStructure
 
 Structure TMainMenuState Extends TGameState
@@ -249,6 +251,23 @@ Procedure InitSpriteVanisherPlayState(*PlayState.TPlayState)
   AddDrawItemDrawList(@*PlayState\DrawList, @*PlayState\SpriteVanisher)
 EndProcedure
 
+Procedure PlayStateInitPowerUps(*PlayState.TPlayState)
+  Protected *PowerUp.TPowerUp = PowerUpGetInactive(*PlayState\PowerUpsList)
+  If *PowerUp = #Null
+    CallDebugger
+    ProcedureReturn
+  EndIf
+  
+  Protected Position.TVector2D
+  Position\x = Random(ScreenWidth() * 0.9, 0.1 * ScreenWidth())
+  Position\y = Random(ScreenHeight() * 0.9, 0.1 * ScreenHeight())
+  PowerUpShootAllDirectionsInit(*PowerUp, @Position, #Null, #Null, #False, @*PlayState\DrawList)
+  
+  AddDrawItemDrawList(@*PlayState\DrawList, *PowerUp)
+  
+  
+EndProcedure
+
 Procedure StartPlayState(*PlayState.TPlayState)
   *PlayState\CurrentLevel = 0;important to start at zero, it will be increased to one when the game starts
   *PlayState\MaxLevel = 10;TODO: more levels
@@ -276,6 +295,8 @@ Procedure StartPlayState(*PlayState.TPlayState)
   InitParticlesRepositoryPlayState(*PlayState)
   
   InitSpriteVanisherPlayState(*PlayState)
+  
+  PlayStateInitPowerUps(*PlayState)
   
   
 EndProcedure
@@ -381,6 +402,35 @@ Procedure CollisionPlayerEnemies(*PlayState.TPlayState, TimeSlice.f)
   Next
 EndProcedure
 
+Procedure CollisionPlayerPowerUps(*PlayState.TPlayState, TimeSlice.f)
+  Protected PlayerCollisionRect.TRect
+  GetCollisionRectPlayer(@*PlayState\Player, @PlayerCollisionRect)
+  
+  
+  ForEach *PlayState\PowerUpsList\PowerUps()
+    Protected *PowerUp.TPowerUp = @*PlayState\PowerUpsList\PowerUps()
+    Protected ActiveAndNotEquipped.a = Bool(*PowerUp\Active And (Not *PowerUp\Equipped))
+    If Not ActiveAndNotEquipped
+      Continue
+    EndIf
+    
+    
+    
+    If Not CollisionRectRect(PlayerCollisionRect\Position\x, PlayerCollisionRect\Position\y,
+                             PlayerCollisionRect\Width, PlayerCollisionRect\Height, *PowerUp\Position\x,
+                             *PowerUp\Position\y, *PowerUp\Width, *PowerUp\Height)
+      Continue
+    EndIf
+    
+    ;collided
+    PowerUpEquip(*PowerUp, @*PlayState\Player, @*PlayState\PlayerProjectiles)
+    
+    
+    
+    
+  Next
+EndProcedure
+
 Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
   ;collisions of player projectiles and enemies
   ForEach *PlayState\PlayerProjectiles\Projectiles()
@@ -391,6 +441,10 @@ Procedure UpdateCollisionsPlayState(*PlayState.TPlayState, TimeSlice.f)
   Next
   
   CollisionPlayerEnemies(*PlayState, TimeSlice)
+  
+  CollisionPlayerPowerUps(*PlayState, TimeSlice)
+  
+  
 EndProcedure
 
 Procedure.a FinishedEnemiesPlayState(*PlayState.TPlayState)
@@ -466,6 +520,15 @@ Procedure UpdatePlayState(*PlayState.TPlayState, TimeSlice.f)
   UpdateGameCameraPlayState(*PlayState, TimeSlice)
   
   UpdateCollisionsPlayState(*PlayState, TimeSlice)
+  
+  ForEach *PlayState\PowerUpsList\PowerUps()
+    If Not *PlayState\PowerUpsList\PowerUps()\Active
+      Continue
+    EndIf
+    
+    *PlayState\PowerUpsList\PowerUps()\Update(@*PlayState\PowerUpsList\PowerUps(), TimeSlice)
+    
+  Next
   
   If Not *PlayState\FinishedWaveEarly And FinishedEnemiesPlayState(*PlayState)
     ;EndLevelPlayState(*PlayState)

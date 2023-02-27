@@ -5,6 +5,7 @@ XIncludeFile "Projectile.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
 XIncludeFile "Camera.pbi"
+XIncludeFile "GameActor.pbi"
 
 EnableExplicit
 
@@ -42,7 +43,7 @@ Structure TEnemyClone Extends TVector2D
   Active.a
 EndStructure
 
-Structure TEnemy Extends TGameObject
+Structure TEnemy Extends TGameActor
   *Player.TGameObject
   CurrentState.a
   LastState.a
@@ -90,6 +91,7 @@ EndProcedure
 
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList,
                     *DrawList.TDrawList, EnemyType.a)
+  GameActorInit(*Enemy)
   *Enemy\Player = *Player
   *Enemy\Projectiles = *ProjectileList
   

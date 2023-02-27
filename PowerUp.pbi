@@ -4,6 +4,7 @@ XIncludeFile "Math.pbi"
 XIncludeFile "Util.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
+XIncludeFile "GameActor.pbi"
 
 EnableExplicit
 
@@ -19,13 +20,13 @@ EndEnumeration
 
 Prototype PowerUpUpdateProc(*PowerUp, TimeSlice.f)
 
-Structure TPowerUp Extends TGameObject
+Structure TPowerUp Extends TGameActor
   Type.a
   Timer.f
   Uses.b
   ShootTimer.f
   *ProjectileList.TProjectileList
-  *Holder.TGameObject
+  *Holder.TGameActor
   *DrawList.TDrawList
   Equipped.a
 EndStructure
@@ -113,6 +114,7 @@ EndProcedure
 
 Procedure PowerUpInit(*PowerUp.TPowerUp, Type.a, Timer.f, Uses.b, ShootTimer.f, *ProjectileList.TProjectileList,
                       *Holder.TGameObject, Equipped.a, *DrawList.TDrawList)
+  GameActorInit(*PowerUp)
   *PowerUp\Type = Type
   
   *PowerUp\Timer = Timer
@@ -140,6 +142,14 @@ Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, 
   
   PowerUpInit(*PowerUp, #POWERUP_TYPE_SHOOT_ALL_DIRECTIONS, 3.0, -1, #POWERUP_SHOOT_ALL_DIRECTIONS_TIMER,
               *ProjectileList, *Holder, Equipped, *DrawList)
+EndProcedure
+
+Procedure PowerUpFreezingShotInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList,
+                                  *Holder.TGameObject, Equipped.a, *DrawList.TDrawList)
+  InitGameObject(*PowerUp, *Position, #PowerUpFreezingShot, @PowerUpUpdateFreezingShot(), @PowerUpDraw(),
+                 #True, #SPRITES_ZOOM, #PowerUpDrawOrder)
+  
+  PowerUpInit(*PowerUp, #POWERUP_TYPE_FREEZING_SHOT, 5.0, -1, 0.0, *ProjectileList, *Holder, Equipped, *DrawList)
 EndProcedure
 
 Procedure PowerUpEquip(*PowerUp.TPowerUp, *Holder.TGameObject, *ProjectileList.TProjectileList)

@@ -4,6 +4,7 @@ XIncludeFile "Resources.pbi"
 XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
 XIncludeFile "PowerUp.pbi"
+XIncludeFile "GameActor.pbi"
 
 EnableExplicit
 
@@ -22,7 +23,7 @@ Structure TPlayerShadow
   
 EndStructure
 
-Structure TPlayer Extends TGameObject
+Structure TPlayer Extends TGameActor
   *Projectiles.TProjectileList
   IsShooting.a
   ShootTimer.f
@@ -266,6 +267,8 @@ EndProcedure
 Procedure InitPlayer(*Player.TPlayer, *ProjectilesList.TProjectileList, *Pos.TVector2D, IsShooting.a, ZoomFactor.f, *DrawList.TDrawList)
   InitGameObject(*Player, *Pos, #Player1, @UpdatePlayer(), @DrawPlayer(), #True, ZoomFactor,
                  #PlayerDrawOrder)
+  
+  GameActorInit(*Player)
   
   *Player\Projectiles = *ProjectilesList
   

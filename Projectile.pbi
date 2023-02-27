@@ -13,6 +13,7 @@ Enumeration EProjectileTypes
   #ProjectileGomo1
   #ProjectileAcid1
   #ProjectileCocoSlice1
+  #ProjectileFreezingLaser1
 EndEnumeration
 
 

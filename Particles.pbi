@@ -170,7 +170,8 @@ Procedure.a InitParticlesRepository(*ParticlesRepository.TParticlesRepository,
   EndIf
   
   StartDrawing(SpriteOutput(*ParticlesRepository\SpriteNum))
-  Box(0, 0, 1, 1, RGB(255, 255, 255))
+  DrawingMode(#PB_2DDrawing_AlphaBlend)
+  Box(0, 0, 1, 1, RGBA(255, 255, 255, 255))
   StopDrawing()
   
   ProcedureReturn #True

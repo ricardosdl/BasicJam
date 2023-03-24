@@ -28,6 +28,7 @@ Enumeration ESprites
   #ShotFlash
   #PlayerShadow
   #PowerUpShootAllDirections
+  #PowerUpFreezingShot
 EndEnumeration
 
 DisableExplicit

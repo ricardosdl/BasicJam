@@ -144,6 +144,10 @@ Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, 
               *ProjectileList, *Holder, Equipped, *DrawList)
 EndProcedure
 
+Procedure PowerUpUpdateFreezingShot(*PowerUp.TPowerUp, TimeSlice.f)
+  
+EndProcedure
+
 Procedure PowerUpFreezingShotInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList,
                                   *Holder.TGameObject, Equipped.a, *DrawList.TDrawList)
   InitGameObject(*PowerUp, *Position, #PowerUpFreezingShot, @PowerUpUpdateFreezingShot(), @PowerUpDraw(),

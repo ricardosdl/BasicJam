@@ -38,6 +38,7 @@ Procedure.a LoadSprites()
   LoadedAll = LoadedAll & Bool(LoadSprite(#ShotFlash, "data\img\shotflash.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#PlayerShadow, "data\img\jabuticabashadow.png", #PB_Sprite_AlphaBlending))
   LoadedAll = LoadedAll & Bool(LoadSprite(#PowerUpShootAllDirections, "data\img\power-up-shoot-all-directions.png", #PB_Sprite_AlphaBlending))
+  LoadedAll = LoadedAll & Bool(LoadSprite(#PowerUpFreezingShot, "data\img\power-up-freezing-shot.png", #PB_Sprite_AlphaBlending))
   
   ProcedureReturn LoadedAll
 EndProcedure

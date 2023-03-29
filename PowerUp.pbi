@@ -145,7 +145,21 @@ Procedure PowerUpShootAllDirectionsInit(*PowerUp.TPowerUp, *Position.TVector2D, 
 EndProcedure
 
 Procedure PowerUpUpdateFreezingShot(*PowerUp.TPowerUp, TimeSlice.f)
+  If Not *PowerUp\Equipped
+    UpdateGameObject(*PowerUp, TimeSlice)
+    ProcedureReturn
+  EndIf
   
+  
+  
+  
+  *PowerUp\Timer - TimeSlice
+  
+  If *PowerUp\Timer <= 0.0
+    *PowerUp\Active = #False
+    *PowerUp\Holder\ShootingFreezingShots = #False
+    ProcedureReturn
+  EndIf
 EndProcedure
 
 Procedure PowerUpFreezingShotInit(*PowerUp.TPowerUp, *Position.TVector2D, *ProjectileList.TProjectileList,
@@ -160,6 +174,8 @@ Procedure PowerUpEquip(*PowerUp.TPowerUp, *Holder.TGameObject, *ProjectileList.T
   *PowerUp\Equipped = #True
   *PowerUp\Holder = *Holder
   *PowerUp\ProjectileList = *ProjectileList
+  ;setup the holder as shootingfreezinshots when the powerup is #PowerUpFreezingShot
+  *PowerUp\Holder\ShootingFreezingShots = Bool(*PowerUp\Type = #POWERUP_TYPE_FREEZING_SHOT)
 EndProcedure
 
 DisableExplicit

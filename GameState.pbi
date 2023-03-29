@@ -261,7 +261,8 @@ Procedure PlayStateInitPowerUps(*PlayState.TPlayState)
   Protected Position.TVector2D
   Position\x = Random(ScreenWidth() * 0.9, 0.1 * ScreenWidth())
   Position\y = Random(ScreenHeight() * 0.9, 0.1 * ScreenHeight())
-  PowerUpShootAllDirectionsInit(*PowerUp, @Position, #Null, #Null, #False, @*PlayState\DrawList)
+  ;PowerUpShootAllDirectionsInit(*PowerUp, @Position, #Null, #Null, #False, @*PlayState\DrawList)
+  PowerUpFreezingShotInit(*PowerUp, @Position, #Null, #Null, #False, @*PlayState\DrawList)
   
   AddDrawItemDrawList(@*PlayState\DrawList, *PowerUp)
   
@@ -351,6 +352,10 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
                            ProjectileRect\Position\y, ProjectileRect\Width, ProjectileRect\Height)
         HurtProjectile(*Projectile, 1.0)
         Protected EnemyWasKilled.a = HurtEnemy(*Enemy, *Projectile\Power)
+        If *Projectile\Type = #ProjectileFreezingLaser1
+          *Enemy\Frozen = #True
+          *Enemy\FrozenTimer = 3.0
+        EndIf
         Protected MidPoint.TVector2D
         CalculateMidPoint(@*Enemy\MiddlePosition, @*Projectile\MiddlePosition, @MidPoint)
         SpawnProjectileHitParticlesPlayState(*PlayState, *Projectile\Velocity\x, *Projectile\Velocity\y, @MidPoint)

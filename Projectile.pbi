@@ -155,6 +155,10 @@ Procedure.f GetProjectileVelocity(Type.a)
     Case #ProjectileCocoSlice1
       ProcedureReturn 175.0
       
+    Case #ProjectileFreezingLaser1
+      
+      ProcedureReturn 500.0
+      
   EndSelect
 EndProcedure
 
@@ -219,9 +223,14 @@ Procedure InitProjectile(*Projectile.TProjectile, *Pos.TVector2D, Active.a,
   Select Type
     Case #ProjectileLaser1
       SpriteNum = #Laser1
-      
       Power = 1.0
       Health = 1.0
+      
+    Case #ProjectileFreezingLaser1
+      SpriteNum = #FreezingLaser1
+      Power = 1.0
+      Health = 1.0
+      
     Case #ProjectileBarf1
       SpriteNum = #Barf1
       

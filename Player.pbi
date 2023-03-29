@@ -46,7 +46,14 @@ Procedure.a PlayerShoot(*Player.TPlayer, TimeSlice.f)
     Protected *Projectile.TProjectile = GetInactiveProjectile(*Player\Projectiles)
     
     Protected Position.TVector2D
-    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, PlayerShootingAngle, #ProjectileLaser1)
+    Protected ProjectileType.a
+    If Not *Player\ShootingFreezingShots
+      ProjectileType = #ProjectileLaser1
+    Else
+      ProjectileType = #ProjectileFreezingLaser1
+    EndIf
+    
+    InitProjectile(*Projectile, @Position, #True, #SPRITES_ZOOM, PlayerShootingAngle, ProjectileType)
     
     AddDrawItemDrawList(*Player\DrawList, *Projectile)
     

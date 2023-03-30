@@ -7,7 +7,7 @@
   <section name="data">
     <explorer view="" pattern="0"/>
     <log show="1"/>
-    <lastopen date="2023-03-29 15:58" user="ricardo.lima" host="686-D-02700820"/>
+    <lastopen date="2023-03-30 10:48" user="ricardo.lima" host="686-D-02700820"/>
   </section>
   <section name="files">
     <file name="BananaEnemy.pbi">
@@ -26,6 +26,9 @@
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="Enemy.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
+    <file name="GameActor.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
     <file name="GameObject.pbi">
@@ -52,6 +55,9 @@
     <file name="Player.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
+    <file name="PowerUp.pbi">
+      <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
+    </file>
     <file name="Projectile.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
     </file>
@@ -63,12 +69,6 @@
     </file>
     <file name="Util.pbi">
       <config load="0" scan="1" panel="1" warn="0" lastopen="1" panelstate="+"/>
-    </file>
-    <file name="PowerUp.pbi">
-      <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
-    </file>
-    <file name="GameActor.pbi">
-      <config load="0" scan="1" panel="1" warn="0" lastopen="0" panelstate="+"/>
     </file>
   </section>
   <section name="targets">

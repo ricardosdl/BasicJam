@@ -252,7 +252,7 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
   
   
   
-  UpdateGameObject(*BananaEnemy, TimeSlice)
+  GameActorUpdate(*BananaEnemy, TimeSlice)
   
   
 EndProcedure
@@ -407,7 +407,7 @@ Procedure UpdateAppleEnemy(*AppleEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   
-  UpdateGameObject(*AppleEnemy, TimeSlice)
+  GameActorUpdate(*AppleEnemy, TimeSlice)
   
 EndProcedure
 
@@ -531,7 +531,7 @@ Procedure UpdateGrapeEnemy(*GrapeEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   
-  UpdateGameObject(*GrapeEnemy, TimeSlice)
+  GameActorUpdate(*GrapeEnemy, TimeSlice)
 EndProcedure
 
 Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVector2D,
@@ -679,7 +679,7 @@ Procedure UpdateWatermelonEnemy(*WatermelonEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   
-  UpdateGameObject(*WatermelonEnemy, TimeSlice)
+  GameActorUpdate(*WatermelonEnemy, TimeSlice)
 EndProcedure
 
 Procedure DrawWatermelonEnemy(*WatermelonEnemy.TEnemy)
@@ -856,7 +856,7 @@ Procedure UpdateTangerineEnemy(*TangerineEnemy.TEnemy, TimeSlice.f)
   EndIf
   
   
-  UpdateGameObject(*TangerineEnemy, TimeSlice)
+  GameActorUpdate(*TangerineEnemy, TimeSlice)
 EndProcedure
 
 Procedure DrawTangerineEnemy(*TangerineEnemy.TEnemy)
@@ -979,7 +979,7 @@ Procedure UpdatePineappleEnemy(*Pineapple.TEnemy, TimeSlice.f)
     
   EndIf
   
-  UpdateGameObject(*Pineapple, TimeSlice)
+  GameActorUpdate(*Pineapple, TimeSlice)
   
   
 EndProcedure
@@ -1091,7 +1091,7 @@ Procedure UpdateLemon(*Lemon.TEnemy, TimeSlice.f)
     
   EndIf
   
-  UpdateGameObject(*Lemon, TimeSlice)
+  GameActorUpdate(*Lemon, TimeSlice)
   
   
 EndProcedure
@@ -1230,7 +1230,7 @@ Procedure UpdateCoconut(*Coconut.TEnemy, TimeSlice.f)
   EndIf
   
   
-  UpdateGameObject(*Coconut, TimeSlice)
+  GameActorUpdate(*Coconut, TimeSlice)
 EndProcedure
 
 Procedure DrawCoconut(*Coconut.TEnemy)
@@ -1423,7 +1423,7 @@ Procedure UpdateJabuticabaEnemy(*Jabuticaba.TEnemy, TimeSlice.f)
   
   
   
-  UpdateGameObject(*Jabuticaba, TimeSlice)
+  GameActorUpdate(*Jabuticaba, TimeSlice)
 EndProcedure
 
 Procedure DrawJabuticabaEnemy(*Jabuticaba.TEnemy)
@@ -1550,7 +1550,7 @@ Procedure UpdateTomatoEnemy(*Tomato.TEnemy, TimeSlice.f)
   
   
   
-  UpdateGameObject(*Tomato, TimeSlice)
+  GameActorUpdate(*Tomato, TimeSlice)
   
   
 EndProcedure
@@ -1614,7 +1614,7 @@ Procedure UpdateEnemySpawner(*EnemySpawner.TEnemy, TimeSlice.f)
     EndIf
   EndIf
   
-  UpdateGameObject(*EnemySpawner, TimeSlice)
+  GameActorUpdate(*EnemySpawner, TimeSlice)
   
 EndProcedure
 

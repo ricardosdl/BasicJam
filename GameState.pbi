@@ -226,9 +226,9 @@ Procedure InitEnemiesPlayState(*PlayState.TPlayState)
 EndProcedure
 
 Procedure InitGroundPlayState(*PlayState.TPlayState)
-  InitGround(*PlayState\Ground)
   
   *PlayState\Ground\GameCamera = @*PlayState\GameCamera
+  InitGround(*PlayState\Ground)
   
   AddDrawItemDrawList(*PlayState\DrawList, *PlayState\Ground)
   

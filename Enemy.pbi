@@ -6,6 +6,7 @@ XIncludeFile "DrawList.pbi"
 XIncludeFile "DrawOrders.pbi"
 XIncludeFile "Camera.pbi"
 XIncludeFile "GameActor.pbi"
+XIncludeFile "EnemyFrozenSprite.pbi"
 
 EnableExplicit
 
@@ -69,6 +70,9 @@ Structure TEnemy Extends TGameActor
   CloneTimer.f
   *SpawnEnemy.SpawnEnemyProc
   EnemyType.a
+  FrozenSprite.i
+  ;stores the original unmodified spritenum
+  OriginalSpriteNum.i
 EndStructure
 
 #TOMATO_CLONING_TIMER = 0.15
@@ -88,9 +92,25 @@ Procedure.a GetRandomEnemyType(StartEnemyType.a, EndEnemyType.a)
   
 EndProcedure
 
+Procedure.a EnemyCreateFrozenSprite(*Enemy.TEnemy, EnemySprite.i)
+  Protected EnemyFrozenSprite.Integer
+  Protected WasCreated = EnemyFrozenSpriteGetFrozenSprite(EnemySprite, *Enemy\EnemyType, @EnemyFrozenSprite)
+  
+  If Not WasCreated
+    *Enemy\FrozenSprite = -1
+    ProcedureReturn #False
+  EndIf
+  
+  *Enemy\FrozenSprite = EnemyFrozenSprite\i
+  
+  ProcedureReturn #True
+  
+EndProcedure
+
+
 
 Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProjectileList,
-                    *DrawList.TDrawList, EnemyType.a)
+                    *DrawList.TDrawList, EnemyType.a, EnemySprite.i = -1)
   GameActorInit(*Enemy)
   *Enemy\Player = *Player
   *Enemy\Projectiles = *ProjectileList
@@ -98,6 +118,8 @@ Procedure InitEnemy(*Enemy.TEnemy, *Player.TGameObject, *ProjectileList.TProject
   *Enemy\IsOnGround = #True
   *Enemy\DrawList = *DrawList
   *Enemy\EnemyType = EnemyType
+  
+  *Enemy\OriginalSpriteNum = EnemySprite
 EndProcedure
 
 Procedure SetVelocityPatrollingBananaEnemy(*BananaEnemy.TEnemy)
@@ -258,6 +280,12 @@ Procedure UpdateBananaEnemy(*BananaEnemy.TEnemy, TimeSlice.f)
 EndProcedure
 
 Procedure DrawEnemy(*Enemy.TEnemy, Intensity.a = 255)
+  If *Enemy\Frozen
+    *Enemy\SpriteNum = *Enemy\FrozenSprite
+  Else
+    *Enemy\SpriteNum = *Enemy\OriginalSpriteNum
+  EndIf
+  
   DrawGameObjectWithGameCamera(*Enemy, Intensity)
 EndProcedure
 
@@ -265,12 +293,16 @@ Procedure InitBananaEnemy(*BananaEnemy.TEnemy, *Player.TGameObject, *Position.TV
                           SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                           *DrawList.TDrawList)
   
-  InitEnemy(*BananaEnemy, *Player, *ProjectileList, *DrawList, #EnemyBanana)
+  InitEnemy(*BananaEnemy, *Player, *ProjectileList, *DrawList, #EnemyBanana, SpriteNum)
   
   *BananaEnemy\Health = 1.0
   
   InitGameObject(*BananaEnemy, *Position, SpriteNum, @UpdateBananaEnemy(), @DrawEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *BananaEnemy\FrozenSprite = EnemyFrozenSprite\i
   
   *BananaEnemy\MaxVelocity\x = 100.0
   *BananaEnemy\MaxVelocity\y = 100.0
@@ -421,12 +453,16 @@ Procedure InitAppleEnemy(*AppleEnemy.TEnemy, *Player.TGameObject, *Position.TVec
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                          *DrawList.TDrawList)
   
-  InitEnemy(*AppleEnemy, *Player, *ProjectileList, *DrawList, #EnemyApple)
+  InitEnemy(*AppleEnemy, *Player, *ProjectileList, *DrawList, #EnemyApple, SpriteNum)
   
   *AppleEnemy\Health = 2.0
   
   InitGameObject(*AppleEnemy, *Position, SpriteNum, @UpdateAppleEnemy(), @DrawAppleEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *AppleEnemy\FrozenSprite = EnemyFrozenSprite\i
   
   *AppleEnemy\MaxVelocity\x = 80.0
   *AppleEnemy\MaxVelocity\y = 80.0
@@ -538,12 +574,16 @@ Procedure InitGrapeEnemy(*GrapeEnemy.TEnemy, *Player.TGameObject, *Position.TVec
                          SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                          *DrawList.TDrawList)
   
-  InitEnemy(*GrapeEnemy, *Player, *ProjectileList, *DrawList, #EnemyGrape)
+  InitEnemy(*GrapeEnemy, *Player, *ProjectileList, *DrawList, #EnemyGrape, SpriteNum)
   
   *GrapeEnemy\Health = 2.0
   
   InitGameObject(*GrapeEnemy, *Position, SpriteNum, @UpdateGrapeEnemy(), @DrawAppleEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *GrapeEnemy\FrozenSprite = EnemyFrozenSprite\i
   
   *GrapeEnemy\MaxVelocity\x = 80.0
   *GrapeEnemy\MaxVelocity\y = 80.0
@@ -690,12 +730,16 @@ Procedure InitWatermelonEnemy(*WatermelonEnemy.TEnemy, *Player.TGameObject, *Pos
                               SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                               *DrawList.TDrawList)
   
-  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList, *DrawList, #EnemyWatermelon)
+  InitEnemy(*WatermelonEnemy, *Player, *ProjectileList, *DrawList, #EnemyWatermelon, SpriteNum)
   
   *WatermelonEnemy\Health = 3.0
   
   InitGameObject(*WatermelonEnemy, *Position, SpriteNum, @UpdateWatermelonEnemy(), @DrawWatermelonEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *WatermelonEnemy\FrozenSprite = EnemyFrozenSprite\i
   
   *WatermelonEnemy\MaxVelocity\x = 80.0
   *WatermelonEnemy\MaxVelocity\y = 80.0
@@ -867,12 +911,16 @@ Procedure InitTangerineEnemy(*TangerineEnemy.TEnemy, *Player.TGameObject, *Posit
                              SpriteNum.i, ZoomFactor.f, *ProjectileList.TProjectileList,
                              *DrawList.TDrawList)
   
-  InitEnemy(*TangerineEnemy, *Player, *ProjectileList, *DrawList, #EnemyTangerine)
+  InitEnemy(*TangerineEnemy, *Player, *ProjectileList, *DrawList, #EnemyTangerine, SpriteNum)
   
   *TangerineEnemy\Health = 4.0
   
   InitGameObject(*TangerineEnemy, *Position, SpriteNum, @UpdateTangerineEnemy(), @DrawTangerineEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *TangerineEnemy\FrozenSprite = EnemyFrozenSprite\i
   
   *TangerineEnemy\MaxVelocity\x = 80.0
   *TangerineEnemy\MaxVelocity\y = 80.0
@@ -998,6 +1046,10 @@ Procedure InitPineappleEnemy(*Pineapple.TEnemy, *Player.TGameObject, *Position.T
   InitGameObject(*Pineapple, *Position, SpriteNum, @UpdatePineappleEnemy(), @DrawPineappleEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
   
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *Pineapple\FrozenSprite = EnemyFrozenSprite\i
+  
   *Pineapple\MaxVelocity\x = 100.0
   *Pineapple\MaxVelocity\y = 100.0
   
@@ -1106,6 +1158,10 @@ Procedure InitLemonEnemy(*Lemon.TEnemy, *Player.TGameObject, *Position.TVector2D
   
   InitGameObject(*Lemon, *Position, SpriteNum, @UpdateLemon(), @DrawEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *Lemon\FrozenSprite = EnemyFrozenSprite\i
   
   *Lemon\MaxVelocity\x = 100.0
   *Lemon\MaxVelocity\y = 100.0
@@ -1270,6 +1326,10 @@ Procedure InitCoconutEnemy(*Coconut.TEnemy, *Player.TGameObject, *Position.TVect
   
   InitGameObject(*Coconut, *Position, SpriteNum, @UpdateCoconut(), @DrawCoconut(),
                  #True, ZoomFactor, #EnemyDrawOrder)
+  
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *Coconut\FrozenSprite = EnemyFrozenSprite\i
   
   *Coconut\MaxVelocity\x = 100.0
   *Coconut\MaxVelocity\y = 100.0
@@ -1454,6 +1514,10 @@ Procedure InitJabuticabaEnemy(*Jabuticaba.TEnemy, *Player.TGameObject, *Position
   InitGameObject(*Jabuticaba, *Position, SpriteNum, @UpdateJabuticabaEnemy(), @DrawJabuticabaEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
   
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *Jabuticaba\FrozenSprite = EnemyFrozenSprite\i
+  
   *Jabuticaba\MaxVelocity\x = 100.0
   *Jabuticaba\MaxVelocity\y = 100.0
   
@@ -1589,6 +1653,10 @@ Procedure InitTomatoEnemy(*Tomato.TEnemy, *Player.TGameObject, *Position.TVector
   InitGameObject(*Tomato, *Position, SpriteNum, @UpdateTomatoEnemy(), @DrawTomatoEnemy(),
                  #True, ZoomFactor, #EnemyDrawOrder)
   
+  Protected EnemyFrozenSprite.Integer
+  EnemyFrozenSpriteCreate(SpriteNum, @EnemyFrozenSprite)
+  *Tomato\FrozenSprite = EnemyFrozenSprite\i
+  
   *Tomato\MaxVelocity\x = 120.0
   *Tomato\MaxVelocity\y = 120.0
   
@@ -1630,7 +1698,7 @@ Procedure InitEnemySpawnerEnemy(*EnemySpawner.TEnemy, *Player.TGameObject, *Posi
                            SpriteNum.i, ZoomFactor.f, *ProjectilesList.TProjectileList,
                            *DrawList.TDrawList, *SpawnEnemy.SpawnEnemyProc)
   
-  InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList, #EnemySpawner_)
+  InitEnemy(*EnemySpawner, *Player, *ProjectilesList, *DrawList, #EnemySpawner_, SpriteNum)
   
   *EnemySpawner\Health = 3.0
   

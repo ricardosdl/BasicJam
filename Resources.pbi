@@ -32,4 +32,9 @@ Enumeration ESprites
   #FreezingLaser1
 EndEnumeration
 
+Enumeration EImages
+  #FrozenSurfaceImage
+EndEnumeration
+
+
 DisableExplicit

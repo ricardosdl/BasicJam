@@ -44,11 +44,21 @@ Procedure.a LoadSprites()
   ProcedureReturn LoadedAll
 EndProcedure
 
+Procedure.a LoadImages()
+  Protected LoadedAll = #True
+  LoadedAll = LoadedAll & Bool(LoadImage(#Player1, "data\img\frozen-surface.png"))
+EndProcedure
+
 Procedure.a LoadResources()
   If LoadSprites() = #False
     MessageRequester("ERROR", "Error loading sprites! Couldn't find data.")
     ProcedureReturn #False
   EndIf
+  
+  If LoadImages()
+    MessageRequester("ERROR", "Error loading images! Couldn't find data.")
+  EndIf
+  
   
   ProcedureReturn #True
   

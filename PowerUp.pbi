@@ -167,7 +167,7 @@ Procedure PowerUpFreezingShotInit(*PowerUp.TPowerUp, *Position.TVector2D, *Proje
   InitGameObject(*PowerUp, *Position, #PowerUpFreezingShot, @PowerUpUpdateFreezingShot(), @PowerUpDraw(),
                  #True, #SPRITES_ZOOM, #PowerUpDrawOrder)
   
-  PowerUpInit(*PowerUp, #POWERUP_TYPE_FREEZING_SHOT, 5.0, -1, 0.0, *ProjectileList, *Holder, Equipped, *DrawList)
+  PowerUpInit(*PowerUp, #POWERUP_TYPE_FREEZING_SHOT, 10.0, -1, 0.0, *ProjectileList, *Holder, Equipped, *DrawList)
 EndProcedure
 
 Procedure PowerUpEquip(*PowerUp.TPowerUp, *Holder.TGameObject, *ProjectileList.TProjectileList)

@@ -354,7 +354,7 @@ Procedure CollisionPlayerProjectileEnemies(*PlayState.TPlayState, *Projectile.TP
         Protected EnemyWasKilled.a = HurtEnemy(*Enemy, *Projectile\Power)
         If *Projectile\Type = #ProjectileFreezingLaser1
           *Enemy\Frozen = #True
-          *Enemy\FrozenTimer = 3.0
+          *Enemy\FrozenTimer = 5.0
         EndIf
         Protected MidPoint.TVector2D
         CalculateMidPoint(@*Enemy\MiddlePosition, @*Projectile\MiddlePosition, @MidPoint)

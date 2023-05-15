@@ -17,6 +17,7 @@ Procedure EnemyFrozenSpriteCreate(EnemySprite.i, *EnemyFrozenSprite.Integer)
   If EnemyFrozenSprite = 0
     ProcedureReturn #False
   EndIf
+  ZoomSprite(EnemyFrozenSprite, SpriteWidth(EnemySprite), SpriteHeight(EnemySprite))
   
   StartDrawing(SpriteOutput(EnemyFrozenSprite))
   DrawingMode(#PB_2DDrawing_AlphaClip)
